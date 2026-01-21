@@ -26,6 +26,22 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Google Maps Setup
+
+To use the "Find Scooter" feature, you'll need to set up a Google Maps API key:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the "Maps JavaScript API"
+4. Create credentials (API Key)
+5. Create a `.env.local` file in the root directory:
+   ```
+   NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
+   ```
+6. Restart the development server
+
+**Note:** Make sure to restrict your API key in the Google Cloud Console for production use.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
