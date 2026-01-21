@@ -1,4 +1,7 @@
+'use client'
+
 import FindScooterButton from '../components/FindScooterButton'
+import AuthLinks from '../components/AuthLinks'
 
 export default function Home() {
   return (
@@ -12,6 +15,13 @@ export default function Home() {
       alignItems: "center",
       gap: "2rem"
     }}>
+      <div style={{
+        position: 'absolute',
+        top: '1rem',
+        right: '1rem',
+      }}>
+        <AuthLinks />
+      </div>
       <div>
         <h1 style={{ 
           fontSize: "2.5rem", 
