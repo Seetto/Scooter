@@ -7,6 +7,14 @@ interface Location {
   lng: number
 }
 
+interface Store {
+  id: string
+  name: string
+  address: string
+  location: Location
+  distance?: number // Distance in kilometers
+}
+
 export default function FindScooterButton() {
   const [showMap, setShowMap] = useState(false)
   const [location, setLocation] = useState<Location | null>(null)
@@ -14,8 +22,19 @@ export default function FindScooterButton() {
   const [error, setError] = useState<string | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [stores, setStores] = useState<Store[]>([])
+  const [closestStore, setClosestStore] = useState<Store | null>(null)
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
+  const markersRef = useRef<any[]>([])
+
+  // Test store - will be replaced with backend data later
+  const testStore: Store = {
+    id: '1',
+    name: 'Test Store',
+    address: '48 Burniston Street, Scarborough',
+    location: { lat: 0, lng: 0 }, // Will be geocoded
+  }
 
   // Ensure component is mounted on client
   useEffect(() => {
@@ -25,6 +44,62 @@ export default function FindScooterButton() {
   // Check for API key
   const getApiKey = () => {
     return process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  }
+
+  // Geocode address to get coordinates
+  const geocodeAddress = async (address: string): Promise<Location | null> => {
+    const apiKey = getApiKey()
+    if (!apiKey) return null
+
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
+      )
+      const data = await response.json()
+
+      if (data.status === 'OK' && data.results && data.results.length > 0) {
+        const location = data.results[0].geometry.location
+        return { lat: location.lat, lng: location.lng }
+      }
+      return null
+    } catch (err) {
+      console.error('Geocoding error:', err)
+      return null
+    }
+  }
+
+  // Calculate distance between two points in kilometers (Haversine formula)
+  const calculateDistance = (loc1: Location, loc2: Location): number => {
+    const R = 6371 // Earth's radius in kilometers
+    const dLat = ((loc2.lat - loc1.lat) * Math.PI) / 180
+    const dLon = ((loc2.lng - loc1.lng) * Math.PI) / 180
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((loc1.lat * Math.PI) / 180) *
+        Math.cos((loc2.lat * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c
+  }
+
+  // Find closest store
+  const findClosestStore = (userLocation: Location, storeList: Store[]): Store | null => {
+    if (storeList.length === 0) return null
+
+    let closest: Store | null = null
+    let minDistance = Infinity
+
+    storeList.forEach((store) => {
+      const distance = calculateDistance(userLocation, store.location)
+      store.distance = distance
+      if (distance < minDistance) {
+        minDistance = distance
+        closest = store
+      }
+    })
+
+    return closest
   }
 
   const loadGoogleMaps = () => {
@@ -75,7 +150,7 @@ export default function FindScooterButton() {
     document.head.appendChild(script)
   }
 
-  const handleFindScooter = () => {
+  const handleFindScooter = async () => {
     setLoading(true)
     setError(null)
 
@@ -96,12 +171,31 @@ export default function FindScooterButton() {
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const userLocation = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         }
         setLocation(userLocation)
+
+        // Geocode the test store address
+        const storeLocation = await geocodeAddress(testStore.address)
+        if (storeLocation) {
+          const storeWithLocation = {
+            ...testStore,
+            location: storeLocation,
+          }
+          setStores([storeWithLocation])
+
+          // Find closest store
+          const closest = findClosestStore(userLocation, [storeWithLocation])
+          setClosestStore(closest)
+        } else {
+          setError('Failed to geocode store address. Please try again.')
+          setLoading(false)
+          return
+        }
+
         setShowMap(true)
         loadGoogleMaps()
         setLoading(false)
@@ -123,14 +217,29 @@ export default function FindScooterButton() {
 
     try {
       const google = (window as any).google
+
+      // Calculate bounds to fit both user location and stores
+      const bounds = new google.maps.LatLngBounds()
+      bounds.extend(location)
+
+      stores.forEach((store) => {
+        bounds.extend(store.location)
+      })
+
       const map = new google.maps.Map(mapRef.current, {
-        center: location,
-        zoom: 15,
         mapTypeControl: true,
         streetViewControl: true,
         fullscreenControl: true,
       })
 
+      // Fit bounds to show all markers
+      map.fitBounds(bounds)
+
+      // Add padding to bounds
+      const padding = 50
+      map.fitBounds(bounds, padding)
+
+      // Add user location marker
       new google.maps.Marker({
         position: location,
         map: map,
@@ -140,13 +249,58 @@ export default function FindScooterButton() {
         },
       })
 
+      // Clear previous markers
+      markersRef.current.forEach((marker) => marker.setMap(null))
+      markersRef.current = []
+
+      // Add store markers
+      stores.forEach((store) => {
+        const isClosest = closestStore?.id === store.id
+
+        // Create marker
+        const marker = new google.maps.Marker({
+          position: store.location,
+          map: map,
+          title: store.name,
+          icon: {
+            url: isClosest
+              ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+              : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            scaledSize: new google.maps.Size(32, 32),
+          },
+        })
+
+        // Create info window with store name and distance
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="padding: 0.5rem;">
+              <strong>${store.name}</strong><br/>
+              ${store.address}<br/>
+              ${store.distance ? `Distance: ${store.distance.toFixed(2)} km` : ''}
+              ${isClosest ? '<br/><strong style="color: green;">⭐ Closest Store</strong>' : ''}
+            </div>
+          `,
+        })
+
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker)
+        })
+
+        // Show info window for closest store automatically
+        if (isClosest) {
+          infoWindow.open(map, marker)
+        }
+
+        markersRef.current.push(marker)
+      })
+
       mapInstanceRef.current = map
     } catch (err) {
       console.error('Error initializing map:', err)
       setError('Failed to initialize map. Please check your API key.')
       setMapLoaded(false)
     }
-  }, [showMap, location, mapLoaded])
+  }, [showMap, location, mapLoaded, stores, closestStore])
 
   // Don't render until mounted to prevent hydration mismatch
   if (!mounted) {
@@ -231,6 +385,27 @@ export default function FindScooterButton() {
                 Get your API key here
               </a>
             </div>
+          )}
+        </div>
+      )}
+
+      {closestStore && (
+        <div
+          style={{
+            padding: '1rem',
+            backgroundColor: '#d1fae5',
+            color: '#065f46',
+            borderRadius: '0.5rem',
+            fontSize: '0.875rem',
+            maxWidth: '500px',
+            textAlign: 'center',
+            border: '2px solid #10b981',
+          }}
+        >
+          <strong>⭐ Closest Store:</strong> {closestStore.name}
+          <br />
+          {closestStore.distance !== undefined && (
+            <span>Distance: {closestStore.distance.toFixed(2)} km</span>
           )}
         </div>
       )}
