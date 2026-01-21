@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { sendConfirmationEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
   try {
@@ -18,6 +19,15 @@ export async function POST(request: Request) {
     if (password.length < 6) {
       return NextResponse.json(
         { error: 'Password must be at least 6 characters' },
+        { status: 400 }
+      )
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Please enter a valid email address' },
         { status: 400 }
       )
     }
@@ -52,14 +62,33 @@ export async function POST(request: Request) {
       }
     })
 
+    // Send confirmation email (don't fail signup if email fails)
+    try {
+      await sendConfirmationEmail(user.email, user.name)
+    } catch (emailError) {
+      console.error('Failed to send confirmation email:', emailError)
+      // Continue even if email fails
+    }
+
     return NextResponse.json(
-      { message: 'User created successfully', user },
+      { message: 'User created successfully. Please check your email for confirmation.', user },
       { status: 201 }
     )
   } catch (error) {
     console.error('Signup error:', error)
+    
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes('Unique constraint')) {
+        return NextResponse.json(
+          { error: 'User with this email already exists' },
+          { status: 400 }
+        )
+      }
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error. Please try again later.' },
       { status: 500 }
     )
   }

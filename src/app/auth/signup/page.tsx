@@ -54,10 +54,11 @@ export default function SignupPage() {
         return
       }
 
-      // Redirect to login page
-      router.push('/auth/login?message=Account created successfully. Please login.')
+      // Redirect to login page with success message
+      router.push('/auth/login?message=Account created successfully! Please check your email for confirmation and then login.')
     } catch (err) {
-      setError('An error occurred. Please try again.')
+      console.error('Signup error:', err)
+      setError('An error occurred. Please check your connection and try again.')
       setLoading(false)
     }
   }
