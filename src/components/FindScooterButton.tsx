@@ -22,24 +22,72 @@ export default function FindScooterButton() {
     setMounted(true)
   }, [])
 
+  // Check for API key
+  const getApiKey = () => {
+    return process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  }
+
   const loadGoogleMaps = () => {
+    const apiKey = getApiKey()
+    
+    if (!apiKey || apiKey === 'YOUR_API_KEY' || apiKey.trim() === '') {
+      setError(
+        'Google Maps API key is not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env.local file. See README.md for setup instructions.'
+      )
+      setLoading(false)
+      return
+    }
+
     if ((window as any).google && (window as any).google.maps) {
       setMapLoaded(true)
       return
     }
 
+    // Add global error handler for Google Maps
+    ;(window as any).gm_authFailure = () => {
+      setError(
+        'Invalid Google Maps API key. Please check your API key in .env.local and ensure the Maps JavaScript API is enabled in Google Cloud Console.'
+      )
+      setMapLoaded(false)
+      setLoading(false)
+    }
+
     const script = document.createElement('script')
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&libraries=places`
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`
     script.async = true
     script.defer = true
-    script.onload = () => setMapLoaded(true)
-    script.onerror = () => setError('Failed to load Google Maps')
+    
+    script.onload = () => {
+      // Check if Google Maps loaded successfully
+      if ((window as any).google && (window as any).google.maps) {
+        setMapLoaded(true)
+      } else {
+        setError('Google Maps failed to load. Please check your API key.')
+        setLoading(false)
+      }
+    }
+    
+    script.onerror = () => {
+      setError('Failed to load Google Maps. Please check your API key and internet connection.')
+      setLoading(false)
+    }
+    
     document.head.appendChild(script)
   }
 
   const handleFindScooter = () => {
     setLoading(true)
     setError(null)
+
+    // Check for API key first
+    const apiKey = getApiKey()
+    if (!apiKey || apiKey === 'YOUR_API_KEY' || apiKey.trim() === '') {
+      setError(
+        'Google Maps API key is not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env.local file.'
+      )
+      setLoading(false)
+      return
+    }
 
     if (typeof window === 'undefined' || !navigator.geolocation) {
       setError('Geolocation is not supported by your browser')
@@ -73,25 +121,31 @@ export default function FindScooterButton() {
     // Prevent re-initialization
     if (mapInstanceRef.current) return
 
-    const google = (window as any).google
-    const map = new google.maps.Map(mapRef.current, {
-      center: location,
-      zoom: 15,
-      mapTypeControl: true,
-      streetViewControl: true,
-      fullscreenControl: true,
-    })
+    try {
+      const google = (window as any).google
+      const map = new google.maps.Map(mapRef.current, {
+        center: location,
+        zoom: 15,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true,
+      })
 
-    new google.maps.Marker({
-      position: location,
-      map: map,
-      title: 'Your Location',
-      icon: {
-        url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-      },
-    })
+      new google.maps.Marker({
+        position: location,
+        map: map,
+        title: 'Your Location',
+        icon: {
+          url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+        },
+      })
 
-    mapInstanceRef.current = map
+      mapInstanceRef.current = map
+    } catch (err) {
+      console.error('Error initializing map:', err)
+      setError('Failed to initialize map. Please check your API key.')
+      setMapLoaded(false)
+    }
   }, [showMap, location, mapLoaded])
 
   // Don't render until mounted to prevent hydration mismatch
@@ -155,20 +209,33 @@ export default function FindScooterButton() {
       {error && (
         <div
           style={{
-            padding: '0.75rem 1rem',
+            padding: '1rem',
             backgroundColor: '#fee2e2',
             color: '#991b1b',
             borderRadius: '0.5rem',
             fontSize: '0.875rem',
-            maxWidth: '400px',
+            maxWidth: '500px',
             textAlign: 'center',
+            lineHeight: '1.5',
           }}
         >
-          {error}
+          <strong>Error:</strong> {error}
+          {error.includes('API key') && (
+            <div style={{ marginTop: '0.5rem', fontSize: '0.75rem' }}>
+              <a
+                href="https://console.cloud.google.com/google/maps-apis"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#991b1b', textDecoration: 'underline' }}
+              >
+                Get your API key here
+              </a>
+            </div>
+          )}
         </div>
       )}
 
-      {showMap && (
+      {showMap && !error && (
         <div
           style={{
             width: '100%',
