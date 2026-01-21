@@ -102,6 +102,16 @@ export default function FindScooterButton() {
     return closest
   }
 
+  // Generate Google Maps directions URL
+  const getDirectionsUrl = (destination: Location): string => {
+    if (location) {
+      // Use user's current location as origin
+      return `https://www.google.com/maps/dir/?api=1&origin=${location.lat},${location.lng}&destination=${destination.lat},${destination.lng}`
+    }
+    // Fallback to destination only (will use current location)
+    return `https://www.google.com/maps/dir/?api=1&destination=${destination.lat},${destination.lng}`
+  }
+
   const loadGoogleMaps = () => {
     const apiKey = getApiKey()
     
@@ -270,14 +280,40 @@ export default function FindScooterButton() {
           },
         })
 
-        // Create info window with store name and distance
+        // Create info window with store name, distance, and directions button
+        const directionsUrl = getDirectionsUrl(store.location)
         const infoWindow = new google.maps.InfoWindow({
           content: `
-            <div style="padding: 0.5rem;">
-              <strong>${store.name}</strong><br/>
-              ${store.address}<br/>
-              ${store.distance ? `Distance: ${store.distance.toFixed(2)} km` : ''}
-              ${isClosest ? '<br/><strong style="color: green;">⭐ Closest Store</strong>' : ''}
+            <div style="padding: 0.75rem; min-width: 200px;">
+              <div style="margin-bottom: 0.75rem;">
+                <strong style="font-size: 1.1rem; color: #1f2937;">${store.name}</strong><br/>
+                <span style="color: #6b7280; font-size: 0.875rem;">${store.address}</span><br/>
+                ${store.distance ? `<span style="color: #059669; font-weight: 600;">Distance: ${store.distance.toFixed(2)} km</span>` : ''}
+                ${isClosest ? '<div style="margin-top: 0.5rem;"><strong style="color: #10b981;">⭐ Closest Store</strong></div>' : ''}
+              </div>
+              <a 
+                href="${directionsUrl}" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style="
+                  display: inline-block;
+                  padding: 0.5rem 1rem;
+                  background-color: #2563eb;
+                  color: white;
+                  text-decoration: none;
+                  border-radius: 0.375rem;
+                  font-weight: 600;
+                  font-size: 0.875rem;
+                  text-align: center;
+                  width: 100%;
+                  box-sizing: border-box;
+                  transition: background-color 0.2s;
+                "
+                onmouseover="this.style.backgroundColor='#1d4ed8'"
+                onmouseout="this.style.backgroundColor='#2563eb'"
+              >
+                🗺️ Get Directions
+              </a>
             </div>
           `,
         })
