@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface Location {
   lat: number
@@ -13,6 +13,14 @@ export default function FindScooterButton() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const mapRef = useRef<HTMLDivElement>(null)
+  const mapInstanceRef = useRef<any>(null)
+
+  // Ensure component is mounted on client
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const loadGoogleMaps = () => {
     if ((window as any).google && (window as any).google.maps) {
@@ -33,7 +41,7 @@ export default function FindScooterButton() {
     setLoading(true)
     setError(null)
 
-    if (!navigator.geolocation) {
+    if (typeof window === 'undefined' || !navigator.geolocation) {
       setError('Geolocation is not supported by your browser')
       setLoading(false)
       return
@@ -58,14 +66,15 @@ export default function FindScooterButton() {
     )
   }
 
-  const initMap = () => {
-    if (!location || !mapLoaded || !(window as any).google) return
+  // Initialize map when both location and Google Maps are ready
+  useEffect(() => {
+    if (!showMap || !location || !mapLoaded || !(window as any).google || !mapRef.current) return
 
-    const mapElement = document.getElementById('map')
-    if (!mapElement) return
+    // Prevent re-initialization
+    if (mapInstanceRef.current) return
 
     const google = (window as any).google
-    const map = new google.maps.Map(mapElement, {
+    const map = new google.maps.Map(mapRef.current, {
       center: location,
       zoom: 15,
       mapTypeControl: true,
@@ -81,11 +90,31 @@ export default function FindScooterButton() {
         url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
       },
     })
-  }
 
-  // Initialize map when both location and Google Maps are ready
-  if (showMap && location && mapLoaded) {
-    setTimeout(initMap, 100)
+    mapInstanceRef.current = map
+  }, [showMap, location, mapLoaded])
+
+  // Don't render until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+        <button
+          disabled
+          style={{
+            padding: '1rem 2rem',
+            fontSize: '1.125rem',
+            fontWeight: '600',
+            color: '#fff',
+            backgroundColor: '#9ca3af',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: 'not-allowed',
+          }}
+        >
+          Find Scooter
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -106,14 +135,14 @@ export default function FindScooterButton() {
           transition: 'all 0.2s ease',
         }}
         onMouseEnter={(e) => {
-          if (!loading) {
+          if (!loading && mounted) {
             e.currentTarget.style.backgroundColor = '#1d4ed8'
             e.currentTarget.style.transform = 'translateY(-2px)'
             e.currentTarget.style.boxShadow = '0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
           }
         }}
         onMouseLeave={(e) => {
-          if (!loading) {
+          if (!loading && mounted) {
             e.currentTarget.style.backgroundColor = '#2563eb'
             e.currentTarget.style.transform = 'translateY(0)'
             e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
@@ -151,10 +180,9 @@ export default function FindScooterButton() {
             marginTop: '1rem',
           }}
         >
-          <div id="map" style={{ width: '100%', height: '100%' }} />
+          <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
         </div>
       )}
     </div>
   )
 }
-
