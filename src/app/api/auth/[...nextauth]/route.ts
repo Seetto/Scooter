@@ -1,8 +1,6 @@
 import NextAuth from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-// NextAuth v5 beta - use type assertion to handle beta API
-const nextAuth = NextAuth as any
-const { handlers } = nextAuth(authOptions)
+const handler = NextAuth(authOptions)
 
-export const { GET, POST } = handlers
+export { handler as GET, handler as POST }
