@@ -1,7 +1,7 @@
-import NextAuth from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import NextAuth from 'next-auth'
 
-// NextAuth v5 beta handler
-const handler = NextAuth(authOptions) as any
+// NextAuth v5 beta uses a different export pattern
+export const { handlers, signIn, signOut, auth } = NextAuth(authOptions)
 
-export { handler as GET, handler as POST }
+export const { GET, POST } = handlers
