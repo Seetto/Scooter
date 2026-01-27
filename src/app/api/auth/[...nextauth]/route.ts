@@ -1,5 +1,6 @@
-import NextAuth from 'next-auth'
+import NextAuth, { NextAuthOptions } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-// NextAuth v4 route handler
-export default NextAuth(authOptions)
+const handler = NextAuth(authOptions as NextAuthOptions)
+
+export { handler as GET, handler as POST }
