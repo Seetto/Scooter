@@ -24,6 +24,7 @@ export default function FindScooterButton() {
   const [mounted, setMounted] = useState(false)
   const [stores, setStores] = useState<Store[]>([])
   const [closestStore, setClosestStore] = useState<Store | null>(null)
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null)
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
@@ -200,6 +201,7 @@ export default function FindScooterButton() {
           // Find closest store
           const closest = findClosestStore(userLocation, [storeWithLocation])
           setClosestStore(closest)
+          setSelectedStore(closest)
         } else {
           setError('Failed to geocode store address. Please try again.')
           setLoading(false)
@@ -280,45 +282,20 @@ export default function FindScooterButton() {
           },
         })
 
-        // Create info window with store name, distance, and directions button
-        const directionsUrl = getDirectionsUrl(store.location)
+        // Create simple info window with store name (detailed panel is rendered above the map)
         const infoWindow = new google.maps.InfoWindow({
           content: `
-            <div style="padding: 0.75rem; min-width: 200px;">
-              <div style="margin-bottom: 0.75rem;">
-                <strong style="font-size: 1.1rem; color: #1f2937;">${store.name}</strong><br/>
-                <span style="color: #6b7280; font-size: 0.875rem;">${store.address}</span><br/>
-                ${store.distance ? `<span style="color: #059669; font-weight: 600;">Distance: ${store.distance.toFixed(2)} km</span>` : ''}
-                ${isClosest ? '<div style="margin-top: 0.5rem;"><strong style="color: #10b981;">⭐ Closest Store</strong></div>' : ''}
-              </div>
-              <a 
-                href="${directionsUrl}" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                style="
-                  display: inline-block;
-                  padding: 0.5rem 1rem;
-                  background-color: #2563eb;
-                  color: white;
-                  text-decoration: none;
-                  border-radius: 0.375rem;
-                  font-weight: 600;
-                  font-size: 0.875rem;
-                  text-align: center;
-                  width: 100%;
-                  box-sizing: border-box;
-                  transition: background-color 0.2s;
-                "
-                onmouseover="this.style.backgroundColor='#1d4ed8'"
-                onmouseout="this.style.backgroundColor='#2563eb'"
-              >
-                🗺️ Get Directions
-              </a>
+            <div style="padding: 0.5rem; min-width: 160px;">
+              <strong style="font-size: 0.95rem; color: #1f2937;">${store.name}</strong><br/>
+              <span style="color: #6b7280; font-size: 0.8rem;">${store.address}</span><br/>
+              ${store.distance ? `<span style="color: #059669; font-size: 0.8rem;">${store.distance.toFixed(2)} km away</span>` : ''}
+              ${isClosest ? '<div style="margin-top: 0.25rem;"><strong style="color: #10b981; font-size: 0.8rem;">⭐ Closest Store</strong></div>' : ''}
             </div>
           `,
         })
 
         marker.addListener('click', () => {
+          setSelectedStore(store)
           infoWindow.open(map, marker)
         })
 
@@ -435,8 +412,9 @@ export default function FindScooterButton() {
             color: '#065f46',
             borderRadius: '0.5rem',
             fontSize: '0.875rem',
-            maxWidth: '500px',
-            textAlign: 'center',
+            maxWidth: '800px',
+            width: '100%',
+            textAlign: 'left',
             border: '2px solid #10b981',
           }}
         >
@@ -448,13 +426,80 @@ export default function FindScooterButton() {
         </div>
       )}
 
+      {selectedStore && (
+        <div
+          style={{
+            width: '100%',
+            maxWidth: '800px',
+            marginTop: '0.5rem',
+            padding: '1rem 1.25rem',
+            borderRadius: '0.75rem',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.06)',
+            border: '1px solid #e5e7eb',
+            textAlign: 'left',
+          }}
+        >
+          <div style={{ marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#111827' }}>
+              {selectedStore.name}
+            </div>
+            <div style={{ fontSize: '0.9rem', color: '#4b5563', marginTop: '0.25rem' }}>
+              {selectedStore.address}
+            </div>
+            {selectedStore.distance !== undefined && (
+              <div style={{ fontSize: '0.85rem', color: '#059669', marginTop: '0.25rem' }}>
+                Distance: {selectedStore.distance.toFixed(2)} km
+                {closestStore?.id === selectedStore.id && (
+                  <span style={{ marginLeft: '0.5rem', color: '#10b981', fontWeight: 600 }}>
+                    ⭐ Closest Store
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const url = getDirectionsUrl(selectedStore.location)
+              window.open(url, '_blank', 'noopener,noreferrer')
+            }}
+            style={{
+              marginTop: '0.5rem',
+              padding: '0.6rem 1.25rem',
+              backgroundColor: '#2563eb',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '0.5rem',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#1d4ed8'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#2563eb'
+            }}
+          >
+            <span role="img" aria-label="map">
+              🗺️
+            </span>
+            Get Directions
+          </button>
+        </div>
+      )}
+
       {showMap && !error && (
         <div
           style={{
-            width: 'min(100%, 1024px)',       // full-width on mobile, capped on desktop
-            height: '60vh',                   // responsive height based on viewport
-            maxHeight: '700px',               // don't get too tall on large screens
-            minHeight: '320px',               // keep usable height on small phones
+            width: 'min(100vw - 4rem, 1100px)', // use almost full viewport width, with padding
+            height: 'min(70vh, 700px)',         // responsive height based on viewport
+            minHeight: '320px',                 // keep usable height on small phones
             borderRadius: '0.5rem',
             overflow: 'hidden',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
