@@ -1,7 +1,13 @@
 'use client'
 
-import FindScooterButton from '../components/FindScooterButton'
+import dynamic from 'next/dynamic'
 import AuthLinks from '../components/AuthLinks'
+
+// Load FindScooterButton only on the client to avoid hydration mismatches
+const FindScooterButton = dynamic(
+  () => import('../components/FindScooterButton'),
+  { ssr: false }
+)
 
 export default function Home() {
   return (
