@@ -46,6 +46,16 @@ export default function SignupPage() {
         }),
       })
 
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text()
+        console.error('Non-JSON response:', text)
+        setError('Server error: Received invalid response. Please try again.')
+        setLoading(false)
+        return
+      }
+
       const data = await response.json()
 
       if (!response.ok) {
@@ -58,7 +68,8 @@ export default function SignupPage() {
       router.push('/auth/login?message=Account created successfully! Please check your email for confirmation and then login.')
     } catch (err) {
       console.error('Signup error:', err)
-      setError('An error occurred. Please check your connection and try again.')
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      setError(`An error occurred: ${errorMessage}. Please check your connection and try again.`)
       setLoading(false)
     }
   }

@@ -79,16 +79,29 @@ export async function POST(request: Request) {
     
     // Provide more specific error messages
     if (error instanceof Error) {
-      if (error.message.includes('Unique constraint')) {
+      console.error('Error details:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+      })
+      
+      if (error.message.includes('Unique constraint') || error.message.includes('unique')) {
         return NextResponse.json(
           { error: 'User with this email already exists' },
           { status: 400 }
         )
       }
+      
+      if (error.message.includes('Prisma') || error.message.includes('database')) {
+        return NextResponse.json(
+          { error: 'Database error. Please try again later.' },
+          { status: 500 }
+        )
+      }
     }
     
     return NextResponse.json(
-      { error: 'Internal server error. Please try again later.' },
+      { error: `Internal server error: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     )
   }
