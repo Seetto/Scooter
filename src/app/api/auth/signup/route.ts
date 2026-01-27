@@ -77,14 +77,17 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Signup error:', error)
     
+    // Always return JSON, even on error
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorName = error instanceof Error ? error.name : 'Error'
+    
+    console.error('Error details:', {
+      message: errorMessage,
+      name: errorName,
+    })
+    
     // Provide more specific error messages
     if (error instanceof Error) {
-      console.error('Error details:', {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-      })
-      
       if (error.message.includes('Unique constraint') || error.message.includes('unique')) {
         return NextResponse.json(
           { error: 'User with this email already exists' },
@@ -94,14 +97,14 @@ export async function POST(request: Request) {
       
       if (error.message.includes('Prisma') || error.message.includes('database')) {
         return NextResponse.json(
-          { error: 'Database error. Please try again later.' },
+          { error: 'Database error. Please check the server logs.' },
           { status: 500 }
         )
       }
     }
     
     return NextResponse.json(
-      { error: `Internal server error: ${error instanceof Error ? error.message : 'Unknown error'}` },
+      { error: `Internal server error: ${errorMessage}` },
       { status: 500 }
     )
   }

@@ -87,4 +87,4 @@ export const authOptions = {
       return token
     },
   },
-}
+} as const
