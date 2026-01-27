@@ -343,7 +343,8 @@ export default function FindScooterButton() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
         <button
-          disabled
+          type="button"
+          disabled={true}
           style={{
             padding: '1rem 2rem',
             fontSize: '1.125rem',
@@ -364,6 +365,7 @@ export default function FindScooterButton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
       <button
+        type="button"
         onClick={handleFindScooter}
         disabled={loading}
         style={{
