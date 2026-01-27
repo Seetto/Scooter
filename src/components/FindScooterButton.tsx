@@ -451,9 +451,10 @@ export default function FindScooterButton() {
       {showMap && !error && (
         <div
           style={{
-            width: '100%',
-            maxWidth: '800px',
-            height: '500px',
+            width: 'min(100%, 1024px)',       // full-width on mobile, capped on desktop
+            height: '60vh',                   // responsive height based on viewport
+            maxHeight: '700px',               // don't get too tall on large screens
+            minHeight: '320px',               // keep usable height on small phones
             borderRadius: '0.5rem',
             overflow: 'hidden',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
