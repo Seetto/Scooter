@@ -10,6 +10,11 @@ export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phoneNumber: '',
+    hotelAddress: '',
+    rentalDuration: '',
+    idDocumentImageUrl: '',
+    damageAgreement: '',
     password: '',
     confirmPassword: '',
   })
@@ -44,6 +49,11 @@ export default function SignupPage() {
           email: formData.email,
           password: formData.password,
           name: formData.name,
+          phoneNumber: formData.phoneNumber,
+          hotelAddress: formData.hotelAddress,
+          rentalDuration: formData.rentalDuration,
+          idDocumentImageUrl: formData.idDocumentImageUrl || null,
+          damageAgreement: formData.damageAgreement || null,
         }),
       })
 
@@ -291,6 +301,97 @@ export default function SignupPage() {
 
               <div style={{ marginBottom: '1rem' }}>
                 <label
+                  htmlFor="phoneNumber"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                  placeholder="+61 4xx xxx xxx"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label
+                  htmlFor="hotelAddress"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Hotel / Villa Address
+                </label>
+                <textarea
+                  id="hotelAddress"
+                  value={formData.hotelAddress}
+                  onChange={(e) => setFormData({ ...formData, hotelAddress: e.target.value })}
+                  placeholder="Where are you staying?"
+                  rows={2}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                    resize: 'vertical',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label
+                  htmlFor="rentalDuration"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Rental Duration
+                </label>
+                <input
+                  type="text"
+                  id="rentalDuration"
+                  value={formData.rentalDuration}
+                  onChange={(e) => setFormData({ ...formData, rentalDuration: e.target.value })}
+                  placeholder="e.g. 3 days, 1 week"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label
                   htmlFor="email"
                   style={{
                     display: 'block',
@@ -315,6 +416,74 @@ export default function SignupPage() {
                     borderRadius: '0.375rem',
                     fontSize: '1rem',
                     boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Future fields: ID document and damage agreement */}
+              <div style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>
+                <label
+                  htmlFor="idDocumentImageUrl"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Passport / Driver&apos;s Licence (coming soon)
+                </label>
+                <input
+                  type="text"
+                  id="idDocumentImageUrl"
+                  value={formData.idDocumentImageUrl}
+                  onChange={(e) => setFormData({ ...formData, idDocumentImageUrl: e.target.value })}
+                  placeholder="We&apos;ll add photo upload here later"
+                  disabled
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px dashed #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                    backgroundColor: '#f9fafb',
+                    color: '#9ca3af',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label
+                  htmlFor="damageAgreement"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Damage Agreement (coming soon)
+                </label>
+                <textarea
+                  id="damageAgreement"
+                  value={formData.damageAgreement}
+                  onChange={(e) => setFormData({ ...formData, damageAgreement: e.target.value })}
+                  placeholder="We&apos;ll add a digital damage agreement here later"
+                  disabled
+                  rows={2}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px dashed #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                    backgroundColor: '#f9fafb',
+                    color: '#9ca3af',
+                    resize: 'vertical',
                   }}
                 />
               </div>

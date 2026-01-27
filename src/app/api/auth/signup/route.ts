@@ -6,7 +6,16 @@ import { sendConfirmationEmail } from '@/lib/email'
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { email, password, name } = body
+    const {
+      email,
+      password,
+      name,
+      phoneNumber,
+      hotelAddress,
+      rentalDuration,
+      idDocumentImageUrl,
+      damageAgreement,
+    } = body
 
     // Validation
     if (!email || !password) {
@@ -53,6 +62,11 @@ export async function POST(request: Request) {
         email,
         password: hashedPassword,
         name: name || null,
+        phoneNumber: phoneNumber || null,
+        hotelAddress: hotelAddress || null,
+        rentalDuration: rentalDuration || null,
+        idDocumentImageUrl: idDocumentImageUrl || null,
+        damageAgreement: damageAgreement || null,
       },
       select: {
         id: true,

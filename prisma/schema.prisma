@@ -11,10 +11,15 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  password      String    // Hashed password
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  name               String?
+  password           String    // Hashed password
+  phoneNumber        String?   // Rider phone number
+  hotelAddress       String?   // Hotel / villa address
+  rentalDuration     String?   // e.g. "3 days", "1 week"
+  idDocumentImageUrl String?   // Passport or driver's licence image (future use)
+  damageAgreement    String?   // Damage agreement text / reference (future use)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
