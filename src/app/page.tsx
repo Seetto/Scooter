@@ -37,25 +37,14 @@ export default function Home() {
           gap: '0.75rem',
           marginBottom: '0.25rem',
         }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '9999px',
-            background: 'linear-gradient(135deg, #2563eb, #10b981)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-          }}>
-            {/* Save your scooter-rider image as public/scooter-rider.png */}
-            <Image
-              src="/scooter-rider.png"
-              alt="Scooter rider logo"
-              width={44}
-              height={44}
-              style={{ objectFit: 'contain' }}
-            />
-          </div>
+          {/* Scooter rider logo image placed directly */}
+          <Image
+            src="/scooter-rider.png"
+            alt="Scooter rider logo"
+            width={56}
+            height={56}
+            style={{ objectFit: 'contain' }}
+          />
           <h1 style={{ 
             fontSize: "2.5rem", 
             fontWeight: "700", 
