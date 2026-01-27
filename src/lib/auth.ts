@@ -50,8 +50,8 @@ export const authOptions = {
       }
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
-  url: process.env.NEXTAUTH_URL,
+  secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-change-in-production',
+  url: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   pages: {
     signIn: '/auth/login',
     signOut: '/auth/login',
