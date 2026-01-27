@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import AuthLinks from '../components/AuthLinks'
 
 // Load FindScooterButton only on the client to avoid hydration mismatches
@@ -33,21 +34,27 @@ export default function Home() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '0.5rem',
+          gap: '0.75rem',
           marginBottom: '0.25rem',
         }}>
           <div style={{
-            width: '40px',
-            height: '40px',
+            width: '48px',
+            height: '48px',
             borderRadius: '9999px',
             background: 'linear-gradient(135deg, #2563eb, #10b981)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'white',
-            fontSize: '1.35rem',
+            overflow: 'hidden',
           }}>
-            🛵
+            {/* Save your scooter-rider image as public/scooter-rider.png */}
+            <Image
+              src="/scooter-rider.png"
+              alt="Scooter rider logo"
+              width={44}
+              height={44}
+              style={{ objectFit: 'contain' }}
+            />
           </div>
           <h1 style={{ 
             fontSize: "2.5rem", 
