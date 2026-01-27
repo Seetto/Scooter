@@ -12,6 +12,8 @@ export default function SignupPage() {
     email: '',
     phoneNumber: '',
     hotelAddress: '',
+    rentalStartDate: '',
+    rentalEndDate: '',
     rentalDuration: '',
     idDocumentImageUrl: '',
     damageAgreement: '',
@@ -20,6 +22,23 @@ export default function SignupPage() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const updateRentalDates = (updates: Partial<{ rentalStartDate: string; rentalEndDate: string }>) => {
+    setFormData((prev) => {
+      const next = { ...prev, ...updates }
+      const { rentalStartDate, rentalEndDate } = next
+
+      if (rentalStartDate && rentalEndDate) {
+        next.rentalDuration = `${rentalStartDate} to ${rentalEndDate}`
+      } else if (rentalStartDate || rentalEndDate) {
+        next.rentalDuration = rentalStartDate || rentalEndDate
+      } else {
+        next.rentalDuration = ''
+      }
+
+      return next
+    })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -362,7 +381,7 @@ export default function SignupPage() {
 
               <div style={{ marginBottom: '1rem' }}>
                 <label
-                  htmlFor="rentalDuration"
+                  htmlFor="rentalStartDate"
                   style={{
                     display: 'block',
                     marginBottom: '0.5rem',
@@ -371,14 +390,13 @@ export default function SignupPage() {
                     color: '#374151',
                   }}
                 >
-                  Rental Duration
+                  Rental Start Date
                 </label>
                 <input
-                  type="text"
-                  id="rentalDuration"
-                  value={formData.rentalDuration}
-                  onChange={(e) => setFormData({ ...formData, rentalDuration: e.target.value })}
-                  placeholder="e.g. 3 days, 1 week"
+                  type="date"
+                  id="rentalStartDate"
+                  value={formData.rentalStartDate}
+                  onChange={(e) => updateRentalDates({ rentalStartDate: e.target.value })}
                   style={{
                     width: '100%',
                     padding: '0.75rem',
@@ -388,6 +406,46 @@ export default function SignupPage() {
                     boxSizing: 'border-box',
                   }}
                 />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label
+                  htmlFor="rentalEndDate"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Rental End Date
+                </label>
+                <input
+                  type="date"
+                  id="rentalEndDate"
+                  value={formData.rentalEndDate}
+                  onChange={(e) => updateRentalDates({ rentalEndDate: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                {formData.rentalDuration && (
+                  <div
+                    style={{
+                      marginTop: '0.35rem',
+                      fontSize: '0.8rem',
+                      color: '#6b7280',
+                    }}
+                  >
+                    Selected: {formData.rentalDuration}
+                  </div>
+                )}
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
