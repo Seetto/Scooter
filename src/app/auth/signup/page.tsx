@@ -244,147 +244,161 @@ export default function SignupPage() {
                 : 'Create your store account to get started.'}
             </p>
 
-        {role && error && (
-          <div style={{
-            padding: '0.75rem',
-            backgroundColor: '#fee2e2',
-            color: '#991b1b',
-            borderRadius: '0.375rem',
-            marginBottom: '1rem',
-            fontSize: '0.875rem',
-          }}>
-            {error}
-          </div>
-        )}
+            {error && (
+              <div
+                style={{
+                  padding: '0.75rem',
+                  backgroundColor: '#fee2e2',
+                  color: '#991b1b',
+                  borderRadius: '0.375rem',
+                  marginBottom: '1rem',
+                  fontSize: '0.875rem',
+                }}
+              >
+                {error}
+              </div>
+            )}
 
-        {role && (
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label htmlFor="name" style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#374151',
-            }}>
-              Name (Optional)
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                fontSize: '1rem',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
+            <form onSubmit={handleSubmit}>
+              <div style={{ marginBottom: '1rem' }}>
+                <label
+                  htmlFor="name"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label htmlFor="email" style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#374151',
-            }}>
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                fontSize: '1rem',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label
+                  htmlFor="email"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label htmlFor="password" style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#374151',
-            }}>
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              required
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                fontSize: '1rem',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
+              <div style={{ marginBottom: '1rem' }}>
+                <label
+                  htmlFor="password"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label htmlFor="confirmPassword" style={{
-              display: 'block',
-              marginBottom: '0.5rem',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              color: '#374151',
-            }}>
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              required
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
-                fontSize: '1rem',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label
+                  htmlFor="confirmPassword"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#374151',
+                  }}
+                >
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              backgroundColor: loading ? '#9ca3af' : '#2563eb',
-              color: 'white',
-              border: 'none',
-              borderRadius: '0.375rem',
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              marginBottom: '1rem',
-            }}
-          >
-            {loading ? 'Creating Account...' : 'Sign Up'}
-          </button>
-        </form>
+              <button
+                type="submit"
+                disabled={loading}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  backgroundColor: loading ? '#9ca3af' : '#2563eb',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.375rem',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  marginBottom: '1rem',
+                }}
+              >
+                {loading ? 'Creating Account...' : 'Sign Up'}
+              </button>
+            </form>
+          </>
         )}
 
         {role && (
