@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 export default function SignupPage() {
   const router = useRouter()
+  const [role, setRole] = useState<'rider' | 'store' | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -75,40 +76,175 @@ export default function SignupPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      backgroundColor: '#f9fafb',
-    }}>
-      <div style={{
-        width: '100%',
-        maxWidth: '400px',
-        backgroundColor: 'white',
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         padding: '2rem',
-        borderRadius: '0.5rem',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      }}>
-        <h1 style={{
-          fontSize: '1.875rem',
-          fontWeight: '700',
-          marginBottom: '0.5rem',
-          textAlign: 'center',
-          color: '#1f2937',
-        }}>
-          Sign Up
-        </h1>
-        <p style={{
-          textAlign: 'center',
-          color: '#6b7280',
-          marginBottom: '2rem',
-        }}>
-          Create your account to get started
-        </p>
+        backgroundColor: '#f9fafb',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: role ? '420px' : '480px',
+          backgroundColor: 'white',
+          padding: '2rem',
+          borderRadius: '0.5rem',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        }}
+      >
+        {/* Step 1: choose account type */}
+        {!role && (
+          <>
+            <h1
+              style={{
+                fontSize: '1.875rem',
+                fontWeight: '700',
+                marginBottom: '0.5rem',
+                textAlign: 'center',
+                color: '#1f2937',
+              }}
+            >
+              Sign Up
+            </h1>
+            <p
+              style={{
+                textAlign: 'center',
+                color: '#6b7280',
+                marginBottom: '1.5rem',
+              }}
+            >
+              Choose how you want to use Scooter
+            </p>
 
-        {error && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setRole('rider')}
+                style={{
+                  padding: '0.9rem 1rem',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #2563eb',
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                Rider
+                <div
+                  style={{
+                    fontSize: '0.85rem',
+                    fontWeight: 400,
+                    marginTop: '0.25rem',
+                    color: 'rgba(255,255,255,0.85)',
+                  }}
+                >
+                  Sign up to find scooters near you.
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setRole('store')}
+                style={{
+                  padding: '0.9rem 1rem',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #d1d5db',
+                  backgroundColor: '#f9fafb',
+                  color: '#111827',
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                Store
+                <div
+                  style={{
+                    fontSize: '0.85rem',
+                    fontWeight: 400,
+                    marginTop: '0.25rem',
+                    color: '#4b5563',
+                  }}
+                >
+                  Sign up to list your store and scooters. (Coming soon)
+                </div>
+              </button>
+            </div>
+
+            <p
+              style={{
+                textAlign: 'center',
+                color: '#6b7280',
+                fontSize: '0.875rem',
+                marginTop: '1.5rem',
+              }}
+            >
+              Already have an account?{' '}
+              <Link
+                href="/auth/login"
+                style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '600' }}
+              >
+                Sign in
+              </Link>
+            </p>
+          </>
+        )}
+
+        {/* Step 2: show signup form for selected role (Rider or Store) */}
+        {role && (
+          <>
+            <button
+              type="button"
+              onClick={() => setRole(null)}
+              style={{
+                border: 'none',
+                background: 'none',
+                color: '#2563eb',
+                fontSize: '0.85rem',
+                marginBottom: '0.75rem',
+                cursor: 'pointer',
+              }}
+            >
+              ← Back to choose account type
+            </button>
+
+            <h1
+              style={{
+                fontSize: '1.875rem',
+                fontWeight: '700',
+                marginBottom: '0.5rem',
+                textAlign: 'center',
+                color: '#1f2937',
+              }}
+            >
+              {role === 'rider' ? 'Rider Sign Up' : 'Store Sign Up'}
+            </h1>
+            <p
+              style={{
+                textAlign: 'center',
+                color: '#6b7280',
+                marginBottom: '2rem',
+              }}
+            >
+              {role === 'rider'
+                ? 'Create your rider account to get started.'
+                : 'Create your store account to get started.'}
+            </p>
+
+        {role && error && (
           <div style={{
             padding: '0.75rem',
             backgroundColor: '#fee2e2',
@@ -121,6 +257,7 @@ export default function SignupPage() {
           </div>
         )}
 
+        {role && (
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
             <label htmlFor="name" style={{
@@ -248,17 +385,20 @@ export default function SignupPage() {
             {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
+        )}
 
-        <p style={{
-          textAlign: 'center',
-          color: '#6b7280',
-          fontSize: '0.875rem',
-        }}>
-          Already have an account?{' '}
-          <Link href="/auth/login" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '600' }}>
-            Sign in
-          </Link>
-        </p>
+        {role && (
+          <p style={{
+            textAlign: 'center',
+            color: '#6b7280',
+            fontSize: '0.875rem',
+          }}>
+            Already have an account?{' '}
+            <Link href="/auth/login" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '600' }}>
+              Sign in
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   )
