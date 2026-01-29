@@ -16,8 +16,23 @@ export default function AuthLinks() {
 
   if (session) {
     return (
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <span style={{ color: '#374151' }}>
+      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <Link
+          href="/profile"
+          style={{
+            padding: '0.35rem 0.8rem',
+            borderRadius: '9999px',
+            border: '1px solid #d1d5db',
+            fontSize: '0.8rem',
+            fontWeight: 500,
+            color: '#374151',
+            textDecoration: 'none',
+            backgroundColor: '#f9fafb',
+          }}
+        >
+          My Profile
+        </Link>
+        <span style={{ color: '#374151', fontSize: '0.85rem' }}>
           {session.user?.name || session.user?.email}
         </span>
         <button
