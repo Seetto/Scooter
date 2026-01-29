@@ -2,6 +2,8 @@
 
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import AuthLinks from '../components/AuthLinks'
 
 // Load FindScooterButton only on the client to avoid hydration mismatches
@@ -11,6 +13,9 @@ const FindScooterButton = dynamic(
 )
 
 export default function Home() {
+  const { status } = useSession()
+  const isAuthenticated = status === 'authenticated'
+
   return (
     <main style={{ 
       padding: "2rem", 
@@ -62,7 +67,46 @@ export default function Home() {
           Find a scooter near you
         </p>
       </div>
-      <FindScooterButton />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '1rem',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+        }}
+      >
+        <FindScooterButton />
+        {isAuthenticated && (
+          <Link
+            href="/bookings"
+            style={{
+              padding: '1rem 2rem',
+              fontSize: '1.025rem',
+              fontWeight: 600,
+              color: '#1f2937',
+              backgroundColor: '#e5e7eb',
+              borderRadius: '0.5rem',
+              border: '1px solid #d1d5db',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#d1d5db'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#e5e7eb'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
+            My Bookings
+          </Link>
+        )}
+      </div>
     </main>
   )
 }
