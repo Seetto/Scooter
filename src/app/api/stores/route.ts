@@ -6,8 +6,8 @@ import { verifyAdminCredentials } from '@/lib/admin-auth'
 
 async function verifyAuth(request: Request): Promise<boolean> {
   // Check session first (for admin logged in via NextAuth)
-  const session = await getServerSession(authOptions as any)
-  if (session && (session.user as any)?.isAdmin === true) {
+  const session = await getServerSession(authOptions as any) as any
+  if (session && session.user?.isAdmin === true) {
     return true
   }
 
