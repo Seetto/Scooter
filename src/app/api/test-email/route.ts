@@ -10,8 +10,8 @@ import {
 // POST: Test email sending (admin only)
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions as any)
-    const isAdmin = (session?.user as any)?.isAdmin === true
+    const session = await getServerSession(authOptions as any) as any
+    const isAdmin = session?.user?.isAdmin === true
 
     if (!isAdmin) {
       return NextResponse.json({ error: 'Unauthorized - Admin only' }, { status: 401 })
