@@ -31,13 +31,10 @@ export function getAdminPassword(): string {
     if (process.env.NODE_ENV === 'production') {
       throw new Error('ADMIN_PASSWORD environment variable is required in production')
     }
-    // Development: Check if we have the old hardcoded value as a last resort
-    // This is only for backward compatibility during migration
-    const fallbackPassword = '7Zark72502!'
-    console.warn('⚠️ ADMIN_PASSWORD not set in environment variables.')
-    console.warn('⚠️ Using temporary fallback for development. Please set ADMIN_PASSWORD in .env.local')
-    console.warn('⚠️ This fallback will be removed in production.')
-    return fallbackPassword
+    // Development: Require environment variable for security
+    console.error('❌ ADMIN_PASSWORD environment variable is required.')
+    console.error('❌ Please set ADMIN_PASSWORD in .env.local file.')
+    throw new Error('ADMIN_PASSWORD environment variable is required')
   }
   return password
 }
