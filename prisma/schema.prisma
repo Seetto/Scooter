@@ -22,14 +22,60 @@ model User {
   damageAgreement    String?   // Damage agreement text / reference (future use)
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  bookings           Booking[]
 }
 
 model Store {
-  id        String   @id @default(cuid())
-  name      String
-  address   String
-  latitude  Float
-  longitude Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  password          String    // Hashed password
+  phoneNumber       String?
+  address           String?
+  latitude          Float?
+  longitude         Float?
+  storeFrontImageUrl String?  // Store front photo (future use)
+  accepted          Boolean   @default(false) // Admin approval required
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  scooters          Scooter[]
+  bookings          Booking[]
+}
+
+model Scooter {
+  id          String   @id @default(cuid())
+  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId     String
+  name        String
+  model       String?
+  numberPlate String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings    Booking[]
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Booking {
+  id        String         @id @default(cuid())
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  store     Store          @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId   String
+  scooter   Scooter?       @relation(fields: [scooterId], references: [id], onDelete: Cascade)
+  scooterId String?
+  startDate DateTime
+  endDate   DateTime
+  status    BookingStatus  @default(PENDING)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 }
