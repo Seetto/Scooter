@@ -20,7 +20,7 @@ interface Calendar {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession | null
+    const session = await getServerSession(authOptions as any) as ExtendedSession | null
     
     console.log('Session:', session ? 'exists' : 'null')
     console.log('Access token:', session?.accessToken ? 'exists' : 'missing')

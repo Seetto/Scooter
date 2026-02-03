@@ -94,7 +94,7 @@ async function getDrivingDistance(
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession | null
+    const session = await getServerSession(authOptions as any) as ExtendedSession | null
     
     if (!session || !session.accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

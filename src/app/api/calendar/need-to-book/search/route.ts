@@ -88,7 +88,7 @@ async function getCoordinatesFromAddress(address: string, apiKey: string): Promi
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions) as ExtendedSession | null
+    const session = await getServerSession(authOptions as any) as ExtendedSession | null
     
     if (!session || !session.accessToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
