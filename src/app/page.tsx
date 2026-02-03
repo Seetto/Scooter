@@ -27,13 +27,15 @@ export default function Home() {
       alignItems: "center",
       gap: "2rem"
     }}>
-      <div style={{
-        position: 'absolute',
-        top: '1rem',
-        right: '1rem',
-      }}>
-        <AuthLinks />
-      </div>
+      {isAuthenticated && (
+        <div style={{
+          position: 'absolute',
+          top: '1rem',
+          right: '1rem',
+        }}>
+          <AuthLinks />
+        </div>
+      )}
       <div>
         <div style={{
           display: 'flex',
@@ -67,32 +69,57 @@ export default function Home() {
           Find a scooter near you
         </p>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: '1rem',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-        }}
-      >
+      {isAuthenticated ? (
         <FindScooterButton />
-        {isAuthenticated && (
+      ) : (
+        <div style={{
+          display: 'flex',
+          gap: '1rem',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}>
           <Link
-            href="/bookings"
+            href="/auth/login"
             style={{
               padding: '1rem 2rem',
-              fontSize: '1.025rem',
-              fontWeight: 600,
+              fontSize: '1.125rem',
+              fontWeight: '600',
+              color: '#fff',
+              backgroundColor: '#2563eb',
+              border: 'none',
+              borderRadius: '0.5rem',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#1d4ed8'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#2563eb'
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+            }}
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/auth/signup"
+            style={{
+              padding: '1rem 2rem',
+              fontSize: '1.125rem',
+              fontWeight: '600',
               color: '#1f2937',
               backgroundColor: '#e5e7eb',
-              borderRadius: '0.5rem',
               border: '1px solid #d1d5db',
+              borderRadius: '0.5rem',
               cursor: 'pointer',
               textDecoration: 'none',
               boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-              transition: 'all 0.15s ease',
+              transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#d1d5db'
@@ -103,10 +130,10 @@ export default function Home() {
               e.currentTarget.style.transform = 'translateY(0)'
             }}
           >
-            My Bookings
+            Sign Up
           </Link>
-        )}
-      </div>
+        </div>
+      )}
     </main>
   )
 }

@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { verifyAdminCredentials } from '@/lib/admin-auth'
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin'
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '7Zark72502!'
+async function isAuthorized(request: Request): Promise<boolean> {
+  // Check session first (for admin logged in via NextAuth)
+  const session = await getServerSession(authOptions as any)
+  if (session && (session.user as any)?.isAdmin === true) {
+    return true
+  }
 
-function isAuthorized(request: Request): boolean {
+  // Fallback to Basic auth for backward compatibility
   const authHeader = request.headers.get('authorization')
   if (!authHeader || !authHeader.startsWith('Basic ')) return false
 
@@ -13,7 +20,7 @@ function isAuthorized(request: Request): boolean {
     const decoded = Buffer.from(base64Credentials, 'base64').toString('utf8')
     const [username, password] = decoded.split(':')
 
-    return username === ADMIN_USERNAME && password === ADMIN_PASSWORD
+    return verifyAdminCredentials(username, password)
   } catch {
     return false
   }
@@ -21,7 +28,7 @@ function isAuthorized(request: Request): boolean {
 
 // GET endpoint to view all users (for admin/debugging purposes)
 export async function GET(request: Request) {
-  if (!isAuthorized(request)) {
+  if (!(await isAuthorized(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -51,7 +58,7 @@ export async function GET(request: Request) {
 
 // DELETE endpoint to remove a user by ID
 export async function DELETE(request: Request) {
-  if (!isAuthorized(request)) {
+  if (!(await isAuthorized(request))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

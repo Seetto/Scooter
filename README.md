@@ -43,9 +43,9 @@ To use the "Find Scooter" feature, you'll need to set up a Google Maps API key:
 
 **Note:** Make sure to restrict your API key in the Google Cloud Console for production use.
 
-### Email Configuration (Optional)
+### Email Configuration
 
-To enable email confirmation on signup, configure SMTP settings in your `.env.local` file:
+To enable email notifications (booking confirmations, signup confirmations, etc.), configure SMTP settings in your `.env.local` file:
 
 ```
 SMTP_HOST=smtp.gmail.com
@@ -57,10 +57,49 @@ SMTP_FROM=your-email@gmail.com
 ```
 
 **For Gmail:**
-- Use an [App Password](https://support.google.com/accounts/answer/185833) instead of your regular password
-- Enable "Less secure app access" or use OAuth2
+1. Go to your Google Account settings
+2. Enable 2-Step Verification
+3. Go to [App Passwords](https://myaccount.google.com/apppasswords)
+4. Generate an app password for "Mail"
+5. Use this app password (not your regular password) for `SMTP_PASSWORD`
 
-**Note:** If SMTP is not configured, signup will still work but confirmation emails won't be sent (useful for development).
+**Alternative: Mailtrap (for testing):**
+For testing emails without sending real emails, you can use [Mailtrap](https://mailtrap.io/):
+```
+SMTP_HOST=smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_SECURE=false
+SMTP_USER=your-mailtrap-username
+SMTP_PASSWORD=your-mailtrap-password
+SMTP_FROM=noreply@scoot2u.com
+```
+
+**Testing Email Setup:**
+1. Log in as admin
+2. Use the test email endpoint (or create a test booking)
+3. Check your email inbox (or Mailtrap inbox if using Mailtrap)
+
+**Note:** If SMTP is not configured, the app will log email content to the console instead of sending (useful for development).
+
+### Admin Authentication
+
+Admin credentials are stored securely in environment variables and are **never hardcoded** in the source code. Set the following in your `.env.local` file:
+
+```
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=your-secure-admin-password-here
+```
+
+**Security Notes:**
+- Admin credentials are required in production (the app will throw an error if not set)
+- In development, you should still set these in `.env.local` for security
+- Never commit `.env.local` to version control
+- Use a strong, unique password for `ADMIN_PASSWORD` in production
+
+**Admin Access:**
+- Admins can log in through the main login page using the admin username and password
+- Once logged in, admins will see "View Users" and "View Stores" buttons in the top right
+- Admin pages at `/admin/users` and `/admin/stores` also require admin credentials
 
 ## Learn More
 

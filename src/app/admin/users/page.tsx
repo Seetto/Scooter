@@ -10,9 +10,6 @@ interface User {
   updatedAt: string
 }
 
-const ADMIN_USERNAME = 'admin'
-const ADMIN_PASSWORD = '7Zark72502!'
-
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(false)
@@ -30,9 +27,11 @@ export default function UsersPage() {
   }, [isAuthenticated])
 
   const getAuthHeader = () => {
-    const username = adminUsername || ADMIN_USERNAME
-    const password = adminPassword || ADMIN_PASSWORD
-    const token = typeof window !== 'undefined' ? btoa(`${username}:${password}`) : ''
+    // Require user to enter credentials - no hardcoded fallbacks
+    if (!adminUsername || !adminPassword) {
+      return ''
+    }
+    const token = typeof window !== 'undefined' ? btoa(`${adminUsername}:${adminPassword}`) : ''
     return `Basic ${token}`
   }
 
@@ -235,7 +234,7 @@ export default function UsersPage() {
                 type="text"
                 value={adminUsername}
                 onChange={(e) => setAdminUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="Enter admin username"
                 style={{
                   width: '100%',
                   padding: '0.5rem 0.75rem',

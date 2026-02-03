@@ -1,19 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import dynamic from 'next/dynamic'
+
+// Dynamically import map component to avoid SSR issues
+const StoreMapView = dynamic(() => import('@/components/StoreMapView'), {
+  ssr: false,
+})
 
 interface Store {
   id: string
   name: string
-  address: string
-  latitude: number
-  longitude: number
+  email: string
+  phoneNumber: string | null
+  address: string | null
+  latitude: number | null
+  longitude: number | null
+  storeFrontImageUrl: string | null
+  accepted: boolean
   createdAt: string
   updatedAt: string
 }
-
-const ADMIN_USERNAME = 'admin'
-const ADMIN_PASSWORD = '7Zark72502!'
 
 export default function StoresPage() {
   const [stores, setStores] = useState<Store[]>([])
@@ -23,6 +30,7 @@ export default function StoresPage() {
   const [adminUsername, setAdminUsername] = useState('')
   const [adminPassword, setAdminPassword] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null)
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -32,9 +40,10 @@ export default function StoresPage() {
   }, [isAuthenticated])
 
   const getAuthHeader = () => {
-    const username = adminUsername || ADMIN_USERNAME
-    const password = adminPassword || ADMIN_PASSWORD
-    const token = typeof window !== 'undefined' ? btoa(`${username}:${password}`) : ''
+    if (!adminUsername || !adminPassword) {
+      return ''
+    }
+    const token = typeof window !== 'undefined' ? btoa(`${adminUsername}:${adminPassword}`) : ''
     return `Basic ${token}`
   }
 
@@ -43,9 +52,7 @@ export default function StoresPage() {
       setLoading(true)
       setError(null)
       const response = await fetch('/api/stores', {
-        headers: {
-          Authorization: getAuthHeader(),
-        },
+        credentials: 'include',
       })
       const data = await response.json()
 
@@ -75,9 +82,7 @@ export default function StoresPage() {
 
     try {
       const response = await fetch('/api/stores', {
-        headers: {
-          Authorization: getAuthHeader(),
-        },
+        credentials: 'include',
       })
       const data = await response.json()
 
@@ -96,6 +101,52 @@ export default function StoresPage() {
     }
   }
 
+  const handleAcceptStore = async (storeId: string) => {
+    if (!confirm('Are you sure you want to accept this store? They will be able to log in after approval.')) {
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await fetch('/api/stores/accept', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: getAuthHeader(),
+        },
+        credentials: 'include',
+        body: JSON.stringify({ storeId }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to accept store')
+        return
+      }
+
+      // Update the store in the list
+      setStores((prev) =>
+        prev.map((store) =>
+          store.id === storeId ? { ...store, accepted: true } : store
+        )
+      )
+
+      // Update selected store if it's the one we just accepted
+      if (selectedStore?.id === storeId) {
+        setSelectedStore({ ...selectedStore, accepted: true })
+      }
+    } catch (err) {
+      setError('An error occurred while accepting the store')
+      console.error('Accept error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const pendingStores = stores.filter((s) => !s.accepted)
+  const acceptedStores = stores.filter((s) => s.accepted)
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -103,7 +154,7 @@ export default function StoresPage() {
       backgroundColor: '#f9fafb',
     }}>
       <div style={{
-        maxWidth: '1200px',
+        maxWidth: '1400px',
         margin: '0 auto',
         backgroundColor: 'white',
         padding: '2rem',
@@ -153,52 +204,43 @@ export default function StoresPage() {
               backgroundColor: '#f9fafb',
             }}
           >
-            <h2
-              style={{
-                fontSize: '1.25rem',
-                fontWeight: 600,
-                marginBottom: '1rem',
-                color: '#111827',
-              }}
-            >
+            <h2 style={{
+              fontSize: '1.25rem',
+              fontWeight: 600,
+              marginBottom: '1rem',
+              color: '#111827',
+            }}>
               Admin Login
             </h2>
-            <p
-              style={{
-                fontSize: '0.875rem',
-                color: '#4b5563',
-                marginBottom: '1rem',
-              }}
-            >
+            <p style={{
+              fontSize: '0.875rem',
+              color: '#4b5563',
+              marginBottom: '1rem',
+            }}>
               Enter admin credentials to view and manage stores.
             </p>
 
             {authError && (
-              <div
-                style={{
-                  marginBottom: '0.75rem',
-                  padding: '0.75rem',
-                  borderRadius: '0.375rem',
-                  backgroundColor: '#fee2e2',
-                  color: '#991b1b',
-                  fontSize: '0.875rem',
-                }}
-              >
+              <div style={{
+                marginBottom: '0.75rem',
+                padding: '0.75rem',
+                borderRadius: '0.375rem',
+                backgroundColor: '#fee2e2',
+                color: '#991b1b',
+                fontSize: '0.875rem',
+              }}>
                 {authError}
               </div>
             )}
 
             <div style={{ marginBottom: '0.75rem' }}>
-              <label
-                htmlFor="admin-username"
-                style={{
-                  display: 'block',
-                  marginBottom: '0.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: '#374151',
-                }}
-              >
+              <label htmlFor="admin-username" style={{
+                display: 'block',
+                marginBottom: '0.25rem',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: '#374151',
+              }}>
                 Username
               </label>
               <input
@@ -206,7 +248,7 @@ export default function StoresPage() {
                 type="text"
                 value={adminUsername}
                 onChange={(e) => setAdminUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="Enter admin username"
                 style={{
                   width: '100%',
                   padding: '0.5rem 0.75rem',
@@ -218,16 +260,13 @@ export default function StoresPage() {
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
-              <label
-                htmlFor="admin-password"
-                style={{
-                  display: 'block',
-                  marginBottom: '0.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: '#374151',
-                }}
-              >
+              <label htmlFor="admin-password" style={{
+                display: 'block',
+                marginBottom: '0.25rem',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                color: '#374151',
+              }}>
                 Password
               </label>
               <input
@@ -265,7 +304,7 @@ export default function StoresPage() {
           </form>
         )}
 
-        {loading && (
+        {loading && !isAuthenticated && (
           <div style={{ textAlign: 'center', padding: '2rem' }}>
             <p style={{ color: '#6b7280' }}>Loading stores...</p>
           </div>
@@ -286,12 +325,33 @@ export default function StoresPage() {
         {isAuthenticated && !loading && !error && (
           <>
             <div style={{
-              marginBottom: '1rem',
-              padding: '0.75rem',
-              backgroundColor: '#dbeafe',
-              borderRadius: '0.375rem',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '2rem',
+              marginBottom: '2rem',
             }}>
-              <strong>Total Stores:</strong> {stores.length}
+              <div style={{
+                padding: '1rem',
+                backgroundColor: '#fef3c7',
+                borderRadius: '0.5rem',
+                border: '1px solid #fbbf24',
+              }}>
+                <strong style={{ color: '#92400e' }}>Pending Approval:</strong>{' '}
+                <span style={{ fontSize: '1.5rem', fontWeight: '700', color: '#92400e' }}>
+                  {pendingStores.length}
+                </span>
+              </div>
+              <div style={{
+                padding: '1rem',
+                backgroundColor: '#d1fae5',
+                borderRadius: '0.5rem',
+                border: '1px solid #10b981',
+              }}>
+                <strong style={{ color: '#065f46' }}>Accepted Stores:</strong>{' '}
+                <span style={{ fontSize: '1.5rem', fontWeight: '700', color: '#065f46' }}>
+                  {acceptedStores.length}
+                </span>
+              </div>
             </div>
 
             {stores.length === 0 ? (
@@ -304,111 +364,288 @@ export default function StoresPage() {
               </div>
             ) : (
               <div style={{
-                overflowX: 'auto',
+                display: 'grid',
+                gridTemplateColumns: '400px 1fr',
+                gap: '2rem',
               }}>
-                <table style={{
-                  width: '100%',
-                  borderCollapse: 'collapse',
+                {/* Store List */}
+                <div style={{
+                  maxHeight: '70vh',
+                  overflowY: 'auto',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '0.5rem',
+                  padding: '1rem',
                 }}>
-                  <thead>
-                    <tr style={{
-                      backgroundColor: '#f3f4f6',
-                      borderBottom: '2px solid #e5e7eb',
+                  <h2 style={{
+                    fontSize: '1.25rem',
+                    fontWeight: 600,
+                    marginBottom: '1rem',
+                    color: '#1f2937',
+                  }}>
+                    Store List
+                  </h2>
+                  {pendingStores.length > 0 && (
+                    <div style={{ marginBottom: '1.5rem' }}>
+                      <h3 style={{
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        color: '#92400e',
+                        marginBottom: '0.5rem',
+                      }}>
+                        Pending Approval ({pendingStores.length})
+                      </h3>
+                      {pendingStores.map((store) => (
+                        <div
+                          key={store.id}
+                          onClick={() => setSelectedStore(store)}
+                          style={{
+                            padding: '1rem',
+                            marginBottom: '0.5rem',
+                            backgroundColor: selectedStore?.id === store.id ? '#fef3c7' : '#fff7ed',
+                            border: `2px solid ${selectedStore?.id === store.id ? '#f59e0b' : '#fed7aa'}`,
+                            borderRadius: '0.375rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
+                            {store.name}
+                          </div>
+                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                            {store.email}
+                          </div>
+                          {store.phoneNumber && (
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                              {store.phoneNumber}
+                            </div>
+                          )}
+                          <div style={{
+                            marginTop: '0.5rem',
+                            padding: '0.25rem 0.5rem',
+                            backgroundColor: '#fef3c7',
+                            color: '#92400e',
+                            borderRadius: '0.25rem',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            display: 'inline-block',
+                          }}>
+                            Pending
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {acceptedStores.length > 0 && (
+                    <div>
+                      <h3 style={{
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        color: '#065f46',
+                        marginBottom: '0.5rem',
+                      }}>
+                        Accepted ({acceptedStores.length})
+                      </h3>
+                      {acceptedStores.map((store) => (
+                        <div
+                          key={store.id}
+                          onClick={() => setSelectedStore(store)}
+                          style={{
+                            padding: '1rem',
+                            marginBottom: '0.5rem',
+                            backgroundColor: selectedStore?.id === store.id ? '#d1fae5' : '#f0fdf4',
+                            border: `2px solid ${selectedStore?.id === store.id ? '#10b981' : '#86efac'}`,
+                            borderRadius: '0.375rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
+                            {store.name}
+                          </div>
+                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                            {store.email}
+                          </div>
+                          {store.phoneNumber && (
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                              {store.phoneNumber}
+                            </div>
+                          )}
+                          <div style={{
+                            marginTop: '0.5rem',
+                            padding: '0.25rem 0.5rem',
+                            backgroundColor: '#d1fae5',
+                            color: '#065f46',
+                            borderRadius: '0.25rem',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            display: 'inline-block',
+                          }}>
+                            Accepted
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Store Details */}
+                <div>
+                  {selectedStore ? (
+                    <div style={{
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '0.5rem',
+                      padding: '1.5rem',
                     }}>
-                      <th style={{
-                        padding: '0.75rem',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        color: '#374151',
-                      }}>ID</th>
-                      <th style={{
-                        padding: '0.75rem',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        color: '#374151',
-                      }}>Name</th>
-                      <th style={{
-                        padding: '0.75rem',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        color: '#374151',
-                      }}>Address</th>
-                      <th style={{
-                        padding: '0.75rem',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        color: '#374151',
-                      }}>Latitude</th>
-                      <th style={{
-                        padding: '0.75rem',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        color: '#374151',
-                      }}>Longitude</th>
-                      <th style={{
-                        padding: '0.75rem',
-                        textAlign: 'left',
-                        fontWeight: '600',
-                        color: '#374151',
-                      }}>Created At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stores.map((store) => (
-                      <tr
-                        key={store.id}
-                        style={{
-                          borderBottom: '1px solid #e5e7eb',
-                        }}
-                      >
-                        <td style={{
-                          padding: '0.75rem',
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                          fontFamily: 'monospace',
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        marginBottom: '1.5rem',
+                      }}>
+                        <div>
+                          <h2 style={{
+                            fontSize: '1.5rem',
+                            fontWeight: 700,
+                            color: '#1f2937',
+                            marginBottom: '0.5rem',
+                          }}>
+                            {selectedStore.name}
+                          </h2>
+                          <div style={{
+                            padding: '0.25rem 0.75rem',
+                            backgroundColor: selectedStore.accepted ? '#d1fae5' : '#fef3c7',
+                            color: selectedStore.accepted ? '#065f46' : '#92400e',
+                            borderRadius: '0.25rem',
+                            fontSize: '0.875rem',
+                            fontWeight: 600,
+                            display: 'inline-block',
+                          }}>
+                            {selectedStore.accepted ? '✓ Accepted' : '⏳ Pending Approval'}
+                          </div>
+                        </div>
+                        {!selectedStore.accepted && (
+                          <button
+                            onClick={() => handleAcceptStore(selectedStore.id)}
+                            disabled={loading}
+                            style={{
+                              padding: '0.5rem 1.5rem',
+                              backgroundColor: loading ? '#9ca3af' : '#10b981',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.375rem',
+                              cursor: loading ? 'not-allowed' : 'pointer',
+                              fontWeight: 600,
+                              fontSize: '0.95rem',
+                            }}
+                          >
+                            {loading ? 'Accepting...' : 'Accept Store'}
+                          </button>
+                        )}
+                      </div>
+
+                      <div style={{ marginBottom: '1.5rem' }}>
+                        <div style={{ marginBottom: '0.75rem' }}>
+                          <strong style={{ color: '#374151' }}>Email:</strong>{' '}
+                          <span style={{ color: '#6b7280' }}>{selectedStore.email}</span>
+                        </div>
+                        {selectedStore.phoneNumber && (
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <strong style={{ color: '#374151' }}>Phone:</strong>{' '}
+                            <span style={{ color: '#6b7280' }}>{selectedStore.phoneNumber}</span>
+                          </div>
+                        )}
+                        {selectedStore.address && (
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <strong style={{ color: '#374151' }}>Address:</strong>{' '}
+                            <span style={{ color: '#6b7280' }}>{selectedStore.address}</span>
+                          </div>
+                        )}
+                        {selectedStore.latitude && selectedStore.longitude && (
+                          <div style={{ marginBottom: '0.75rem' }}>
+                            <strong style={{ color: '#374151' }}>Location:</strong>{' '}
+                            <span style={{ color: '#6b7280', fontFamily: 'monospace' }}>
+                              {selectedStore.latitude.toFixed(6)}, {selectedStore.longitude.toFixed(6)}
+                            </span>
+                          </div>
+                        )}
+                        <div style={{ marginBottom: '0.75rem' }}>
+                          <strong style={{ color: '#374151' }}>Created:</strong>{' '}
+                          <span style={{ color: '#6b7280' }}>
+                            {new Date(selectedStore.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Store Location Map */}
+                      {selectedStore.latitude && selectedStore.longitude && (
+                        <div style={{ marginBottom: '1.5rem' }}>
+                          <h3 style={{
+                            fontSize: '1rem',
+                            fontWeight: 600,
+                            marginBottom: '0.5rem',
+                            color: '#1f2937',
+                          }}>
+                            Store Location
+                          </h3>
+                          <StoreMapView
+                            latitude={selectedStore.latitude}
+                            longitude={selectedStore.longitude}
+                            storeName={selectedStore.name}
+                          />
+                        </div>
+                      )}
+
+                      {/* Store Front Photo Placeholder */}
+                      <div>
+                        <h3 style={{
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          marginBottom: '0.5rem',
+                          color: '#1f2937',
                         }}>
-                          {store.id.substring(0, 8)}...
-                        </td>
-                        <td style={{
-                          padding: '0.75rem',
-                          color: '#374151',
-                          fontWeight: '600',
-                        }}>
-                          {store.name}
-                        </td>
-                        <td style={{
-                          padding: '0.75rem',
-                          color: '#374151',
-                        }}>
-                          {store.address}
-                        </td>
-                        <td style={{
-                          padding: '0.75rem',
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                          fontFamily: 'monospace',
-                        }}>
-                          {store.latitude.toFixed(6)}
-                        </td>
-                        <td style={{
-                          padding: '0.75rem',
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                          fontFamily: 'monospace',
-                        }}>
-                          {store.longitude.toFixed(6)}
-                        </td>
-                        <td style={{
-                          padding: '0.75rem',
-                          fontSize: '0.875rem',
-                          color: '#6b7280',
-                        }}>
-                          {new Date(store.createdAt).toLocaleString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                          Store Front Photo
+                        </h3>
+                        {selectedStore.storeFrontImageUrl ? (
+                          <img
+                            src={selectedStore.storeFrontImageUrl}
+                            alt={`${selectedStore.name} store front`}
+                            style={{
+                              width: '100%',
+                              maxWidth: '500px',
+                              height: 'auto',
+                              borderRadius: '0.375rem',
+                              border: '1px solid #e5e7eb',
+                            }}
+                          />
+                        ) : (
+                          <div style={{
+                            width: '100%',
+                            maxWidth: '500px',
+                            height: '300px',
+                            backgroundColor: '#f3f4f6',
+                            border: '2px dashed #d1d5db',
+                            borderRadius: '0.375rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#9ca3af',
+                            fontSize: '0.875rem',
+                          }}>
+                            No store front photo uploaded yet
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{
+                      padding: '3rem',
+                      textAlign: 'center',
+                      color: '#6b7280',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '0.5rem',
+                    }}>
+                      Select a store from the list to view details
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </>

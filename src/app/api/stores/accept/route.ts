@@ -28,40 +28,46 @@ async function verifyAuth(request: Request): Promise<boolean> {
   }
 }
 
-// GET endpoint to view all stores (for admin/debugging purposes)
-export async function GET(request: Request) {
+// POST endpoint to accept a store
+export async function POST(request: Request) {
   if (!(await verifyAuth(request))) {
     return NextResponse.json(
       { error: 'Unauthorized' },
-      { status: 401, headers: { 'WWW-Authenticate': 'Basic realm="Admin Area"' } }
+      { status: 401 }
     )
   }
 
   try {
-    const stores = await prisma.store.findMany({
+    const body = await request.json()
+    const { storeId } = body
+
+    if (!storeId) {
+      return NextResponse.json(
+        { error: 'Store ID is required' },
+        { status: 400 }
+      )
+    }
+
+    const store = await prisma.store.update({
+      where: { id: storeId },
+      data: { accepted: true },
       select: {
         id: true,
         name: true,
         email: true,
-        phoneNumber: true,
-        address: true,
-        latitude: true,
-        longitude: true,
-        storeFrontImageUrl: true,
         accepted: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-      orderBy: {
-        createdAt: 'desc',
       },
     })
 
-    return NextResponse.json({ stores, count: stores.length })
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Store accepted successfully',
+      store 
+    })
   } catch (error) {
-    console.error('Error fetching stores:', error)
+    console.error('Error accepting store:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch stores', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to accept store', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

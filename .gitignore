@@ -41,3 +41,7 @@ next-env.d.ts
 *.db-journal
 prisma/dev.db
 prisma/dev.db-journal
+
+# uploaded files (keep directory structure but ignore actual uploads)
+public/uploads/passports/*
+!public/uploads/passports/.gitkeep

@@ -36,7 +36,12 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
+        // Check if it's a pending store approval error
+        if (result.error.includes('pending admin approval')) {
+          setError('Your store account is pending admin approval. Please wait for approval before logging in.')
+        } else {
+          setError('Invalid email or password')
+        }
         setLoading(false)
         return
       }
@@ -120,14 +125,15 @@ export default function LoginPage() {
               fontWeight: '600',
               color: '#374151',
             }}>
-              Email
+              Email or Username
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="Enter your email or username"
               style={{
                 width: '100%',
                 padding: '0.75rem',

@@ -2,6 +2,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
+import { verifyAdminCredentials } from './admin-auth'
 
 export const authOptions = {
   providers: [
@@ -17,7 +18,7 @@ export const authOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
@@ -25,6 +26,44 @@ export const authOptions = {
           return null
         }
 
+        // Check for admin login
+        if (verifyAdminCredentials(credentials.email, credentials.password)) {
+          return {
+            id: 'admin',
+            email: 'admin@scoot2u.com',
+            name: 'Admin',
+            isAdmin: true,
+          }
+        }
+
+        // Check for store login
+        const store = await prisma.store.findUnique({
+          where: { email: credentials.email }
+        })
+
+        if (store && store.password) {
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            store.password
+          )
+
+          if (isPasswordValid) {
+            // Check if store is accepted by admin
+            if (!store.accepted) {
+              throw new Error('Your store account is pending admin approval. Please wait for approval before logging in.')
+            }
+
+            return {
+              id: store.id,
+              email: store.email,
+              name: store.name,
+              isAdmin: false,
+              isStore: true,
+            }
+          }
+        }
+
+        // Regular user login
         const user = await prisma.user.findUnique({
           where: { email: credentials.email }
         })
@@ -46,6 +85,8 @@ export const authOptions = {
           id: user.id,
           email: user.email,
           name: user.name || user.email,
+          isAdmin: false,
+          isStore: false,
         }
       }
     }),
@@ -74,6 +115,12 @@ export const authOptions = {
       if (token?.sub) {
         session.user.id = token.sub
       }
+      if (token?.isAdmin !== undefined) {
+        session.user.isAdmin = token.isAdmin
+      }
+      if (token?.isStore !== undefined) {
+        session.user.isStore = token.isStore
+      }
       return session
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,6 +130,8 @@ export const authOptions = {
       }
       if (user) {
         token.sub = user.id
+        token.isAdmin = user.isAdmin || false
+        token.isStore = user.isStore || false
       }
       return token
     },

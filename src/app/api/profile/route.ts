@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
@@ -20,7 +20,8 @@ async function getCurrentUser() {
       name: true,
       phoneNumber: true,
       hotelAddress: true,
-      rentalDuration: true,
+      idDocumentImageUrl: true,
+      damageAgreement: true,
       createdAt: true,
       updatedAt: true,
     },
@@ -61,7 +62,6 @@ export async function PUT(request: Request) {
       name,
       phoneNumber,
       hotelAddress,
-      rentalDuration,
       email,
       currentPassword,
       newPassword,
@@ -71,7 +71,6 @@ export async function PUT(request: Request) {
       name: name ?? undefined,
       phoneNumber: phoneNumber ?? undefined,
       hotelAddress: hotelAddress ?? undefined,
-      rentalDuration: rentalDuration ?? undefined,
       email: email ?? undefined,
     }
 
@@ -116,7 +115,8 @@ export async function PUT(request: Request) {
         name: true,
         phoneNumber: true,
         hotelAddress: true,
-        rentalDuration: true,
+        idDocumentImageUrl: true,
+        damageAgreement: true,
         createdAt: true,
         updatedAt: true,
       },

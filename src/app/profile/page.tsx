@@ -10,7 +10,8 @@ interface ProfileUser {
   name: string | null
   phoneNumber: string | null
   hotelAddress: string | null
-  rentalDuration: string | null
+  idDocumentImageUrl: string | null
+  damageAgreement: string | null
   createdAt: string
   updatedAt: string
 }
@@ -27,7 +28,6 @@ export default function ProfilePage() {
     email: '',
     phoneNumber: '',
     hotelAddress: '',
-    rentalDuration: '',
   })
 
   const [passwordForm, setPasswordForm] = useState({
@@ -54,7 +54,6 @@ export default function ProfilePage() {
           email: u.email,
           phoneNumber: u.phoneNumber || '',
           hotelAddress: u.hotelAddress || '',
-          rentalDuration: u.rentalDuration || '',
         })
       } catch (err) {
         console.error('Profile fetch error:', err)
@@ -384,33 +383,80 @@ export default function ProfilePage() {
                 />
               </div>
 
+              {user.damageAgreement && (
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.25rem',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      color: '#374151',
+                    }}
+                  >
+                    Damage Agreement
+                  </label>
+                  <div
+                    style={{
+                      padding: '0.6rem 0.75rem',
+                      borderRadius: '0.375rem',
+                      border: '1px solid #d1d5db',
+                      backgroundColor: '#f9fafb',
+                      fontSize: '0.9rem',
+                      color: '#059669',
+                      fontWeight: 500,
+                    }}
+                  >
+                    ✓ Agreed
+                  </div>
+                </div>
+              )}
+
               <div style={{ marginBottom: '1rem' }}>
                 <label
-                  htmlFor="rentalDuration"
                   style={{
                     display: 'block',
-                    marginBottom: '0.25rem',
+                    marginBottom: '0.5rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
                     color: '#374151',
                   }}
                 >
-                  Rental duration (notes)
+                  Passport / Driver&apos;s Licence Photo
                 </label>
-                <input
-                  id="rentalDuration"
-                  type="text"
-                  value={form.rentalDuration}
-                  onChange={(e) => setForm({ ...form, rentalDuration: e.target.value })}
-                  placeholder="e.g. 2026-02-01 to 2026-02-05"
-                  style={{
-                    width: '100%',
-                    padding: '0.6rem 0.75rem',
-                    borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
-                    fontSize: '0.95rem',
-                  }}
-                />
+                {user.idDocumentImageUrl ? (
+                  <div>
+                    <img
+                      src={user.idDocumentImageUrl}
+                      alt="Passport/ID Document"
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '300px',
+                        borderRadius: '0.5rem',
+                        border: '1px solid #e5e7eb',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                        marginBottom: '0.5rem',
+                      }}
+                    />
+                    <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                      This photo is visible to stores when you make a booking.
+                    </p>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      padding: '2rem',
+                      borderRadius: '0.5rem',
+                      border: '1px dashed #d1d5db',
+                      backgroundColor: '#f9fafb',
+                      textAlign: 'center',
+                      color: '#9ca3af',
+                      fontSize: '0.9rem',
+                    }}
+                  >
+                    No passport photo uploaded
+                  </div>
+                )}
               </div>
 
               <button

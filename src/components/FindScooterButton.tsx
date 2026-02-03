@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useSession } from 'next-auth/react'
+import Link from 'next/link'
 
 interface Location {
   lat: number
@@ -10,12 +12,18 @@ interface Location {
 interface Store {
   id: string
   name: string
-  address: string
-  location: Location
+  address: string | null
+  latitude: number
+  longitude: number
+  phoneNumber: string | null
+  location: Location // Computed from latitude/longitude
   distance?: number // Distance in kilometers
 }
 
 export default function FindScooterButton() {
+  const { data: session, status } = useSession()
+  const isAuthenticated = status === 'authenticated'
+  const isStore = (session?.user as any)?.isStore === true
   const [showMap, setShowMap] = useState(false)
   const [location, setLocation] = useState<Location | null>(null)
   const [loading, setLoading] = useState(false)
@@ -25,22 +33,43 @@ export default function FindScooterButton() {
   const [stores, setStores] = useState<Store[]>([])
   const [closestStore, setClosestStore] = useState<Store | null>(null)
   const [selectedStore, setSelectedStore] = useState<Store | null>(null)
+  const [showDetails, setShowDetails] = useState(false)
+  const [notificationCount, setNotificationCount] = useState(0)
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
 
-  // Test store - will be replaced with backend data later
-  const testStore: Store = {
-    id: '1',
-    name: 'Test Store',
-    address: '48 Burniston Street, Scarborough',
-    location: { lat: 0, lng: 0 }, // Will be geocoded
-  }
+  // Stores will be loaded from the backend in the future.
+  // For now, the map only shows the user's location.
 
   // Ensure component is mounted on client
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Fetch notification count
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchNotifications = async () => {
+        try {
+          const response = await fetch('/api/bookings/notifications', {
+            credentials: 'include',
+          })
+          if (response.ok) {
+            const data = await response.json()
+            setNotificationCount(data.count || 0)
+          }
+        } catch (err) {
+          console.error('Error fetching notifications:', err)
+        }
+      }
+
+      fetchNotifications()
+      // Refresh notifications every 30 seconds
+      const interval = setInterval(fetchNotifications, 30000)
+      return () => clearInterval(interval)
+    }
+  }, [isAuthenticated])
 
   // Check for API key
   const getApiKey = () => {
@@ -161,6 +190,36 @@ export default function FindScooterButton() {
     document.head.appendChild(script)
   }
 
+  // Fetch accepted stores from the API
+  const fetchAcceptedStores = async (): Promise<Store[]> => {
+    try {
+      const response = await fetch('/api/stores/public')
+      const data = await response.json()
+
+      if (!response.ok) {
+        console.error('Failed to fetch stores:', data.error)
+        return []
+      }
+
+      // Transform API response to Store format
+      return (data.stores || []).map((store: any) => ({
+        id: store.id,
+        name: store.name,
+        address: store.address,
+        latitude: store.latitude,
+        longitude: store.longitude,
+        phoneNumber: store.phoneNumber,
+        location: {
+          lat: store.latitude,
+          lng: store.longitude,
+        },
+      }))
+    } catch (err) {
+      console.error('Error fetching stores:', err)
+      return []
+    }
+  }
+
   const handleFindScooter = async () => {
     setLoading(true)
     setError(null)
@@ -189,23 +248,18 @@ export default function FindScooterButton() {
         }
         setLocation(userLocation)
 
-        // Geocode the test store address
-        const storeLocation = await geocodeAddress(testStore.address)
-        if (storeLocation) {
-          const storeWithLocation = {
-            ...testStore,
-            location: storeLocation,
-          }
-          setStores([storeWithLocation])
+        // Fetch accepted stores from the backend
+        const acceptedStores = await fetchAcceptedStores()
+        setStores(acceptedStores)
 
-          // Find closest store
-          const closest = findClosestStore(userLocation, [storeWithLocation])
+        // Find closest store if we have stores
+        if (acceptedStores.length > 0) {
+          const closest = findClosestStore(userLocation, acceptedStores)
           setClosestStore(closest)
-          setSelectedStore(closest)
+          setSelectedStore(closest) // Auto-select closest store
         } else {
-          setError('Failed to geocode store address. Please try again.')
-          setLoading(false)
-          return
+          setClosestStore(null)
+          setSelectedStore(null)
         }
 
         setShowMap(true)
@@ -224,8 +278,13 @@ export default function FindScooterButton() {
   useEffect(() => {
     if (!showMap || !location || !mapLoaded || !(window as any).google || !mapRef.current) return
 
-    // Prevent re-initialization
-    if (mapInstanceRef.current) return
+    // Clear previous map instance to allow re-initialization with new stores
+    if (mapInstanceRef.current) {
+      // Clear previous markers
+      markersRef.current.forEach((marker) => marker.setMap(null))
+      markersRef.current = []
+      mapInstanceRef.current = null
+    }
 
     try {
       const google = (window as any).google
@@ -234,9 +293,14 @@ export default function FindScooterButton() {
       const bounds = new google.maps.LatLngBounds()
       bounds.extend(location)
 
-      stores.forEach((store) => {
-        bounds.extend(store.location)
-      })
+      if (stores.length > 0) {
+        stores.forEach((store) => {
+          bounds.extend(store.location)
+        })
+      } else {
+        // If no stores, just center on user location
+        bounds.extend(location)
+      }
 
       const map = new google.maps.Map(mapRef.current, {
         mapTypeControl: true,
@@ -244,12 +308,16 @@ export default function FindScooterButton() {
         fullscreenControl: true,
       })
 
-      // Fit bounds to show all markers
-      map.fitBounds(bounds)
-
-      // Add padding to bounds
-      const padding = 50
-      map.fitBounds(bounds, padding)
+      // Fit bounds to show all markers (or center on user if no stores)
+      if (stores.length > 0) {
+        map.fitBounds(bounds)
+        // Add padding to bounds
+        const padding = 50
+        map.fitBounds(bounds, padding)
+      } else {
+        map.setCenter(location)
+        map.setZoom(15)
+      }
 
       // Add user location marker
       new google.maps.Marker({
@@ -269,7 +337,7 @@ export default function FindScooterButton() {
       stores.forEach((store) => {
         const isClosest = closestStore?.id === store.id
 
-        // Create marker
+        // Create marker with different icon for closest store
         const marker = new google.maps.Marker({
           position: store.location,
           map: map,
@@ -282,20 +350,19 @@ export default function FindScooterButton() {
           },
         })
 
-        // Create simple info window with store name (detailed panel is rendered above the map)
+        // Create very compact info window with just store name and distance
         const infoWindow = new google.maps.InfoWindow({
           content: `
-            <div style="padding: 0.5rem; min-width: 160px;">
-              <strong style="font-size: 0.95rem; color: #1f2937;">${store.name}</strong><br/>
-              <span style="color: #6b7280; font-size: 0.8rem;">${store.address}</span><br/>
-              ${store.distance ? `<span style="color: #059669; font-size: 0.8rem;">${store.distance.toFixed(2)} km away</span>` : ''}
-              ${isClosest ? '<div style="margin-top: 0.25rem;"><strong style="color: #10b981; font-size: 0.8rem;">⭐ Closest Store</strong></div>' : ''}
+            <div style="padding: 0.2rem 0.35rem; line-height: 1.2; white-space: nowrap;">
+              <div style="font-size: 0.75rem; font-weight: 600; color: #1f2937;">${store.name}</div>
+              ${store.distance ? `<div style="color: #059669; font-size: 0.65rem; margin-top: 0.1rem;">${store.distance.toFixed(2)} km</div>` : ''}
             </div>
           `,
         })
 
         marker.addListener('click', () => {
           setSelectedStore(store)
+          setShowDetails(false) // Reset details when selecting a new store
           infoWindow.open(map, marker)
         })
 
@@ -341,39 +408,133 @@ export default function FindScooterButton() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-      <button
-        type="button"
-        onClick={handleFindScooter}
-        disabled={loading}
+      <div
         style={{
-          padding: '1rem 2rem',
-          fontSize: '1.125rem',
-          fontWeight: '600',
-          color: '#fff',
-          backgroundColor: loading ? '#9ca3af' : '#2563eb',
-          border: 'none',
-          borderRadius: '0.5rem',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseEnter={(e) => {
-          if (!loading && mounted) {
-            e.currentTarget.style.backgroundColor = '#1d4ed8'
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!loading && mounted) {
-            e.currentTarget.style.backgroundColor = '#2563eb'
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-          }
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        {loading ? 'Finding Location...' : 'Find Scooter'}
-      </button>
+        <button
+          type="button"
+          onClick={handleFindScooter}
+          disabled={loading}
+          style={{
+            padding: '1rem 2rem',
+            fontSize: '1.125rem',
+            fontWeight: '600',
+            color: '#fff',
+            backgroundColor: loading ? '#9ca3af' : '#2563eb',
+            border: 'none',
+            borderRadius: '0.5rem',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            if (!loading && mounted) {
+              e.currentTarget.style.backgroundColor = '#1d4ed8'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!loading && mounted) {
+              e.currentTarget.style.backgroundColor = '#2563eb'
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+            }
+          }}
+        >
+          {loading ? 'Finding Location...' : 'Find Scooter'}
+        </button>
+
+        {isAuthenticated && (
+          <Link
+            href="/bookings"
+            style={{
+              position: 'relative',
+              padding: '0.9rem 1.75rem',
+              fontSize: '1rem',
+              fontWeight: 600,
+              color: '#1f2937',
+              backgroundColor: '#e5e7eb',
+              borderRadius: '0.5rem',
+              border: '1px solid #d1d5db',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#d1d5db'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#e5e7eb'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
+            My Bookings
+            {notificationCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '-0.25rem',
+                  right: '-0.25rem',
+                  minWidth: '1.25rem',
+                  height: '1.25rem',
+                  padding: '0 0.35rem',
+                  borderRadius: '9999px',
+                  backgroundColor: '#ef4444',
+                  color: '#ffffff',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  lineHeight: 1,
+                }}
+              >
+                {notificationCount > 99 ? '99+' : notificationCount}
+              </span>
+            )}
+          </Link>
+        )}
+
+        {isStore && (
+          <Link
+            href="/scooters"
+            style={{
+              padding: '0.9rem 1.75rem',
+              fontSize: '1rem',
+              fontWeight: 600,
+              color: '#1f2937',
+              backgroundColor: '#e5e7eb',
+              borderRadius: '0.5rem',
+              border: '1px solid #d1d5db',
+              cursor: 'pointer',
+              textDecoration: 'none',
+              boxShadow:
+                '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.05)',
+              transition: 'all 0.15s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#d1d5db'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#e5e7eb'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
+            My Scooters
+          </Link>
+        )}
+      </div>
 
       {error && (
         <div
@@ -404,27 +565,7 @@ export default function FindScooterButton() {
         </div>
       )}
 
-      {closestStore && (
-        <div
-          style={{
-            padding: '1rem',
-            backgroundColor: '#d1fae5',
-            color: '#065f46',
-            borderRadius: '0.5rem',
-            fontSize: '0.875rem',
-            maxWidth: '800px',
-            width: '100%',
-            textAlign: 'left',
-            border: '2px solid #10b981',
-          }}
-        >
-          <strong>⭐ Closest Store:</strong> {closestStore.name}
-          <br />
-          {closestStore.distance !== undefined && (
-            <span>Distance: {closestStore.distance.toFixed(2)} km</span>
-          )}
-        </div>
-      )}
+      {/* Removed large closest-store banner to keep layout clean */}
 
       {selectedStore && (
         <div
@@ -444,53 +585,126 @@ export default function FindScooterButton() {
             <div style={{ fontSize: '1rem', fontWeight: 700, color: '#111827' }}>
               {selectedStore.name}
             </div>
-            <div style={{ fontSize: '0.9rem', color: '#4b5563', marginTop: '0.25rem' }}>
-              {selectedStore.address}
-            </div>
             {selectedStore.distance !== undefined && (
-              <div style={{ fontSize: '0.85rem', color: '#059669', marginTop: '0.25rem' }}>
+              <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.2rem' }}>
                 Distance: {selectedStore.distance.toFixed(2)} km
-                {closestStore?.id === selectedStore.id && (
-                  <span style={{ marginLeft: '0.5rem', color: '#10b981', fontWeight: 600 }}>
-                    ⭐ Closest Store
-                  </span>
-                )}
               </div>
             )}
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              const url = getDirectionsUrl(selectedStore.location)
-              window.open(url, '_blank', 'noopener,noreferrer')
-            }}
-            style={{
-              marginTop: '0.5rem',
-              padding: '0.6rem 1.25rem',
-              backgroundColor: '#2563eb',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '0.5rem',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.35rem',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#1d4ed8'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#2563eb'
-            }}
-          >
-            <span role="img" aria-label="map">
-              🗺️
-            </span>
-            Get Directions
-          </button>
+
+          {/* Show details section */}
+          {showDetails && (
+            <div
+              style={{
+                marginTop: '0.75rem',
+                padding: '0.75rem',
+                backgroundColor: '#f9fafb',
+                borderRadius: '0.5rem',
+                border: '1px solid #e5e7eb',
+              }}
+            >
+              <div style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '0.5rem' }}>
+                <strong style={{ color: '#374151' }}>Address:</strong>{' '}
+                {selectedStore.address || 'No address provided'}
+              </div>
+              {selectedStore.phoneNumber && (
+                <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>
+                  <strong style={{ color: '#374151' }}>Phone:</strong> {selectedStore.phoneNumber}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => {
+                const url = getDirectionsUrl(selectedStore.location)
+                window.open(url, '_blank', 'noopener,noreferrer')
+              }}
+              style={{
+                padding: '0.6rem 1.25rem',
+                backgroundColor: '#2563eb',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '0.5rem',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#1d4ed8'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#2563eb'
+              }}
+            >
+              <span role="img" aria-label="map">
+                🗺️
+              </span>
+              Get Directions
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowDetails(!showDetails)}
+              style={{
+                padding: '0.6rem 1.25rem',
+                backgroundColor: '#f3f4f6',
+                color: '#374151',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.5rem',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                fontFamily: 'Arial, sans-serif',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#e5e7eb'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f3f4f6'
+              }}
+            >
+              {showDetails ? 'Hide Details' : 'Show Details'}
+            </button>
+            <Link
+              href={`/stores/${selectedStore.id}/scooters?name=${encodeURIComponent(
+                selectedStore.name,
+              )}`}
+              style={{
+                padding: '0.6rem 1.25rem',
+                backgroundColor: '#f3f4f6',
+                color: '#374151',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.5rem',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                fontFamily: 'Arial, sans-serif',
+                cursor: 'pointer',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#e5e7eb'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f3f4f6'
+              }}
+            >
+              View Scooters
+            </Link>
+          </div>
         </div>
       )}
 
