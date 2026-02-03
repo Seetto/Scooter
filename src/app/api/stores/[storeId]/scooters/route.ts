@@ -4,9 +4,9 @@ import { prisma } from '@/lib/prisma'
 // Public endpoint to get scooters for a specific store
 export async function GET(
   _request: Request,
-  context: { params: { storeId: string } }
+  context: { params: Promise<{ storeId: string }> }
 ) {
-  const { storeId } = context.params
+  const { storeId } = await context.params
 
   if (!storeId) {
     return NextResponse.json({ error: 'Store ID is required' }, { status: 400 })
