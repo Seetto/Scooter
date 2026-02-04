@@ -641,22 +641,15 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                         }}
                       >
                         {!rentalPeriod.startDate || !rentalPeriod.endDate ? (
-                          <button
-                            type="button"
-                            onClick={() => openBookingModal(scooter)}
+                          <span
                             style={{
-                              padding: '0.45rem 1.1rem',
-                              borderRadius: '0.5rem',
-                              border: 'none',
-                              backgroundColor: '#10b981',
-                              color: '#ffffff',
-                              fontWeight: 600,
                               fontSize: '0.85rem',
-                              cursor: 'pointer',
+                              color: '#9ca3af',
+                              fontStyle: 'italic',
                             }}
                           >
-                            Book Now
-                          </button>
+                            Please select a date range
+                          </span>
                         ) : !availabilityChecked ? (
                           <span
                             style={{
