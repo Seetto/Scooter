@@ -33,7 +33,7 @@ export default function FindScooterButton() {
   const [stores, setStores] = useState<Store[]>([])
   const [closestStore, setClosestStore] = useState<Store | null>(null)
   const [selectedStore, setSelectedStore] = useState<Store | null>(null)
-  const [showDetails, setShowDetails] = useState(false)
+  const [expandedStoreId, setExpandedStoreId] = useState<string | null>(null)
   const [notificationCount, setNotificationCount] = useState(0)
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
@@ -362,7 +362,7 @@ export default function FindScooterButton() {
 
         marker.addListener('click', () => {
           setSelectedStore(store)
-          setShowDetails(false) // Reset details when selecting a new store
+          setExpandedStoreId(store.id === expandedStoreId ? null : store.id) // Toggle expansion
           infoWindow.open(map, marker)
         })
 
@@ -565,146 +565,184 @@ export default function FindScooterButton() {
         </div>
       )}
 
-      {/* Removed large closest-store banner to keep layout clean */}
-
-      {selectedStore && (
+      {/* Store List */}
+      {showMap && stores.length > 0 && (
         <div
           style={{
             width: '100%',
             maxWidth: '800px',
-            marginTop: '0.5rem',
-            padding: '1rem 1.25rem',
-            borderRadius: '0.75rem',
-            backgroundColor: '#ffffff',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.06)',
-            border: '1px solid #e5e7eb',
-            textAlign: 'left',
+            marginTop: '1rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
           }}
         >
-          <div style={{ marginBottom: '0.5rem' }}>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#111827' }}>
-              {selectedStore.name}
-            </div>
-            {selectedStore.distance !== undefined && (
-              <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.2rem' }}>
-                Distance: {selectedStore.distance.toFixed(2)} km
-              </div>
-            )}
-          </div>
-
-          {/* Show details section */}
-          {showDetails && (
-            <div
-              style={{
-                marginTop: '0.75rem',
-                padding: '0.75rem',
-                backgroundColor: '#f9fafb',
-                borderRadius: '0.5rem',
-                border: '1px solid #e5e7eb',
-              }}
-            >
-              <div style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '0.5rem' }}>
-                <strong style={{ color: '#374151' }}>Address:</strong>{' '}
-                {selectedStore.address || 'No address provided'}
-              </div>
-              {selectedStore.phoneNumber && (
-                <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>
-                  <strong style={{ color: '#374151' }}>Phone:</strong> {selectedStore.phoneNumber}
+          {stores.map((store) => {
+            const isExpanded = expandedStoreId === store.id
+            return (
+              <div
+                key={store.id}
+                style={{
+                  padding: '1rem 1.25rem',
+                  borderRadius: '0.75rem',
+                  backgroundColor: '#ffffff',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                  border: '1px solid #e5e7eb',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '1rem',
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#111827' }}>
+                      {store.name}
+                    </div>
+                    {store.distance !== undefined && (
+                      <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.2rem' }}>
+                        Distance: {store.distance.toFixed(2)} km
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExpandedStoreId(isExpanded ? null : store.id)
+                      setSelectedStore(store)
+                    }}
+                    style={{
+                      padding: '0.6rem 1.25rem',
+                      backgroundColor: isExpanded ? '#e5e7eb' : '#2563eb',
+                      color: isExpanded ? '#374151' : '#ffffff',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isExpanded) {
+                        e.currentTarget.style.backgroundColor = '#1d4ed8'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isExpanded) {
+                        e.currentTarget.style.backgroundColor = '#2563eb'
+                      }
+                    }}
+                  >
+                    {isExpanded ? 'Hide Details' : 'Show Details'}
+                  </button>
                 </div>
-              )}
-            </div>
-          )}
 
-          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={() => {
-                const url = getDirectionsUrl(selectedStore.location)
-                window.open(url, '_blank', 'noopener,noreferrer')
-              }}
-              style={{
-                padding: '0.6rem 1.25rem',
-                backgroundColor: '#2563eb',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '0.5rem',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#1d4ed8'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#2563eb'
-              }}
-            >
-              <span role="img" aria-label="map">
-                🗺️
-              </span>
-              Get Directions
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowDetails(!showDetails)}
-              style={{
-                padding: '0.6rem 1.25rem',
-                backgroundColor: '#f3f4f6',
-                color: '#374151',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.5rem',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                fontFamily: 'Arial, sans-serif',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#e5e7eb'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-              }}
-            >
-              {showDetails ? 'Hide Details' : 'Show Details'}
-            </button>
-            <Link
-              href={`/stores/${selectedStore.id}/scooters?name=${encodeURIComponent(
-                selectedStore.name,
-              )}`}
-              style={{
-                padding: '0.6rem 1.25rem',
-                backgroundColor: '#f3f4f6',
-                color: '#374151',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.5rem',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                fontFamily: 'Arial, sans-serif',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#e5e7eb'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f3f4f6'
-              }}
-            >
-              View Scooters
-            </Link>
-          </div>
+                {/* Expanded Details Section */}
+                {isExpanded && (
+                  <div
+                    style={{
+                      marginTop: '1rem',
+                      paddingTop: '1rem',
+                      borderTop: '1px solid #e5e7eb',
+                    }}
+                  >
+                    {/* Store Details */}
+                    <div
+                      style={{
+                        marginBottom: '1rem',
+                        padding: '0.75rem',
+                        backgroundColor: '#f9fafb',
+                        borderRadius: '0.5rem',
+                        border: '1px solid #e5e7eb',
+                      }}
+                    >
+                      <div style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '0.5rem' }}>
+                        <strong style={{ color: '#374151' }}>Address:</strong>{' '}
+                        {store.address || 'No address provided'}
+                      </div>
+                      {store.phoneNumber && (
+                        <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>
+                          <strong style={{ color: '#374151' }}>Phone:</strong> {store.phoneNumber}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const url = getDirectionsUrl(store.location)
+                          window.open(url, '_blank', 'noopener,noreferrer')
+                        }}
+                        style={{
+                          padding: '0.6rem 1.25rem',
+                          backgroundColor: '#2563eb',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontWeight: 600,
+                          fontSize: '0.9rem',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+                          transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#1d4ed8'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#2563eb'
+                        }}
+                      >
+                        <span role="img" aria-label="map">
+                          🗺️
+                        </span>
+                        Get Directions
+                      </button>
+                      <Link
+                        href={`/stores/${store.id}/scooters?name=${encodeURIComponent(store.name)}`}
+                        style={{
+                          padding: '0.6rem 1.25rem',
+                          backgroundColor: '#10b981',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          fontWeight: 600,
+                          fontSize: '0.9rem',
+                          cursor: 'pointer',
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.35rem',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+                          transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#059669'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = '#10b981'
+                        }}
+                      >
+                        <span role="img" aria-label="scooter">
+                          🛵
+                        </span>
+                        View Scooters
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       )}
 
