@@ -682,7 +682,7 @@ export default function FindScooterButton() {
                         }}
                         style={{
                           padding: '0.6rem 1.25rem',
-                          backgroundColor: '#2563eb',
+                          backgroundColor: '#6b7280',
                           color: '#ffffff',
                           border: 'none',
                           borderRadius: '0.5rem',
@@ -696,10 +696,10 @@ export default function FindScooterButton() {
                           transition: 'all 0.2s ease',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#1d4ed8'
+                          e.currentTarget.style.backgroundColor = '#4b5563'
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#2563eb'
+                          e.currentTarget.style.backgroundColor = '#6b7280'
                         }}
                       >
                         <span role="img" aria-label="map">
@@ -711,7 +711,7 @@ export default function FindScooterButton() {
                         href={`/stores/${store.id}/scooters?name=${encodeURIComponent(store.name)}`}
                         style={{
                           padding: '0.6rem 1.25rem',
-                          backgroundColor: '#10b981',
+                          backgroundColor: '#6b7280',
                           color: '#ffffff',
                           border: 'none',
                           borderRadius: '0.5rem',
@@ -726,10 +726,10 @@ export default function FindScooterButton() {
                           transition: 'all 0.2s ease',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#059669'
+                          e.currentTarget.style.backgroundColor = '#4b5563'
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#10b981'
+                          e.currentTarget.style.backgroundColor = '#6b7280'
                         }}
                       >
                         <span role="img" aria-label="scooter">
