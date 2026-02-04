@@ -188,6 +188,56 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Please select a valid date range' }, { status: 400 })
     }
 
+    // Check for existing bookings that conflict with the requested dates
+    const conflictingBookings = await prisma.booking.findFirst({
+      where: {
+        scooterId,
+        status: {
+          in: ['PENDING', 'CONFIRMED'],
+        },
+        OR: [
+          // New booking starts during an existing booking
+          {
+            AND: [
+              { startDate: { lte: start } },
+              { endDate: { gte: start } },
+            ],
+          },
+          // New booking ends during an existing booking
+          {
+            AND: [
+              { startDate: { lte: end } },
+              { endDate: { gte: end } },
+            ],
+          },
+          // New booking completely contains an existing booking
+          {
+            AND: [
+              { startDate: { gte: start } },
+              { endDate: { lte: end } },
+            ],
+          },
+          // New booking is completely within an existing booking
+          {
+            AND: [
+              { startDate: { lte: start } },
+              { endDate: { gte: end } },
+            ],
+          },
+        ],
+      },
+    })
+
+    if (conflictingBookings) {
+      return NextResponse.json(
+        {
+          error: 'Scooter is not available for the selected dates',
+          details: `The scooter is already booked from ${new Date(conflictingBookings.startDate).toLocaleDateString()} to ${new Date(conflictingBookings.endDate).toLocaleDateString()}`,
+        },
+        { status: 409 },
+      )
+    }
+
     // Fetch user and store details for emails
     const user = await prisma.user.findUnique({
       where: { id: userId },

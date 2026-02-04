@@ -45,6 +45,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     startDate: '',
     endDate: '',
   })
+  const [unavailableDates, setUnavailableDates] = useState<string[]>([])
+  const [loadingUnavailableDates, setLoadingUnavailableDates] = useState(false)
 
   useEffect(() => {
     const fetchScooters = async () => {
@@ -84,8 +86,28 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     setSelectedScooter(scooter)
     setBookingError(null)
     setBookingSuccess(null)
+    setBookingForm((prev) => ({
+      ...prev,
+      startDate: '',
+      endDate: '',
+    }))
     setShowBookingModal(true)
 
+    // Fetch unavailable dates for this scooter
+    setLoadingUnavailableDates(true)
+    try {
+      const unavailableRes = await fetch(`/api/scooters/${scooter.id}/unavailable-dates`)
+      if (unavailableRes.ok) {
+        const unavailableData = await unavailableRes.json()
+        setUnavailableDates(unavailableData.unavailableDates || [])
+      }
+    } catch (err) {
+      console.error('Error loading unavailable dates:', err)
+    } finally {
+      setLoadingUnavailableDates(false)
+    }
+
+    // Load user profile
     try {
       const res = await fetch('/api/profile', { credentials: 'include' })
       if (!res.ok) return
@@ -102,6 +124,40 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     }
   }
 
+  // Check if a date range conflicts with unavailable dates
+  const checkDateConflict = (startDate: string, endDate: string): string | null => {
+    if (!startDate || !endDate) return null
+
+    const start = new Date(startDate)
+    const end = new Date(endDate)
+    start.setHours(0, 0, 0, 0)
+    end.setHours(0, 0, 0, 0)
+
+    if (end < start) {
+      return 'End date must be after start date.'
+    }
+
+    // Check if any date in the range is unavailable
+    const conflictingDates: string[] = []
+    const currentDate = new Date(start)
+    
+    while (currentDate <= end) {
+      const dateStr = currentDate.toISOString().split('T')[0]
+      if (unavailableDates.includes(dateStr)) {
+        conflictingDates.push(dateStr)
+      }
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    if (conflictingDates.length > 0) {
+      const dateList = conflictingDates.slice(0, 5).join(', ')
+      const more = conflictingDates.length > 5 ? ` and ${conflictingDates.length - 5} more` : ''
+      return `The scooter is not available on: ${dateList}${more}. Please select different dates.`
+    }
+
+    return null
+  }
+
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedScooter) return
@@ -111,6 +167,13 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
 
     if (!bookingForm.startDate || !bookingForm.endDate) {
       setBookingError('Please select a start and end date for your booking.')
+      return
+    }
+
+    // Check for date conflicts
+    const conflictError = checkDateConflict(bookingForm.startDate, bookingForm.endDate)
+    if (conflictError) {
+      setBookingError(conflictError)
       return
     }
 
@@ -609,19 +672,32 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     id="booking-start"
                     type="date"
                     value={bookingForm.startDate}
-                    onChange={(e) =>
+                    min={new Date().toISOString().split('T')[0]}
+                    onChange={(e) => {
+                      const newStartDate = e.target.value
                       setBookingForm({
                         ...bookingForm,
-                        startDate: e.target.value,
+                        startDate: newStartDate,
+                        // Reset end date if it's before new start date
+                        endDate: bookingForm.endDate && new Date(bookingForm.endDate) < new Date(newStartDate) 
+                          ? '' 
+                          : bookingForm.endDate,
                       })
-                    }
+                      // Clear error when user changes date
+                      if (bookingError) setBookingError(null)
+                    }}
                     style={{
                       width: '100%',
                       padding: '0.6rem 0.75rem',
                       borderRadius: '0.375rem',
-                      border: '1px solid #d1d5db',
+                      border: unavailableDates.includes(bookingForm.startDate) && bookingForm.startDate
+                        ? '2px solid #ef4444'
+                        : '1px solid #d1d5db',
                       fontSize: '0.9rem',
                       boxSizing: 'border-box',
+                      backgroundColor: unavailableDates.includes(bookingForm.startDate) && bookingForm.startDate
+                        ? '#fef2f2'
+                        : '#ffffff',
                     }}
                   />
                 </div>
@@ -642,23 +718,94 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     id="booking-end"
                     type="date"
                     value={bookingForm.endDate}
-                    onChange={(e) =>
+                    min={bookingForm.startDate || new Date().toISOString().split('T')[0]}
+                    onChange={(e) => {
                       setBookingForm({
                         ...bookingForm,
                         endDate: e.target.value,
                       })
-                    }
+                      // Clear error when user changes date
+                      if (bookingError) setBookingError(null)
+                    }}
                     style={{
                       width: '100%',
                       padding: '0.6rem 0.75rem',
                       borderRadius: '0.375rem',
-                      border: '1px solid #d1d5db',
+                      border: unavailableDates.includes(bookingForm.endDate) && bookingForm.endDate
+                        ? '2px solid #ef4444'
+                        : '1px solid #d1d5db',
                       fontSize: '0.9rem',
                       boxSizing: 'border-box',
+                      backgroundColor: unavailableDates.includes(bookingForm.endDate) && bookingForm.endDate
+                        ? '#fef2f2'
+                        : '#ffffff',
                     }}
                   />
                 </div>
               </div>
+
+              {loadingUnavailableDates ? (
+                <div
+                  style={{
+                    marginBottom: '0.75rem',
+                    padding: '0.5rem',
+                    fontSize: '0.8rem',
+                    color: '#6b7280',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  Checking availability...
+                </div>
+              ) : unavailableDates.length > 0 && (
+                <div
+                  style={{
+                    marginBottom: '0.75rem',
+                    padding: '0.75rem',
+                    borderRadius: '0.375rem',
+                    backgroundColor: '#fef3c7',
+                    border: '1px solid #fbbf24',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      color: '#92400e',
+                      marginBottom: '0.25rem',
+                    }}
+                  >
+                    ⚠️ Unavailable Dates
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#78350f',
+                    }}
+                  >
+                    This scooter is already booked on {unavailableDates.length} day{unavailableDates.length !== 1 ? 's' : ''}. 
+                    These dates are shown in red and cannot be selected.
+                  </div>
+                </div>
+              )}
+
+              {bookingForm.startDate && bookingForm.endDate && (() => {
+                const conflict = checkDateConflict(bookingForm.startDate, bookingForm.endDate)
+                return conflict ? (
+                  <div
+                    style={{
+                      marginBottom: '0.75rem',
+                      padding: '0.75rem',
+                      borderRadius: '0.375rem',
+                      backgroundColor: '#fee2e2',
+                      border: '1px solid #f87171',
+                      fontSize: '0.8rem',
+                      color: '#991b1b',
+                    }}
+                  >
+                    {conflict}
+                  </div>
+                ) : null
+              })()}
 
               <div
                 style={{
