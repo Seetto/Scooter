@@ -29,9 +29,10 @@ export default function Home() {
     }}>
       {isAuthenticated && (
         <div style={{
-          position: 'absolute',
+          position: 'fixed',
           top: '1rem',
           right: '1rem',
+          zIndex: 1000,
         }}>
           <AuthLinks />
         </div>

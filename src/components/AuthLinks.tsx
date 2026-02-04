@@ -176,122 +176,288 @@ export default function AuthLinks() {
     )
   }
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
   if (session) {
     return (
       <>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <span style={{ color: '#374151', fontSize: '0.85rem', fontWeight: 500 }}>
-            {session.user?.name || session.user?.email}
-          </span>
-          {isAdmin && (
-            <>
-              <button
-                onClick={() => {
-                  setShowUsersModal(true)
-                  if (users.length === 0) fetchUsers()
-                }}
-                style={{
-                  padding: '0.45rem 0.9rem',
-                  borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  color: '#374151',
-                  backgroundColor: '#f9fafb',
-                  cursor: 'pointer',
-                }}
-              >
-                View Users
-              </button>
-              <button
-                onClick={() => {
-                  setShowStoresModal(true)
-                  if (stores.length === 0) fetchStores()
-                }}
-                style={{
-                  padding: '0.45rem 0.9rem',
-                  borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  color: '#374151',
-                  backgroundColor: '#f9fafb',
-                  cursor: 'pointer',
-                }}
-              >
-                View Stores
-              </button>
-            </>
-          )}
-          <Link
-            href="/bookings"
+        {/* Hamburger Menu Button */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
             style={{
-              position: 'relative',
-              padding: '0.45rem 0.9rem',
+              padding: '0.5rem',
               borderRadius: '0.375rem',
               border: '1px solid #d1d5db',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              color: '#374151',
-              textDecoration: 'none',
-              backgroundColor: '#f9fafb',
+              backgroundColor: '#ffffff',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.25rem',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '2.5rem',
+              height: '2.5rem',
             }}
+            aria-label="Open menu"
           >
-            My Bookings
-            {notificationCount > 0 && (
-              <span
+            <span
+              style={{
+                width: '1.25rem',
+                height: '2px',
+                backgroundColor: '#374151',
+                borderRadius: '1px',
+                transition: 'all 0.3s ease',
+                transform: isMenuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none',
+              }}
+            />
+            <span
+              style={{
+                width: '1.25rem',
+                height: '2px',
+                backgroundColor: '#374151',
+                borderRadius: '1px',
+                transition: 'all 0.3s ease',
+                opacity: isMenuOpen ? 0 : 1,
+              }}
+            />
+            <span
+              style={{
+                width: '1.25rem',
+                height: '2px',
+                backgroundColor: '#374151',
+                borderRadius: '1px',
+                transition: 'all 0.3s ease',
+                transform: isMenuOpen ? 'rotate(-45deg) translate(7px, -6px)' : 'none',
+              }}
+            />
+          </button>
+
+          {/* Dropdown Menu */}
+          {isMenuOpen && (
+            <>
+              {/* Backdrop to close menu when clicking outside */}
+              <div
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 998,
+                }}
+                onClick={() => setIsMenuOpen(false)}
+              />
+              {/* Menu Dropdown */}
+              <div
                 style={{
                   position: 'absolute',
-                  top: '-0.25rem',
-                  right: '-0.25rem',
-                  minWidth: '1.25rem',
-                  height: '1.25rem',
-                  padding: '0 0.35rem',
-                  borderRadius: '9999px',
-                  backgroundColor: '#ef4444',
-                  color: '#ffffff',
-                  fontSize: '0.7rem',
-                  fontWeight: 700,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  lineHeight: 1,
+                  top: 'calc(100% + 0.5rem)',
+                  right: 0,
+                  backgroundColor: '#ffffff',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #e5e7eb',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                  minWidth: '200px',
+                  zIndex: 999,
+                  padding: '0.5rem',
                 }}
+                onClick={(e) => e.stopPropagation()}
               >
-                {notificationCount > 99 ? '99+' : notificationCount}
-              </span>
-            )}
-          </Link>
-          <Link
-            href="/profile"
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '0.375rem',
-              border: '1px solid #d1d5db',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              color: '#374151',
-              textDecoration: 'none',
-              backgroundColor: '#f9fafb',
-            }}
-          >
-            My Profile
-          </Link>
-          <button
-            onClick={() => signOut()}
-            style={{
-              padding: '0.45rem 0.9rem',
-              borderRadius: '0.375rem',
-              backgroundColor: '#ef4444',
-              color: 'white',
-              border: '1px solid #ef4444',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-            }}
-          >
-            Sign Out
-          </button>
+                {/* User Info */}
+                <div
+                  style={{
+                    padding: '0.75rem',
+                    borderBottom: '1px solid #e5e7eb',
+                    marginBottom: '0.5rem',
+                  }}
+                >
+                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                    {session.user?.name || session.user?.email}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                    {session.user?.email}
+                  </div>
+                </div>
+
+                {/* Menu Items */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  {isAdmin && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setShowUsersModal(true)
+                          if (users.length === 0) fetchUsers()
+                          setIsMenuOpen(false)
+                        }}
+                        style={{
+                          padding: '0.75rem 1rem',
+                          borderRadius: '0.375rem',
+                          border: 'none',
+                          fontSize: '0.875rem',
+                          fontWeight: 500,
+                          color: '#374151',
+                          backgroundColor: 'transparent',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'background-color 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#f3f4f6'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
+                      >
+                        View Users
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowStoresModal(true)
+                          if (stores.length === 0) fetchStores()
+                          setIsMenuOpen(false)
+                        }}
+                        style={{
+                          padding: '0.75rem 1rem',
+                          borderRadius: '0.375rem',
+                          border: 'none',
+                          fontSize: '0.875rem',
+                          fontWeight: 500,
+                          color: '#374151',
+                          backgroundColor: 'transparent',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'background-color 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#f3f4f6'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
+                      >
+                        View Stores
+                      </button>
+                      <div
+                        style={{
+                          height: '1px',
+                          backgroundColor: '#e5e7eb',
+                          margin: '0.5rem 0',
+                        }}
+                      />
+                    </>
+                  )}
+                  <Link
+                    href="/bookings"
+                    onClick={() => setIsMenuOpen(false)}
+                    style={{
+                      position: 'relative',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '0.375rem',
+                      border: 'none',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      color: '#374151',
+                      textDecoration: 'none',
+                      backgroundColor: 'transparent',
+                      textAlign: 'left',
+                      transition: 'background-color 0.2s',
+                      display: 'block',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f3f4f6'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
+                  >
+                    My Bookings
+                    {notificationCount > 0 && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: '0.5rem',
+                          right: '1rem',
+                          minWidth: '1.25rem',
+                          height: '1.25rem',
+                          padding: '0 0.35rem',
+                          borderRadius: '9999px',
+                          backgroundColor: '#ef4444',
+                          color: '#ffffff',
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          lineHeight: 1,
+                        }}
+                      >
+                        {notificationCount > 99 ? '99+' : notificationCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsMenuOpen(false)}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderRadius: '0.375rem',
+                      border: 'none',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      color: '#374151',
+                      textDecoration: 'none',
+                      backgroundColor: 'transparent',
+                      textAlign: 'left',
+                      transition: 'background-color 0.2s',
+                      display: 'block',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#f3f4f6'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
+                  >
+                    My Profile
+                  </Link>
+                  <div
+                    style={{
+                      height: '1px',
+                      backgroundColor: '#e5e7eb',
+                      margin: '0.5rem 0',
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false)
+                      signOut()
+                    }}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderRadius: '0.375rem',
+                      border: 'none',
+                      backgroundColor: 'transparent',
+                      color: '#ef4444',
+                      cursor: 'pointer',
+                      fontSize: '0.875rem',
+                      fontWeight: 500,
+                      textAlign: 'left',
+                      transition: 'background-color 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#fee2e2'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Users Modal */}
