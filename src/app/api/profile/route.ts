@@ -63,6 +63,7 @@ export async function PUT(request: Request) {
       phoneNumber,
       hotelAddress,
       email,
+      idDocumentImageUrl,
       currentPassword,
       newPassword,
     } = body
@@ -72,6 +73,7 @@ export async function PUT(request: Request) {
       phoneNumber: phoneNumber ?? undefined,
       hotelAddress: hotelAddress ?? undefined,
       email: email ?? undefined,
+      idDocumentImageUrl: idDocumentImageUrl ?? undefined,
     }
 
     // Handle password change if both current and new passwords are provided

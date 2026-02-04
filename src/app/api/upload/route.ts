@@ -1,7 +1,4 @@
 import { NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
 
 export async function POST(request: Request) {
   try {
@@ -30,28 +27,15 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'passports')
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now()
-    const randomString = Math.random().toString(36).substring(2, 15)
-    const fileExtension = file.name.split('.').pop() || 'jpg'
-    const fileName = `${timestamp}-${randomString}.${fileExtension}`
-    const filePath = join(uploadsDir, fileName)
-
-    // Convert file to buffer and save
+    // Convert file to base64 data URL for storage in database
+    // This works on Vercel (serverless) where filesystem is ephemeral
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filePath, buffer)
+    const base64 = buffer.toString('base64')
+    const dataUrl = `data:${file.type};base64,${base64}`
 
-    // Return the public URL
-    const publicUrl = `/uploads/passports/${fileName}`
-
-    return NextResponse.json({ url: publicUrl, fileName })
+    // Return the data URL (can be stored directly in database)
+    return NextResponse.json({ url: dataUrl, fileName: file.name })
   } catch (error) {
     console.error('Error uploading file:', error)
     return NextResponse.json(

@@ -36,6 +36,9 @@ export default function ProfilePage() {
     confirmNewPassword: '',
   })
 
+  const [passportPreview, setPassportPreview] = useState<string | null>(null)
+  const [uploadingPassport, setUploadingPassport] = useState(false)
+
   useEffect(() => {
     const loadProfile = async () => {
       setLoading(true)
@@ -55,6 +58,10 @@ export default function ProfilePage() {
           phoneNumber: u.phoneNumber || '',
           hotelAddress: u.hotelAddress || '',
         })
+        // Set preview if passport photo exists
+        if (u.idDocumentImageUrl) {
+          setPassportPreview(u.idDocumentImageUrl)
+        }
       } catch (err) {
         console.error('Profile fetch error:', err)
         setError('An error occurred while loading your profile.')
@@ -94,6 +101,83 @@ export default function ProfilePage() {
       setError('An error occurred while saving your profile.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handlePassportUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      setError('Invalid file type. Please upload a JPEG, PNG, or WebP image.')
+      return
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    if (file.size > maxSize) {
+      setError('File size too large. Maximum size is 5MB.')
+      return
+    }
+
+    try {
+      setUploadingPassport(true)
+      setError('')
+
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPassportPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+
+      // Upload file
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to upload passport photo')
+        setPassportPreview(null)
+        return
+      }
+
+      // Update profile with the uploaded file URL
+      const updateResponse = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          idDocumentImageUrl: data.url,
+        }),
+      })
+
+      const updateData = await updateResponse.json()
+
+      if (!updateResponse.ok) {
+        setError(updateData.error || 'Failed to save passport photo')
+        setPassportPreview(null)
+        return
+      }
+
+      // Update user state
+      setUser(updateData.user as ProfileUser)
+      setError(null)
+    } catch (err) {
+      console.error('Error uploading passport:', err)
+      setError('An error occurred while uploading the passport photo')
+      setPassportPreview(null)
+    } finally {
+      setUploadingPassport(false)
     }
   }
 
@@ -424,10 +508,10 @@ export default function ProfilePage() {
                 >
                   Passport / Driver&apos;s Licence Photo
                 </label>
-                {user.idDocumentImageUrl ? (
+                {(user.idDocumentImageUrl || passportPreview) ? (
                   <div>
                     <img
-                      src={user.idDocumentImageUrl}
+                      src={passportPreview || user.idDocumentImageUrl || ''}
                       alt="Passport/ID Document"
                       style={{
                         maxWidth: '100%',
@@ -438,23 +522,79 @@ export default function ProfilePage() {
                         marginBottom: '0.5rem',
                       }}
                     />
-                    <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                    <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
                       This photo is visible to stores when you make a booking.
                     </p>
+                    <label
+                      htmlFor="passport-upload"
+                      style={{
+                        display: 'inline-block',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '0.375rem',
+                        border: '1px solid #d1d5db',
+                        backgroundColor: '#ffffff',
+                        color: '#374151',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        cursor: uploadingPassport ? 'not-allowed' : 'pointer',
+                        opacity: uploadingPassport ? 0.6 : 1,
+                      }}
+                    >
+                      {uploadingPassport ? 'Uploading...' : 'Change Photo'}
+                    </label>
+                    <input
+                      id="passport-upload"
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handlePassportUpload}
+                      disabled={uploadingPassport}
+                      style={{ display: 'none' }}
+                    />
                   </div>
                 ) : (
-                  <div
-                    style={{
-                      padding: '2rem',
-                      borderRadius: '0.5rem',
-                      border: '1px dashed #d1d5db',
-                      backgroundColor: '#f9fafb',
-                      textAlign: 'center',
-                      color: '#9ca3af',
-                      fontSize: '0.9rem',
-                    }}
-                  >
-                    No passport photo uploaded
+                  <div>
+                    <div
+                      style={{
+                        padding: '2rem',
+                        borderRadius: '0.5rem',
+                        border: '1px dashed #d1d5db',
+                        backgroundColor: '#f9fafb',
+                        textAlign: 'center',
+                        color: '#9ca3af',
+                        fontSize: '0.9rem',
+                        marginBottom: '0.75rem',
+                      }}
+                    >
+                      No passport photo uploaded
+                    </div>
+                    <label
+                      htmlFor="passport-upload-new"
+                      style={{
+                        display: 'inline-block',
+                        padding: '0.6rem 1.25rem',
+                        borderRadius: '0.375rem',
+                        border: 'none',
+                        backgroundColor: uploadingPassport ? '#9ca3af' : '#2563eb',
+                        color: '#ffffff',
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                        cursor: uploadingPassport ? 'not-allowed' : 'pointer',
+                        opacity: uploadingPassport ? 0.6 : 1,
+                      }}
+                    >
+                      {uploadingPassport ? 'Uploading...' : 'Upload Passport Photo'}
+                    </label>
+                    <input
+                      id="passport-upload-new"
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handlePassportUpload}
+                      disabled={uploadingPassport}
+                      style={{ display: 'none' }}
+                    />
+                    <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                      Accepted formats: JPEG, PNG, WebP (max 5MB)
+                    </p>
                   </div>
                 )}
               </div>
