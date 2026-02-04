@@ -95,13 +95,40 @@ export async function POST(request: Request) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     const errorName = error instanceof Error ? error.name : 'Error'
     
+    // Enhanced error logging for debugging
     console.error('Error details:', {
       message: errorMessage,
       name: errorName,
+      stack: error instanceof Error ? error.stack : undefined,
+      // Log Prisma-specific error details
+      ...(error && typeof error === 'object' && 'meta' in error ? { meta: (error as any).meta } : {}),
     })
     
     // Provide more specific error messages
     if (error instanceof Error) {
+      // Check for table/relation not found errors (migration issue)
+      if (error.message.includes('does not exist') || 
+          error.message.includes('relation') && error.message.includes('does not exist') ||
+          error.message.includes('Table') && error.message.includes('doesn\'t exist')) {
+        console.error('⚠️ DATABASE MIGRATION ISSUE: Tables may not exist. Run: npx prisma migrate deploy')
+        return NextResponse.json(
+          { error: 'Database tables not found. Please run database migrations.' },
+          { status: 500 }
+        )
+      }
+      
+      // Check for connection errors
+      if (error.message.includes('Can\'t reach database server') ||
+          error.message.includes('Connection') ||
+          error.message.includes('ECONNREFUSED') ||
+          error.message.includes('timeout')) {
+        console.error('⚠️ DATABASE CONNECTION ISSUE: Check DATABASE_URL environment variable')
+        return NextResponse.json(
+          { error: 'Database connection failed. Please check server configuration.' },
+          { status: 500 }
+        )
+      }
+      
       if (error.message.includes('Unique constraint') || error.message.includes('unique')) {
         return NextResponse.json(
           { error: 'User with this email already exists' },
