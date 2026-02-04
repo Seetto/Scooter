@@ -47,6 +47,12 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
   })
   const [unavailableDates, setUnavailableDates] = useState<string[]>([])
   const [loadingUnavailableDates, setLoadingUnavailableDates] = useState(false)
+  const [rentalPeriod, setRentalPeriod] = useState({
+    startDate: '',
+    endDate: '',
+  })
+  const [scooterAvailability, setScooterAvailability] = useState<Record<string, boolean>>({})
+  const [checkingAvailability, setCheckingAvailability] = useState(false)
 
   useEffect(() => {
     const fetchScooters = async () => {
@@ -74,7 +80,60 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     fetchScooters()
   }, [storeId])
 
-  const openBookingModal = async (scooter: Scooter) => {
+  // Check availability for all scooters when rental period changes
+  useEffect(() => {
+    const checkScooterAvailability = async () => {
+      if (!rentalPeriod.startDate || !rentalPeriod.endDate) {
+        // Reset availability if dates are cleared
+        setScooterAvailability({})
+        return
+      }
+
+      setCheckingAvailability(true)
+      const availability: Record<string, boolean> = {}
+
+      // Check each scooter's availability
+      for (const scooter of scooters) {
+        try {
+          const response = await fetch(`/api/scooters/${scooter.id}/unavailable-dates`)
+          if (response.ok) {
+            const data = await response.json()
+            const unavailableDates = data.unavailableDates || []
+
+            // Check if any date in the rental period is unavailable
+            const start = new Date(rentalPeriod.startDate)
+            const end = new Date(rentalPeriod.endDate)
+            let isAvailable = true
+
+            const currentDate = new Date(start)
+            while (currentDate <= end && isAvailable) {
+              const dateStr = currentDate.toISOString().split('T')[0]
+              if (unavailableDates.includes(dateStr)) {
+                isAvailable = false
+              }
+              currentDate.setDate(currentDate.getDate() + 1)
+            }
+
+            availability[scooter.id] = isAvailable
+          } else {
+            // If we can't check, assume available
+            availability[scooter.id] = true
+          }
+        } catch (err) {
+          console.error(`Error checking availability for scooter ${scooter.id}:`, err)
+          // On error, assume available
+          availability[scooter.id] = true
+        }
+      }
+
+      setScooterAvailability(availability)
+      setCheckingAvailability(false)
+    }
+
+    checkScooterAvailability()
+  }, [rentalPeriod.startDate, rentalPeriod.endDate, scooters])
+
+  const openBookingModal = async (scooter: Scooter, prefillDates?: { startDate: string; endDate: string }) => {
     if (!isAuthenticated) {
       const callbackUrl = window.location.pathname + window.location.search
       window.location.href = `/auth/login?callbackUrl=${encodeURIComponent(
@@ -88,8 +147,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     setBookingSuccess(null)
     setBookingForm((prev) => ({
       ...prev,
-      startDate: '',
-      endDate: '',
+      startDate: prefillDates?.startDate || '',
+      endDate: prefillDates?.endDate || '',
     }))
     setShowBookingModal(true)
 
@@ -288,6 +347,120 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
           </Link>
         </div>
 
+        {/* Rental Period Selector */}
+        <div
+          style={{
+            marginBottom: '1.5rem',
+            padding: '1.25rem',
+            borderRadius: '0.5rem',
+            backgroundColor: '#f9fafb',
+            border: '1px solid #e5e7eb',
+          }}
+        >
+          <h3
+            style={{
+              fontSize: '1rem',
+              fontWeight: 600,
+              color: '#111827',
+              marginBottom: '0.75rem',
+            }}
+          >
+            Select Rental Period
+          </h3>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '0.75rem',
+            }}
+          >
+            <div>
+              <label
+                htmlFor="rental-start"
+                style={{
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#374151',
+                }}
+              >
+                Start Date
+              </label>
+              <input
+                id="rental-start"
+                type="date"
+                value={rentalPeriod.startDate}
+                min={new Date().toISOString().split('T')[0]}
+                onChange={(e) => {
+                  setRentalPeriod({
+                    ...rentalPeriod,
+                    startDate: e.target.value,
+                    // Reset end date if it's before new start date
+                    endDate: rentalPeriod.endDate && new Date(rentalPeriod.endDate) < new Date(e.target.value)
+                      ? ''
+                      : rentalPeriod.endDate,
+                  })
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  border: '1px solid #d1d5db',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="rental-end"
+                style={{
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#374151',
+                }}
+              >
+                End Date
+              </label>
+              <input
+                id="rental-end"
+                type="date"
+                value={rentalPeriod.endDate}
+                min={rentalPeriod.startDate || new Date().toISOString().split('T')[0]}
+                onChange={(e) => {
+                  setRentalPeriod({
+                    ...rentalPeriod,
+                    endDate: e.target.value,
+                  })
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  border: '1px solid #d1d5db',
+                  fontSize: '0.9rem',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+          </div>
+          {checkingAvailability && (
+            <div
+              style={{
+                marginTop: '0.75rem',
+                fontSize: '0.8rem',
+                color: '#6b7280',
+                fontStyle: 'italic',
+              }}
+            >
+              Checking availability...
+            </div>
+          )}
+        </div>
+
         {error && (
           <div
             style={{
@@ -407,75 +580,134 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                 </tr>
               </thead>
               <tbody>
-                {scooters.map((scooter) => (
-                  <tr
-                    key={scooter.id}
-                    style={{
-                      borderBottom: '1px solid #e5e7eb',
-                    }}
-                  >
-                    <td
+                {scooters.map((scooter) => {
+                  // Determine if scooter is available
+                  const isAvailable = rentalPeriod.startDate && rentalPeriod.endDate
+                    ? scooterAvailability[scooter.id] !== false // true or undefined (not checked yet)
+                    : true // Available if no dates selected
+                  const availabilityChecked = rentalPeriod.startDate && rentalPeriod.endDate
+                    ? scooterAvailability[scooter.id] !== undefined
+                    : true
+
+                  return (
+                    <tr
+                      key={scooter.id}
                       style={{
-                        padding: '0.75rem',
-                        fontSize: '0.9rem',
-                        color: '#111827',
-                        fontWeight: 600,
+                        borderBottom: '1px solid #e5e7eb',
+                        opacity: rentalPeriod.startDate && rentalPeriod.endDate && !isAvailable ? 0.6 : 1,
                       }}
                     >
-                      {scooter.name}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        fontSize: '0.9rem',
-                        color: '#4b5563',
-                      }}
-                    >
-                      {scooter.model || '-'}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        fontSize: '0.9rem',
-                        color: '#4b5563',
-                        fontFamily: 'monospace',
-                      }}
-                    >
-                      {scooter.numberPlate || '-'}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                        fontSize: '0.9rem',
-                        color: '#4b5563',
-                      }}
-                    >
-                      {scooter.notes || '-'}
-                    </td>
-                    <td
-                      style={{
-                        padding: '0.75rem',
-                      }}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => openBookingModal(scooter)}
+                      <td
                         style={{
-                          padding: '0.45rem 1.1rem',
-                          borderRadius: '0.5rem',
-                          border: 'none',
-                          backgroundColor: '#10b981',
-                          color: '#ffffff',
+                          padding: '0.75rem',
+                          fontSize: '0.9rem',
+                          color: '#111827',
                           fontWeight: 600,
-                          fontSize: '0.85rem',
-                          cursor: 'pointer',
                         }}
                       >
-                        Book Now
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        {scooter.name}
+                      </td>
+                      <td
+                        style={{
+                          padding: '0.75rem',
+                          fontSize: '0.9rem',
+                          color: '#4b5563',
+                        }}
+                      >
+                        {scooter.model || '-'}
+                      </td>
+                      <td
+                        style={{
+                          padding: '0.75rem',
+                          fontSize: '0.9rem',
+                          color: '#4b5563',
+                          fontFamily: 'monospace',
+                        }}
+                      >
+                        {scooter.numberPlate || '-'}
+                      </td>
+                      <td
+                        style={{
+                          padding: '0.75rem',
+                          fontSize: '0.9rem',
+                          color: '#4b5563',
+                        }}
+                      >
+                        {scooter.notes || '-'}
+                      </td>
+                      <td
+                        style={{
+                          padding: '0.75rem',
+                        }}
+                      >
+                        {!rentalPeriod.startDate || !rentalPeriod.endDate ? (
+                          <button
+                            type="button"
+                            onClick={() => openBookingModal(scooter)}
+                            style={{
+                              padding: '0.45rem 1.1rem',
+                              borderRadius: '0.5rem',
+                              border: 'none',
+                              backgroundColor: '#10b981',
+                              color: '#ffffff',
+                              fontWeight: 600,
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Book Now
+                          </button>
+                        ) : !availabilityChecked ? (
+                          <span
+                            style={{
+                              fontSize: '0.85rem',
+                              color: '#6b7280',
+                              fontStyle: 'italic',
+                            }}
+                          >
+                            Checking...
+                          </span>
+                        ) : isAvailable ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              openBookingModal(scooter, {
+                                startDate: rentalPeriod.startDate,
+                                endDate: rentalPeriod.endDate,
+                              })
+                            }}
+                            style={{
+                              padding: '0.45rem 1.1rem',
+                              borderRadius: '0.5rem',
+                              border: 'none',
+                              backgroundColor: '#10b981',
+                              color: '#ffffff',
+                              fontWeight: 600,
+                              fontSize: '0.85rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Book Now
+                          </button>
+                        ) : (
+                          <span
+                            style={{
+                              padding: '0.45rem 1.1rem',
+                              borderRadius: '0.5rem',
+                              backgroundColor: '#f3f4f6',
+                              color: '#6b7280',
+                              fontWeight: 600,
+                              fontSize: '0.85rem',
+                              display: 'inline-block',
+                            }}
+                          >
+                            Not Available
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
