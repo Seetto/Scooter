@@ -564,17 +564,6 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       color: '#374151',
                     }}
                   >
-                    Notes
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'left',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: '#374151',
-                    }}
-                  >
                     Action
                   </th>
                 </tr>
@@ -625,15 +614,6 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                         }}
                       >
                         {scooter.numberPlate || '-'}
-                      </td>
-                      <td
-                        style={{
-                          padding: '0.75rem',
-                          fontSize: '0.9rem',
-                          color: '#4b5563',
-                        }}
-                      >
-                        {scooter.notes || '-'}
                       </td>
                       <td
                         style={{
