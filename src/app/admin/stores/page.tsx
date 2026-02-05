@@ -32,6 +32,7 @@ export default function StoresPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [selectedStore, setSelectedStore] = useState<Store | null>(null)
   const [isMobile, setIsMobile] = useState(false)
+  const [showStoreModal, setShowStoreModal] = useState<Store | null>(null)
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -190,6 +191,11 @@ export default function StoresPage() {
       // Clear selected store if it was the deleted one
       if (selectedStore?.id === storeId) {
         setSelectedStore(null)
+      }
+
+      // Close modal if it was showing the deleted store
+      if (showStoreModal?.id === storeId) {
+        setShowStoreModal(null)
       }
 
       // Show success message
@@ -457,40 +463,76 @@ export default function StoresPage() {
                       {pendingStores.map((store) => (
                         <div
                           key={store.id}
-                          onClick={() => setSelectedStore(store)}
                           style={{
                             padding: '1rem',
                             marginBottom: '0.5rem',
                             backgroundColor: selectedStore?.id === store.id ? '#fef3c7' : '#fff7ed',
                             border: `2px solid ${selectedStore?.id === store.id ? '#f59e0b' : '#fed7aa'}`,
                             borderRadius: '0.375rem',
-                            cursor: 'pointer',
                             wordBreak: 'break-word',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            gap: '0.75rem',
                           }}
                         >
-                          <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
-                            {store.name}
-                          </div>
-                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
-                            {store.email}
-                          </div>
-                          {store.phoneNumber && (
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', wordBreak: 'break-word' }}>
-                              {store.phoneNumber}
+                          <div 
+                            onClick={() => setSelectedStore(store)}
+                            style={{
+                              flex: 1,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
+                              {store.name}
                             </div>
-                          )}
-                          <div style={{
-                            marginTop: '0.5rem',
-                            padding: '0.25rem 0.5rem',
-                            backgroundColor: '#fef3c7',
-                            color: '#92400e',
-                            borderRadius: '0.25rem',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            display: 'inline-block',
-                          }}>
-                            Pending
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
+                              {store.email}
+                            </div>
+                            {store.phoneNumber && (
+                              <div style={{ fontSize: '0.875rem', color: '#6b7280', wordBreak: 'break-word' }}>
+                                {store.phoneNumber}
+                              </div>
+                            )}
+                            <div style={{
+                              marginTop: '0.5rem',
+                              padding: '0.25rem 0.5rem',
+                              backgroundColor: '#fef3c7',
+                              color: '#92400e',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              display: 'inline-block',
+                            }}>
+                              Pending
+                            </div>
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setShowStoreModal(store)
+                            }}
+                            style={{
+                              padding: '0.5rem 1rem',
+                              backgroundColor: '#2563eb',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.375rem',
+                              cursor: 'pointer',
+                              fontWeight: 600,
+                              fontSize: '0.875rem',
+                              whiteSpace: 'nowrap',
+                              flexShrink: 0,
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#1d4ed8'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#2563eb'
+                            }}
+                          >
+                            View Info
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -508,40 +550,76 @@ export default function StoresPage() {
                       {acceptedStores.map((store) => (
                         <div
                           key={store.id}
-                          onClick={() => setSelectedStore(store)}
                           style={{
                             padding: '1rem',
                             marginBottom: '0.5rem',
                             backgroundColor: selectedStore?.id === store.id ? '#d1fae5' : '#f0fdf4',
                             border: `2px solid ${selectedStore?.id === store.id ? '#10b981' : '#86efac'}`,
                             borderRadius: '0.375rem',
-                            cursor: 'pointer',
                             wordBreak: 'break-word',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            gap: '0.75rem',
                           }}
                         >
-                          <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
-                            {store.name}
-                          </div>
-                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
-                            {store.email}
-                          </div>
-                          {store.phoneNumber && (
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', wordBreak: 'break-word' }}>
-                              {store.phoneNumber}
+                          <div 
+                            onClick={() => setSelectedStore(store)}
+                            style={{
+                              flex: 1,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
+                              {store.name}
                             </div>
-                          )}
-                          <div style={{
-                            marginTop: '0.5rem',
-                            padding: '0.25rem 0.5rem',
-                            backgroundColor: '#d1fae5',
-                            color: '#065f46',
-                            borderRadius: '0.25rem',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            display: 'inline-block',
-                          }}>
-                            Accepted
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
+                              {store.email}
+                            </div>
+                            {store.phoneNumber && (
+                              <div style={{ fontSize: '0.875rem', color: '#6b7280', wordBreak: 'break-word' }}>
+                                {store.phoneNumber}
+                              </div>
+                            )}
+                            <div style={{
+                              marginTop: '0.5rem',
+                              padding: '0.25rem 0.5rem',
+                              backgroundColor: '#d1fae5',
+                              color: '#065f46',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.75rem',
+                              fontWeight: 600,
+                              display: 'inline-block',
+                            }}>
+                              Accepted
+                            </div>
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setShowStoreModal(store)
+                            }}
+                            style={{
+                              padding: '0.5rem 1rem',
+                              backgroundColor: '#2563eb',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.375rem',
+                              cursor: 'pointer',
+                              fontWeight: 600,
+                              fontSize: '0.875rem',
+                              whiteSpace: 'nowrap',
+                              flexShrink: 0,
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#1d4ed8'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#2563eb'
+                            }}
+                          >
+                            View Info
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -742,6 +820,252 @@ export default function StoresPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* Store Info Modal */}
+        {showStoreModal && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '1rem',
+            }}
+            onClick={() => setShowStoreModal(null)}
+          >
+            <div
+              style={{
+                backgroundColor: 'white',
+                borderRadius: '0.75rem',
+                padding: isMobile ? '1.5rem' : '2rem',
+                maxWidth: '600px',
+                width: '100%',
+                maxHeight: '90vh',
+                overflowY: 'auto',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: '1.5rem',
+              }}>
+                <div>
+                  <h2 style={{
+                    fontSize: '1.5rem',
+                    fontWeight: 700,
+                    color: '#1f2937',
+                    marginBottom: '0.5rem',
+                  }}>
+                    {showStoreModal.name}
+                  </h2>
+                  <div style={{
+                    padding: '0.25rem 0.75rem',
+                    backgroundColor: showStoreModal.accepted ? '#d1fae5' : '#fef3c7',
+                    color: showStoreModal.accepted ? '#065f46' : '#92400e',
+                    borderRadius: '0.25rem',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    display: 'inline-block',
+                  }}>
+                    {showStoreModal.accepted ? '✓ Accepted' : '⏳ Pending Approval'}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowStoreModal(null)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '1.5rem',
+                    cursor: 'pointer',
+                    color: '#6b7280',
+                    padding: '0.25rem',
+                    lineHeight: 1,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#111827'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = '#6b7280'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div style={{ marginBottom: '1.5rem', wordBreak: 'break-word' }}>
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Email:</strong>
+                  <span style={{ color: '#6b7280', wordBreak: 'break-all' }}>{showStoreModal.email}</span>
+                </div>
+                {showStoreModal.phoneNumber && (
+                  <div style={{ marginBottom: '0.75rem' }}>
+                    <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Phone:</strong>
+                    <span style={{ color: '#6b7280' }}>{showStoreModal.phoneNumber}</span>
+                  </div>
+                )}
+                {showStoreModal.address && (
+                  <div style={{ marginBottom: '0.75rem' }}>
+                    <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Address:</strong>
+                    <span style={{ color: '#6b7280', wordBreak: 'break-word' }}>{showStoreModal.address}</span>
+                  </div>
+                )}
+                {showStoreModal.latitude && showStoreModal.longitude && (
+                  <div style={{ marginBottom: '0.75rem' }}>
+                    <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Location:</strong>
+                    <span style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: '0.875rem', wordBreak: 'break-all' }}>
+                      {showStoreModal.latitude.toFixed(6)}, {showStoreModal.longitude.toFixed(6)}
+                    </span>
+                  </div>
+                )}
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Created:</strong>
+                  <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                    {new Date(showStoreModal.createdAt).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Store Location Map */}
+              {showStoreModal.latitude && showStoreModal.longitude && (
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <h3 style={{
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    marginBottom: '0.5rem',
+                    color: '#1f2937',
+                  }}>
+                    Store Location
+                  </h3>
+                  <div style={{ width: '100%', overflow: 'hidden', borderRadius: '0.375rem', height: '300px' }}>
+                    <StoreMapView
+                      latitude={showStoreModal.latitude}
+                      longitude={showStoreModal.longitude}
+                      storeName={showStoreModal.name}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Store Front Photo */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  marginBottom: '0.5rem',
+                  color: '#1f2937',
+                }}>
+                  Store Front Photo
+                </h3>
+                {showStoreModal.storeFrontImageUrl ? (
+                  <img
+                    src={showStoreModal.storeFrontImageUrl}
+                    alt={`${showStoreModal.name} store front`}
+                    style={{
+                      width: '100%',
+                      maxWidth: '500px',
+                      height: 'auto',
+                      borderRadius: '0.375rem',
+                      border: '1px solid #e5e7eb',
+                    }}
+                  />
+                ) : (
+                  <div style={{
+                    width: '100%',
+                    maxWidth: '500px',
+                    height: '200px',
+                    backgroundColor: '#f3f4f6',
+                    border: '2px dashed #d1d5db',
+                    borderRadius: '0.375rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#9ca3af',
+                    fontSize: '0.875rem',
+                  }}>
+                    No store front photo uploaded yet
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '0.75rem',
+                flexWrap: 'wrap',
+                paddingTop: '1rem',
+                borderTop: '1px solid #e5e7eb',
+              }}>
+                {!showStoreModal.accepted && (
+                  <button
+                    onClick={async () => {
+                      await handleAcceptStore(showStoreModal.id)
+                      setShowStoreModal(null)
+                    }}
+                    disabled={loading}
+                    style={{
+                      flex: isMobile ? '1' : 'none',
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: loading ? '#9ca3af' : '#10b981',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '0.375rem',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      fontWeight: 600,
+                      fontSize: '0.95rem',
+                    }}
+                  >
+                    {loading ? 'Accepting...' : 'Accept Store'}
+                  </button>
+                )}
+                <button
+                  onClick={async () => {
+                    await handleDeleteStore(showStoreModal.id)
+                    setShowStoreModal(null)
+                  }}
+                  disabled={loading}
+                  style={{
+                    flex: isMobile ? '1' : 'none',
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: loading ? '#9ca3af' : '#ef4444',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                  }}
+                >
+                  {loading ? 'Deleting...' : 'Delete Store'}
+                </button>
+                <button
+                  onClick={() => setShowStoreModal(null)}
+                  style={{
+                    flex: isMobile ? '1' : 'none',
+                    padding: '0.75rem 1.5rem',
+                    backgroundColor: '#6b7280',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
