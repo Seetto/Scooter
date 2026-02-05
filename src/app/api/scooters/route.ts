@@ -100,8 +100,8 @@ export async function POST(request: Request) {
     const scooter = await prisma.scooter.create({
       data: {
         storeId: store.id,
-        name: name.trim(),
-        model: model?.trim() || null,
+        name: name || model.trim(), // Use name if provided, otherwise use model
+        model: model.trim(),
         numberPlate: numberPlate.trim(),
         vinOrChassisNumber: vinOrChassisNumber?.trim() || null,
         availableUnits: availableUnits,
