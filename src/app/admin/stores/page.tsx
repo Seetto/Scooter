@@ -147,6 +147,11 @@ export default function StoresPage() {
       if (selectedStore?.id === storeId) {
         setSelectedStore({ ...selectedStore, accepted: true })
       }
+
+      // Update modal store if it's the one we just accepted
+      if (showStoreModal?.id === storeId) {
+        setShowStoreModal({ ...showStoreModal, accepted: true })
+      }
     } catch (err) {
       setError('An error occurred while accepting the store')
       console.error('Accept error:', err)
