@@ -11,6 +11,7 @@ interface Scooter {
   numberPlate: string | null
   availableUnits: number
   pricePerDay: number | null
+  status: 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'RESERVED'
   notes: string | null
   createdAt: string
 }

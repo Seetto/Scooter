@@ -136,7 +136,6 @@ export default function ScootersPage() {
       model: scooter.model || '',
       numberPlate: scooter.numberPlate || '',
       vinOrChassisNumber: scooter.vinOrChassisNumber || '',
-      availableUnits: scooter.availableUnits,
       odometer: scooter.odometer ? String(scooter.odometer) : '',
       condition: scooter.condition || '',
       pricePerDay: scooter.pricePerDay ? String(scooter.pricePerDay) : '',
