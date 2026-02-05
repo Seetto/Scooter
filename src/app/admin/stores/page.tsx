@@ -39,6 +39,15 @@ export default function StoresPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated])
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   const getAuthHeader = () => {
     if (!adminUsername || !adminPassword) {
       return ''
@@ -144,20 +153,68 @@ export default function StoresPage() {
     }
   }
 
+  const handleDeleteStore = async (storeId: string) => {
+    const store = stores.find((s) => s.id === storeId)
+    const storeName = store?.name || 'this store'
+    
+    if (!confirm(`⚠️ WARNING: Are you sure you want to delete "${storeName}"?\n\nThis will permanently delete:\n- The store account\n- All scooters belonging to this store\n- All bookings associated with this store\n\nThis action cannot be undone!`)) {
+      return
+    }
+
+    // Double confirmation for safety
+    if (!confirm(`Final confirmation: Delete "${storeName}" and all related data?`)) {
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await fetch(`/api/stores/${storeId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: getAuthHeader(),
+        },
+        credentials: 'include',
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to delete store')
+        return
+      }
+
+      // Remove the store from the list
+      setStores((prev) => prev.filter((store) => store.id !== storeId))
+
+      // Clear selected store if it was the deleted one
+      if (selectedStore?.id === storeId) {
+        setSelectedStore(null)
+      }
+
+      // Show success message
+      alert(`Store "${storeName}" has been deleted successfully.\n\nDeleted:\n- Store account\n- ${data.deleted?.scooters || 0} scooter(s)\n- ${data.deleted?.bookings || 0} booking(s)`)
+    } catch (err) {
+      setError('An error occurred while deleting the store')
+      console.error('Delete error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const pendingStores = stores.filter((s) => !s.accepted)
   const acceptedStores = stores.filter((s) => s.accepted)
 
   return (
     <div style={{
       minHeight: '100vh',
-      padding: '2rem',
+      padding: '1rem',
       backgroundColor: '#f9fafb',
     }}>
       <div style={{
         maxWidth: '1400px',
         margin: '0 auto',
         backgroundColor: 'white',
-        padding: '2rem',
+        padding: '1rem',
         borderRadius: '0.5rem',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
       }}>
@@ -326,8 +383,8 @@ export default function StoresPage() {
           <>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '2rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '1rem',
               marginBottom: '2rem',
             }}>
               <div style={{
@@ -365,16 +422,18 @@ export default function StoresPage() {
             ) : (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: '400px 1fr',
+                gridTemplateColumns: isMobile ? '1fr' : '400px 1fr',
                 gap: '2rem',
               }}>
                 {/* Store List */}
                 <div style={{
-                  maxHeight: '70vh',
+                  maxHeight: isMobile ? 'none' : '70vh',
                   overflowY: 'auto',
+                  overflowX: 'auto',
                   border: '1px solid #e5e7eb',
                   borderRadius: '0.5rem',
                   padding: '1rem',
+                  width: '100%',
                 }}>
                   <h2 style={{
                     fontSize: '1.25rem',
@@ -405,16 +464,17 @@ export default function StoresPage() {
                             border: `2px solid ${selectedStore?.id === store.id ? '#f59e0b' : '#fed7aa'}`,
                             borderRadius: '0.375rem',
                             cursor: 'pointer',
+                            wordBreak: 'break-word',
                           }}
                         >
                           <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
                             {store.name}
                           </div>
-                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
                             {store.email}
                           </div>
                           {store.phoneNumber && (
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', wordBreak: 'break-word' }}>
                               {store.phoneNumber}
                             </div>
                           )}
@@ -455,16 +515,17 @@ export default function StoresPage() {
                             border: `2px solid ${selectedStore?.id === store.id ? '#10b981' : '#86efac'}`,
                             borderRadius: '0.375rem',
                             cursor: 'pointer',
+                            wordBreak: 'break-word',
                           }}
                         >
                           <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
                             {store.name}
                           </div>
-                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                          <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
                             {store.email}
                           </div>
                           {store.phoneNumber && (
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280' }}>
+                            <div style={{ fontSize: '0.875rem', color: '#6b7280', wordBreak: 'break-word' }}>
                               {store.phoneNumber}
                             </div>
                           )}
@@ -487,18 +548,20 @@ export default function StoresPage() {
                 </div>
 
                 {/* Store Details */}
-                <div>
+                <div style={{ width: '100%', minWidth: 0 }}>
                   {selectedStore ? (
                     <div style={{
                       border: '1px solid #e5e7eb',
                       borderRadius: '0.5rem',
-                      padding: '1.5rem',
+                      padding: isMobile ? '1rem' : '1.5rem',
                     }}>
                       <div style={{
                         display: 'flex',
+                        flexDirection: isMobile ? 'column' : 'row',
                         justifyContent: 'space-between',
-                        alignItems: 'flex-start',
+                        alignItems: isMobile ? 'flex-start' : 'flex-start',
                         marginBottom: '1.5rem',
+                        gap: '1rem',
                       }}>
                         <div>
                           <h2 style={{
@@ -521,54 +584,81 @@ export default function StoresPage() {
                             {selectedStore.accepted ? '✓ Accepted' : '⏳ Pending Approval'}
                           </div>
                         </div>
-                        {!selectedStore.accepted && (
+                        <div style={{ 
+                          display: 'flex', 
+                          gap: '0.5rem', 
+                          flexWrap: 'wrap',
+                          width: isMobile ? '100%' : 'auto',
+                        }}>
+                          {!selectedStore.accepted && (
+                            <button
+                              onClick={() => handleAcceptStore(selectedStore.id)}
+                              disabled={loading}
+                              style={{
+                                padding: '0.5rem 1.5rem',
+                                backgroundColor: loading ? '#9ca3af' : '#10b981',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.375rem',
+                                cursor: loading ? 'not-allowed' : 'pointer',
+                                fontWeight: 600,
+                                fontSize: '0.95rem',
+                                flex: isMobile ? '1' : 'none',
+                                minWidth: isMobile ? '0' : 'auto',
+                              }}
+                            >
+                              {loading ? 'Accepting...' : 'Accept Store'}
+                            </button>
+                          )}
                           <button
-                            onClick={() => handleAcceptStore(selectedStore.id)}
+                            onClick={() => handleDeleteStore(selectedStore.id)}
                             disabled={loading}
                             style={{
                               padding: '0.5rem 1.5rem',
-                              backgroundColor: loading ? '#9ca3af' : '#10b981',
+                              backgroundColor: loading ? '#9ca3af' : '#ef4444',
                               color: 'white',
                               border: 'none',
                               borderRadius: '0.375rem',
                               cursor: loading ? 'not-allowed' : 'pointer',
                               fontWeight: 600,
                               fontSize: '0.95rem',
+                              flex: isMobile ? '1' : 'none',
+                              minWidth: isMobile ? '0' : 'auto',
                             }}
                           >
-                            {loading ? 'Accepting...' : 'Accept Store'}
+                            {loading ? 'Deleting...' : 'Delete Store'}
                           </button>
-                        )}
+                        </div>
                       </div>
 
-                      <div style={{ marginBottom: '1.5rem' }}>
+                      <div style={{ marginBottom: '1.5rem', wordBreak: 'break-word' }}>
                         <div style={{ marginBottom: '0.75rem' }}>
-                          <strong style={{ color: '#374151' }}>Email:</strong>{' '}
-                          <span style={{ color: '#6b7280' }}>{selectedStore.email}</span>
+                          <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Email:</strong>
+                          <span style={{ color: '#6b7280', wordBreak: 'break-all' }}>{selectedStore.email}</span>
                         </div>
                         {selectedStore.phoneNumber && (
                           <div style={{ marginBottom: '0.75rem' }}>
-                            <strong style={{ color: '#374151' }}>Phone:</strong>{' '}
+                            <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Phone:</strong>
                             <span style={{ color: '#6b7280' }}>{selectedStore.phoneNumber}</span>
                           </div>
                         )}
                         {selectedStore.address && (
                           <div style={{ marginBottom: '0.75rem' }}>
-                            <strong style={{ color: '#374151' }}>Address:</strong>{' '}
-                            <span style={{ color: '#6b7280' }}>{selectedStore.address}</span>
+                            <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Address:</strong>
+                            <span style={{ color: '#6b7280', wordBreak: 'break-word' }}>{selectedStore.address}</span>
                           </div>
                         )}
                         {selectedStore.latitude && selectedStore.longitude && (
                           <div style={{ marginBottom: '0.75rem' }}>
-                            <strong style={{ color: '#374151' }}>Location:</strong>{' '}
-                            <span style={{ color: '#6b7280', fontFamily: 'monospace' }}>
+                            <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Location:</strong>
+                            <span style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: '0.875rem', wordBreak: 'break-all' }}>
                               {selectedStore.latitude.toFixed(6)}, {selectedStore.longitude.toFixed(6)}
                             </span>
                           </div>
                         )}
                         <div style={{ marginBottom: '0.75rem' }}>
-                          <strong style={{ color: '#374151' }}>Created:</strong>{' '}
-                          <span style={{ color: '#6b7280' }}>
+                          <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Created:</strong>
+                          <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
                             {new Date(selectedStore.createdAt).toLocaleString()}
                           </span>
                         </div>
@@ -585,11 +675,13 @@ export default function StoresPage() {
                           }}>
                             Store Location
                           </h3>
-                          <StoreMapView
-                            latitude={selectedStore.latitude}
-                            longitude={selectedStore.longitude}
-                            storeName={selectedStore.name}
-                          />
+                          <div style={{ width: '100%', overflow: 'hidden', borderRadius: '0.375rem' }}>
+                            <StoreMapView
+                              latitude={selectedStore.latitude}
+                              longitude={selectedStore.longitude}
+                              storeName={selectedStore.name}
+                            />
+                          </div>
                         </div>
                       )}
 
