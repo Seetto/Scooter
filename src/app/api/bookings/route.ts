@@ -188,51 +188,86 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Please select a valid date range' }, { status: 400 })
     }
 
-    // Check for existing bookings that conflict with the requested dates
-    const conflictingBookings = await prisma.booking.findFirst({
-      where: {
-        scooterId,
-        status: {
-          in: ['PENDING', 'CONFIRMED'],
-        },
-        OR: [
-          // New booking starts during an existing booking
-          {
-            AND: [
-              { startDate: { lte: start } },
-              { endDate: { gte: start } },
-            ],
-          },
-          // New booking ends during an existing booking
-          {
-            AND: [
-              { startDate: { lte: end } },
-              { endDate: { gte: end } },
-            ],
-          },
-          // New booking completely contains an existing booking
-          {
-            AND: [
-              { startDate: { gte: start } },
-              { endDate: { lte: end } },
-            ],
-          },
-          // New booking is completely within an existing booking
-          {
-            AND: [
-              { startDate: { lte: start } },
-              { endDate: { gte: end } },
-            ],
-          },
-        ],
+    // Fetch the selected scooter to get its model
+    const selectedScooter = await prisma.scooter.findUnique({
+      where: { id: scooterId },
+      select: { 
+        id: true,
+        name: true,
+        model: true,
+        storeId: true,
       },
     })
 
-    if (conflictingBookings) {
+    if (!selectedScooter) {
+      return NextResponse.json(
+        { error: 'Scooter not found' },
+        { status: 404 },
+      )
+    }
+
+    // Verify the scooter belongs to the correct store
+    if (selectedScooter.storeId !== storeId) {
+      return NextResponse.json(
+        { error: 'Scooter does not belong to the specified store' },
+        { status: 400 },
+      )
+    }
+
+    // Find an available scooter with the same model (status = AVAILABLE)
+    // First, get all scooters with the same model and status AVAILABLE
+    const modelScooters = await prisma.scooter.findMany({
+      where: {
+        storeId,
+        model: selectedScooter.model || selectedScooter.name,
+        status: 'AVAILABLE' as any, // Type assertion needed until Prisma client is regenerated
+      },
+      include: {
+        bookings: {
+          where: {
+            status: {
+              in: ['PENDING', 'CONFIRMED'],
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'asc' }, // Get the oldest available scooter first
+    })
+
+    // Filter out scooters that have conflicting bookings
+    const availableScooters = modelScooters.filter((scooter: any) => {
+      return !scooter.bookings.some((booking: any) => {
+        const bookingStart = new Date(booking.startDate)
+        const bookingEnd = new Date(booking.endDate)
+        
+        // Check if dates overlap
+        return (
+          (start >= bookingStart && start <= bookingEnd) ||
+          (end >= bookingStart && end <= bookingEnd) ||
+          (start <= bookingStart && end >= bookingEnd) ||
+          (start >= bookingStart && end <= bookingEnd)
+        )
+      })
+    })
+
+    if (availableScooters.length === 0) {
       return NextResponse.json(
         {
           error: 'Scooter is not available for the selected dates',
-          details: `The scooter is already booked from ${new Date(conflictingBookings.startDate).toLocaleDateString()} to ${new Date(conflictingBookings.endDate).toLocaleDateString()}`,
+          details: 'No available scooters of this model for the selected date range',
+        },
+        { status: 409 },
+      )
+    }
+
+    // Get the first available scooter
+    const availableScooter = availableScooters[0]
+
+    if (!availableScooter) {
+      return NextResponse.json(
+        {
+          error: 'Scooter is not available for the selected dates',
+          details: 'No available scooters of this model for the selected date range',
         },
         { status: 409 },
       )
@@ -249,31 +284,32 @@ export async function POST(request: Request) {
       select: { email: true, name: true },
     })
 
-    const scooter = await prisma.scooter.findUnique({
-      where: { id: scooterId },
-      select: { name: true },
-    })
-
-    if (!user || !store || !scooter) {
+    if (!user || !store) {
       return NextResponse.json(
-        { error: 'User, store, or scooter not found' },
+        { error: 'User or store not found' },
         { status: 404 },
       )
     }
 
-    // Create booking
+    // Create booking with the available scooter
     const booking = await prisma.booking.create({
       data: {
         userId,
         storeId,
-        scooterId,
+        scooterId: availableScooter.id, // Use the available scooter, not the selected one
         startDate: start,
         endDate: end,
       },
       include: {
         store: { select: { id: true, name: true } },
-        scooter: { select: { id: true, name: true } },
+        scooter: { select: { id: true, name: true, model: true } },
       },
+    })
+
+    // Update the scooter status to RENTED
+    await prisma.scooter.update({
+      where: { id: availableScooter.id },
+      data: { status: 'RENTED' as any }, // Type assertion needed until Prisma client is regenerated
     })
 
     // Optionally update user profile details with latest name/phone
@@ -294,7 +330,7 @@ export async function POST(request: Request) {
         user.email,
         user.name,
         store.name,
-        scooter.name,
+        availableScooter.name || availableScooter.model || 'Scooter',
         start,
         end,
       )
@@ -305,7 +341,7 @@ export async function POST(request: Request) {
         store.name,
         user.name,
         user.email,
-        scooter.name,
+        availableScooter.name || availableScooter.model || 'Scooter',
         start,
         end,
       )
