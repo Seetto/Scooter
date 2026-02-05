@@ -9,6 +9,8 @@ interface Scooter {
   name: string
   model: string | null
   numberPlate: string | null
+  availableUnits: number
+  pricePerDay: number | null
   notes: string | null
   createdAt: string
 }
@@ -36,6 +38,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
   const [error, setError] = useState<string | null>(null)
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [selectedScooter, setSelectedScooter] = useState<Scooter | null>(null)
+  const [selectedQuantity, setSelectedQuantity] = useState<Record<string, number>>({})
   const [bookingLoading, setBookingLoading] = useState(false)
   const [bookingError, setBookingError] = useState<string | null>(null)
   const [bookingSuccess, setBookingSuccess] = useState<string | null>(null)
@@ -44,6 +47,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     phoneNumber: '',
     startDate: '',
     endDate: '',
+    quantity: 1,
   })
   const [unavailableDates, setUnavailableDates] = useState<string[]>([])
   const [loadingUnavailableDates, setLoadingUnavailableDates] = useState(false)
@@ -133,7 +137,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     checkScooterAvailability()
   }, [rentalPeriod.startDate, rentalPeriod.endDate, scooters])
 
-  const openBookingModal = async (scooter: Scooter, prefillDates?: { startDate: string; endDate: string }) => {
+  const openBookingModal = async (scooter: Scooter, prefillDates?: { startDate: string; endDate: string }, quantity?: number) => {
     if (!isAuthenticated) {
       const callbackUrl = window.location.pathname + window.location.search
       window.location.href = `/auth/login?callbackUrl=${encodeURIComponent(
@@ -145,10 +149,12 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     setSelectedScooter(scooter)
     setBookingError(null)
     setBookingSuccess(null)
+    const qty = quantity || selectedQuantity[scooter.id] || 1
     setBookingForm((prev) => ({
       ...prev,
       startDate: prefillDates?.startDate || '',
       endDate: prefillDates?.endDate || '',
+      quantity: qty,
     }))
     setShowBookingModal(true)
 
@@ -229,6 +235,11 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
       return
     }
 
+    if (!bookingForm.quantity || bookingForm.quantity < 1 || bookingForm.quantity > selectedScooter.availableUnits) {
+      setBookingError(`Please select a quantity between 1 and ${selectedScooter.availableUnits}.`)
+      return
+    }
+
     // Check for date conflicts
     const conflictError = checkDateConflict(bookingForm.startDate, bookingForm.endDate)
     if (conflictError) {
@@ -239,37 +250,46 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     setBookingLoading(true)
 
     try {
-      const res = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          storeId,
-          scooterId: selectedScooter.id,
-          startDate: bookingForm.startDate,
-          endDate: bookingForm.endDate,
-          name: bookingForm.name,
-          phoneNumber: bookingForm.phoneNumber,
-        }),
-      })
+      // Create multiple bookings for the selected quantity
+      const bookingPromises = []
+      for (let i = 0; i < bookingForm.quantity; i++) {
+        bookingPromises.push(
+          fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+              storeId,
+              scooterId: selectedScooter.id,
+              startDate: bookingForm.startDate,
+              endDate: bookingForm.endDate,
+              name: bookingForm.name,
+              phoneNumber: bookingForm.phoneNumber,
+            }),
+          })
+        )
+      }
 
-      const data = await res.json()
+      const responses = await Promise.all(bookingPromises)
+      const results = await Promise.all(responses.map(r => r.json()))
 
-      if (!res.ok) {
-        // Show detailed error message if available
-        const errorMsg = data.details 
-          ? `${data.error || 'Failed to create booking'}: ${data.details}`
-          : data.error || 'Failed to create booking. Please try again.'
+      // Check if all bookings succeeded
+      const failedBookings = results.filter(r => !responses[results.indexOf(r)].ok)
+      
+      if (failedBookings.length > 0) {
+        const errorMsg = failedBookings[0].details 
+          ? `${failedBookings[0].error || 'Failed to create booking'}: ${failedBookings[0].details}`
+          : failedBookings[0].error || 'Failed to create booking. Please try again.'
         setBookingError(errorMsg)
         setBookingLoading(false)
-        console.error('Booking API error:', { status: res.status, data })
         return
       }
 
+      const successCount = results.length
       setBookingSuccess(
-        'Booking request sent! The store will review and confirm your booking.',
+        `Successfully created ${successCount} booking${successCount > 1 ? 's' : ''}! The store will review and confirm your booking${successCount > 1 ? 's' : ''}.`,
       )
       setBookingLoading(false)
     } catch (err) {
@@ -531,17 +551,6 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       color: '#374151',
                     }}
                   >
-                    Scooter
-                  </th>
-                  <th
-                    style={{
-                      padding: '0.75rem',
-                      textAlign: 'left',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: '#374151',
-                    }}
-                  >
                     Model
                   </th>
                   <th
@@ -553,7 +562,29 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       color: '#374151',
                     }}
                   >
-                    Number Plate
+                    Available Units
+                  </th>
+                  <th
+                    style={{
+                      padding: '0.75rem',
+                      textAlign: 'left',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      color: '#374151',
+                    }}
+                  >
+                    Price per Day
+                  </th>
+                  <th
+                    style={{
+                      padding: '0.75rem',
+                      textAlign: 'left',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      color: '#374151',
+                    }}
+                  >
+                    Quantity
                   </th>
                   <th
                     style={{
@@ -594,7 +625,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           fontWeight: 600,
                         }}
                       >
-                        {scooter.name}
+                        {scooter.model || scooter.name || '-'}
                       </td>
                       <td
                         style={{
@@ -603,17 +634,50 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           color: '#4b5563',
                         }}
                       >
-                        {scooter.model || '-'}
+                        {scooter.availableUnits}
                       </td>
                       <td
                         style={{
                           padding: '0.75rem',
                           fontSize: '0.9rem',
                           color: '#4b5563',
-                          fontFamily: 'monospace',
+                          fontWeight: 600,
                         }}
                       >
-                        {scooter.numberPlate || '-'}
+                        {scooter.pricePerDay ? `$${scooter.pricePerDay.toFixed(2)}` : '-'}
+                      </td>
+                      <td
+                        style={{
+                          padding: '0.75rem',
+                        }}
+                      >
+                        <select
+                          value={selectedQuantity[scooter.id] || 1}
+                          onChange={(e) => {
+                            const qty = parseInt(e.target.value)
+                            setSelectedQuantity((prev) => ({
+                              ...prev,
+                              [scooter.id]: qty,
+                            }))
+                          }}
+                          disabled={!isAvailable || !availabilityChecked}
+                          style={{
+                            padding: '0.4rem 0.6rem',
+                            borderRadius: '0.375rem',
+                            border: '1px solid #d1d5db',
+                            fontSize: '0.85rem',
+                            backgroundColor: (!isAvailable || !availabilityChecked) ? '#f3f4f6' : 'white',
+                            color: (!isAvailable || !availabilityChecked) ? '#9ca3af' : '#111827',
+                            cursor: (!isAvailable || !availabilityChecked) ? 'not-allowed' : 'pointer',
+                            minWidth: '60px',
+                          }}
+                        >
+                          {Array.from({ length: scooter.availableUnits }, (_, i) => i + 1).map((num) => (
+                            <option key={num} value={num}>
+                              {num}
+                            </option>
+                          ))}
+                        </select>
                       </td>
                       <td
                         style={{
@@ -647,7 +711,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                               openBookingModal(scooter, {
                                 startDate: rentalPeriod.startDate,
                                 endDate: rentalPeriod.endDate,
-                              })
+                              }, selectedQuantity[scooter.id] || 1)
                             }}
                             style={{
                               padding: '0.45rem 1.1rem',
@@ -737,8 +801,26 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     marginTop: '0.25rem',
                   }}
                 >
-                  {selectedScooter.name} at {storeName}
+                  {selectedScooter.model || selectedScooter.name} at {storeName}
                 </p>
+                {selectedScooter.pricePerDay && bookingForm.startDate && bookingForm.endDate && (
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                      Quantity: {bookingForm.quantity} × ${selectedScooter.pricePerDay.toFixed(2)}/day
+                    </div>
+                    {(() => {
+                      const start = new Date(bookingForm.startDate)
+                      const end = new Date(bookingForm.endDate)
+                      const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
+                      const totalPrice = selectedScooter.pricePerDay * days * bookingForm.quantity
+                      return (
+                        <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#111827' }}>
+                          Total: ${totalPrice.toFixed(2)} ({days} day{days !== 1 ? 's' : ''})
+                        </div>
+                      )
+                    })()}
+                  </div>
+                )}
               </div>
               <button
                 type="button"
@@ -947,6 +1029,43 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     }}
                   />
                 </div>
+              </div>
+
+              <div style={{ marginBottom: '0.75rem' }}>
+                <label
+                  htmlFor="booking-quantity"
+                  style={{
+                    display: 'block',
+                    marginBottom: '0.25rem',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    color: '#374151',
+                  }}
+                >
+                  Quantity
+                </label>
+                <select
+                  id="booking-quantity"
+                  value={bookingForm.quantity}
+                  onChange={(e) =>
+                    setBookingForm({ ...bookingForm, quantity: parseInt(e.target.value) })
+                  }
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.75rem',
+                    borderRadius: '0.375rem',
+                    border: '1px solid #d1d5db',
+                    fontSize: '0.9rem',
+                    boxSizing: 'border-box',
+                    backgroundColor: 'white',
+                  }}
+                >
+                  {selectedScooter && Array.from({ length: selectedScooter.availableUnits }, (_, i) => i + 1).map((num) => (
+                    <option key={num} value={num}>
+                      {num}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {loadingUnavailableDates ? (
