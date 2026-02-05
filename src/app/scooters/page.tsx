@@ -705,6 +705,74 @@ export default function ScootersPage() {
         )}
 
         <div>
+          {/* Summary Section */}
+          {scooters.length > 0 && (() => {
+            const totalScooters = scooters.length
+            const modelCounts: Record<string, number> = {}
+            
+            scooters.forEach((scooter) => {
+              const model = scooter.model || scooter.name || 'Unknown'
+              modelCounts[model] = (modelCounts[model] || 0) + 1
+            })
+
+            return (
+              <div
+                style={{
+                  marginBottom: '1.5rem',
+                  padding: '1rem',
+                  backgroundColor: '#f9fafb',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #e5e7eb',
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: '1rem',
+                    fontWeight: 600,
+                    color: '#111827',
+                    marginBottom: '0.75rem',
+                  }}
+                >
+                  Scooter Summary
+                </h3>
+                <div style={{ marginBottom: '0.5rem' }}>
+                  <strong style={{ color: '#374151' }}>Total Scooters: </strong>
+                  <span style={{ color: '#6b7280' }}>{totalScooters}</span>
+                </div>
+                <div>
+                  <strong style={{ color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
+                    By Model:
+                  </strong>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    {Object.entries(modelCounts)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([model, count]) => (
+                        <div
+                          key={model}
+                          style={{
+                            padding: '0.5rem',
+                            backgroundColor: 'white',
+                            borderRadius: '0.375rem',
+                            border: '1px solid #e5e7eb',
+                            fontSize: '0.875rem',
+                          }}
+                        >
+                          <span style={{ fontWeight: 600, color: '#111827' }}>{model}:</span>{' '}
+                          <span style={{ color: '#6b7280' }}>{count}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
+
           <h2
             style={{
               fontSize: '1.1rem',
@@ -772,7 +840,7 @@ export default function ScootersPage() {
                         color: '#374151',
                       }}
                     >
-                      Name
+                      ID
                     </th>
                     <th
                       style={{
@@ -843,7 +911,7 @@ export default function ScootersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {scooters.map((scooter) => (
+                  {scooters.map((scooter, index) => (
                     <tr
                       key={scooter.id}
                       style={{
@@ -858,7 +926,7 @@ export default function ScootersPage() {
                           fontWeight: 600,
                         }}
                       >
-                        {scooter.name}
+                        {index + 1}
                       </td>
                       <td
                         style={{
