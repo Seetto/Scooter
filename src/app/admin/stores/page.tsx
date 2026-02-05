@@ -31,6 +31,7 @@ export default function StoresPage() {
   const [adminPassword, setAdminPassword] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [selectedStore, setSelectedStore] = useState<Store | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     if (isAuthenticated) {
