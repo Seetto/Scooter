@@ -96,8 +96,10 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
       setCheckingAvailability(true)
       const availability: Record<string, boolean> = {}
 
-      // Check each scooter's availability
-      for (const scooter of scooters) {
+      // Check each scooter's availability (only AVAILABLE status scooters)
+      const availableScooters = scooters.filter(s => s.status === 'AVAILABLE')
+      
+      for (const scooter of availableScooters) {
         try {
           const response = await fetch(`/api/scooters/${scooter.id}/unavailable-dates`)
           if (response.ok) {
@@ -600,16 +602,37 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                 </tr>
               </thead>
               <tbody>
-                {scooters.map((scooter) => {
-                  // Determine if scooter is available
-                  const isAvailable = rentalPeriod.startDate && rentalPeriod.endDate
-                    ? scooterAvailability[scooter.id] !== false // true or undefined (not checked yet)
-                    : true // Available if no dates selected
-                  const availabilityChecked = rentalPeriod.startDate && rentalPeriod.endDate
-                    ? scooterAvailability[scooter.id] !== undefined
-                    : true
+                {(() => {
+                  // Group scooters by model and calculate available units for each
+                  const modelGroups: Record<string, Scooter[]> = {}
+                  scooters.forEach((scooter) => {
+                    const model = scooter.model || scooter.name || 'Unknown'
+                    if (!modelGroups[model]) {
+                      modelGroups[model] = []
+                    }
+                    modelGroups[model].push(scooter)
+                  })
 
-                  return (
+                  // Get unique models (one row per model)
+                  const uniqueModels = Object.keys(modelGroups)
+                  
+                  return uniqueModels.map((model) => {
+                    const modelScooters = modelGroups[model]
+                    const availableScooters = modelScooters.filter(s => s.status === 'AVAILABLE')
+                    const availableUnits = availableScooters.length
+                    
+                    // Use the first scooter of this model for display
+                    const scooter = modelScooters[0]
+                    
+                    // Determine if any scooter of this model is available for the selected dates
+                    const isAvailable = rentalPeriod.startDate && rentalPeriod.endDate
+                      ? availableScooters.some(s => scooterAvailability[s.id] !== false)
+                      : availableUnits > 0
+                    const availabilityChecked = rentalPeriod.startDate && rentalPeriod.endDate
+                      ? availableScooters.some(s => scooterAvailability[s.id] !== undefined)
+                      : true
+
+                    return (
                     <tr
                       key={scooter.id}
                       style={{
@@ -634,7 +657,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           color: '#4b5563',
                         }}
                       >
-                        {scooter.availableUnits}
+                        {availableUnits}
                       </td>
                       <td
                         style={{
@@ -672,7 +695,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                             minWidth: '60px',
                           }}
                         >
-                          {Array.from({ length: scooter.availableUnits }, (_, i) => i + 1).map((num) => (
+                          {Array.from({ length: availableUnits }, (_, i) => i + 1).map((num) => (
                             <option key={num} value={num}>
                               {num}
                             </option>
@@ -708,7 +731,9 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           <button
                             type="button"
                             onClick={() => {
-                              openBookingModal(scooter, {
+                              // Use the first available scooter for booking
+                              const scooterToBook = availableScooters[0] || scooter
+                              openBookingModal(scooterToBook, {
                                 startDate: rentalPeriod.startDate,
                                 endDate: rentalPeriod.endDate,
                               }, selectedQuantity[scooter.id] || 1)
@@ -743,8 +768,9 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                         )}
                       </td>
                     </tr>
-                  )
-                })}
+                    )
+                  })
+                })()}
               </tbody>
             </table>
           </div>

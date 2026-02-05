@@ -73,10 +73,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Plate number is required' }, { status: 400 })
     }
 
-    if (availableUnits === undefined || typeof availableUnits !== 'number' || availableUnits < 1 || availableUnits > 30) {
-      return NextResponse.json({ error: 'Available units must be between 1 and 30' }, { status: 400 })
-    }
-
     if (!status || !['AVAILABLE', 'RENTED', 'MAINTENANCE', 'RESERVED'].includes(status)) {
       return NextResponse.json({ error: 'Valid status is required' }, { status: 400 })
     }
@@ -88,7 +84,7 @@ export async function PUT(
         model: model.trim(),
         numberPlate: numberPlate.trim(),
         vinOrChassisNumber: vinOrChassisNumber?.trim() || null,
-        availableUnits: availableUnits,
+        availableUnits: 1, // Always 1 - units are counted by model
         odometer: odometer ? parseInt(String(odometer)) : null,
         condition: condition?.trim() || null,
         pricePerDay: pricePerDay ? parseFloat(String(pricePerDay)) : null,

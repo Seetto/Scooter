@@ -31,7 +31,6 @@ export default function ScootersPage() {
     model: '',
     numberPlate: '',
     vinOrChassisNumber: '',
-    availableUnits: 1,
     odometer: '',
     condition: '',
     pricePerDay: '',
@@ -79,7 +78,6 @@ export default function ScootersPage() {
       model: '', 
       numberPlate: '', 
       vinOrChassisNumber: '',
-      availableUnits: 1,
       odometer: '',
       condition: '',
       pricePerDay: '',
@@ -172,7 +170,7 @@ export default function ScootersPage() {
           model: form.model,
           numberPlate: form.numberPlate,
           vinOrChassisNumber: form.vinOrChassisNumber || null,
-          availableUnits: form.availableUnits,
+          availableUnits: 1, // Always 1 - units are counted by model
           odometer: form.odometer ? parseInt(form.odometer) : null,
           condition: form.condition || null,
           pricePerDay: form.pricePerDay ? parseFloat(form.pricePerDay) : null,
@@ -517,42 +515,6 @@ export default function ScootersPage() {
 
             <div style={{ marginBottom: '0.75rem' }}>
               <label
-                htmlFor="scooter-available-units"
-                style={{
-                  display: 'block',
-                  marginBottom: '0.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: '#374151',
-                }}
-              >
-                Available Units <span style={{ color: '#ef4444' }}>*</span>
-              </label>
-              <select
-                id="scooter-available-units"
-                value={form.availableUnits}
-                onChange={(e) => setForm({ ...form, availableUnits: parseInt(e.target.value) })}
-                style={{
-                  width: '100%',
-                  padding: '0.6rem 0.75rem',
-                  borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
-                  fontSize: '0.95rem',
-                  boxSizing: 'border-box',
-                  backgroundColor: 'white',
-                }}
-                required
-              >
-                {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
-                  <option key={num} value={num}>
-                    {num}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '0.75rem' }}>
-              <label
                 htmlFor="scooter-odometer"
                 style={{
                   display: 'block',
@@ -844,17 +806,6 @@ export default function ScootersPage() {
                         color: '#374151',
                       }}
                     >
-                      Available Units
-                    </th>
-                    <th
-                      style={{
-                        padding: '0.75rem',
-                        textAlign: 'left',
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        color: '#374151',
-                      }}
-                    >
                       Price/Day
                     </th>
                     <th
@@ -928,15 +879,6 @@ export default function ScootersPage() {
                         }}
                       >
                         {scooter.numberPlate || '-'}
-                      </td>
-                      <td
-                        style={{
-                          padding: '0.75rem',
-                          fontSize: '0.9rem',
-                          color: '#4b5563',
-                        }}
-                      >
-                        {scooter.availableUnits}
                       </td>
                       <td
                         style={{
