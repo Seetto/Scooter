@@ -40,6 +40,11 @@ export async function GET() {
         name: true,
         model: true,
         numberPlate: true,
+        vinOrChassisNumber: true,
+        availableUnits: true,
+        odometer: true,
+        condition: true,
+        status: true,
         notes: true,
         createdAt: true,
       },
@@ -64,10 +69,32 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { name, model, numberPlate, notes } = body
+    const { 
+      name, 
+      model, 
+      numberPlate, 
+      vinOrChassisNumber, 
+      availableUnits, 
+      odometer, 
+      condition, 
+      status, 
+      notes 
+    } = body
 
-    if (!name || typeof name !== 'string' || name.trim().length === 0) {
-      return NextResponse.json({ error: 'Scooter name is required' }, { status: 400 })
+    if (!model || typeof model !== 'string' || model.trim().length === 0) {
+      return NextResponse.json({ error: 'Model is required' }, { status: 400 })
+    }
+
+    if (!numberPlate || typeof numberPlate !== 'string' || numberPlate.trim().length === 0) {
+      return NextResponse.json({ error: 'Plate number is required' }, { status: 400 })
+    }
+
+    if (availableUnits === undefined || typeof availableUnits !== 'number' || availableUnits < 1 || availableUnits > 30) {
+      return NextResponse.json({ error: 'Available units must be between 1 and 30' }, { status: 400 })
+    }
+
+    if (!status || !['AVAILABLE', 'RENTED', 'MAINTENANCE', 'RESERVED'].includes(status)) {
+      return NextResponse.json({ error: 'Valid status is required' }, { status: 400 })
     }
 
     const scooter = await prisma.scooter.create({
@@ -75,7 +102,12 @@ export async function POST(request: Request) {
         storeId: store.id,
         name: name.trim(),
         model: model?.trim() || null,
-        numberPlate: numberPlate?.trim() || null,
+        numberPlate: numberPlate.trim(),
+        vinOrChassisNumber: vinOrChassisNumber?.trim() || null,
+        availableUnits: availableUnits,
+        odometer: odometer ? parseInt(String(odometer)) : null,
+        condition: condition?.trim() || null,
+        status: status,
         notes: notes?.trim() || null,
       },
       select: {
@@ -83,6 +115,11 @@ export async function POST(request: Request) {
         name: true,
         model: true,
         numberPlate: true,
+        vinOrChassisNumber: true,
+        availableUnits: true,
+        odometer: true,
+        condition: true,
+        status: true,
         notes: true,
         createdAt: true,
       },

@@ -44,18 +44,30 @@ model Store {
   bookings          Booking[]
 }
 
-model Scooter {
-  id          String   @id @default(cuid())
-  store       Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  storeId     String
-  name        String
-  model       String?
-  numberPlate String?
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum ScooterStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  RESERVED
+}
 
-  bookings    Booking[]
+model Scooter {
+  id                String         @id @default(cuid())
+  store             Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId           String
+  name              String
+  model             String?
+  numberPlate       String?
+  vinOrChassisNumber String?
+  availableUnits    Int            @default(1)
+  odometer          Int?
+  condition         String?
+  status            ScooterStatus  @default(AVAILABLE)
+  notes             String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  bookings          Booking[]
 }
 
 enum BookingStatus {

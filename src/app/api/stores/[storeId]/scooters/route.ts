@@ -14,13 +14,21 @@ export async function GET(
 
   try {
     const scooters = await prisma.scooter.findMany({
-      where: { storeId },
+      where: { 
+        storeId,
+        status: 'AVAILABLE', // Only show available scooters to users
+      },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
         name: true,
         model: true,
         numberPlate: true,
+        vinOrChassisNumber: true,
+        availableUnits: true,
+        odometer: true,
+        condition: true,
+        status: true,
         notes: true,
         createdAt: true,
       },

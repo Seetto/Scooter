@@ -7,9 +7,14 @@ import Link from 'next/link'
 interface Scooter {
   id: string
   name: string
-  model: string
-  numberPlate: string
-  notes: string
+  model: string | null
+  numberPlate: string | null
+  vinOrChassisNumber: string | null
+  availableUnits: number
+  odometer: number | null
+  condition: string | null
+  status: 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'RESERVED'
+  notes: string | null
   createdAt: string
 }
 
@@ -23,6 +28,11 @@ export default function ScootersPage() {
     name: '',
     model: '',
     numberPlate: '',
+    vinOrChassisNumber: '',
+    availableUnits: 1,
+    odometer: '',
+    condition: '',
+    status: 'AVAILABLE' as 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'RESERVED',
     notes: '',
   })
 
@@ -62,7 +72,7 @@ export default function ScootersPage() {
 
   const handleAddScooter = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.name.trim()) return
+    if (!form.model.trim() || !form.numberPlate.trim()) return
 
     try {
       setLoading(true)
@@ -75,9 +85,14 @@ export default function ScootersPage() {
         },
         credentials: 'include',
         body: JSON.stringify({
-          name: form.name,
+          name: form.model, // Using model as the name
           model: form.model,
           numberPlate: form.numberPlate,
+          vinOrChassisNumber: form.vinOrChassisNumber || null,
+          availableUnits: form.availableUnits,
+          odometer: form.odometer ? parseInt(form.odometer) : null,
+          condition: form.condition || null,
+          status: form.status,
           notes: form.notes,
         }),
       })
@@ -91,7 +106,17 @@ export default function ScootersPage() {
 
       const newScooter = data.scooter as Scooter
       setScooters((prev) => [newScooter, ...prev])
-      setForm({ name: '', model: '', numberPlate: '', notes: '' })
+      setForm({ 
+        name: '',
+        model: '', 
+        numberPlate: '', 
+        vinOrChassisNumber: '',
+        availableUnits: 1,
+        odometer: '',
+        condition: '',
+        status: 'AVAILABLE',
+        notes: '' 
+      })
       setShowForm(false)
     } catch (err) {
       console.error('Error saving scooter:', err)
@@ -301,7 +326,7 @@ export default function ScootersPage() {
           >
             <div style={{ marginBottom: '0.75rem' }}>
               <label
-                htmlFor="scooter-name"
+                htmlFor="scooter-model"
                 style={{
                   display: 'block',
                   marginBottom: '0.25rem',
@@ -310,13 +335,13 @@ export default function ScootersPage() {
                   color: '#374151',
                 }}
               >
-                Scooter Name <span style={{ color: '#ef4444' }}>*</span>
+                Model <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
-                id="scooter-name"
+                id="scooter-model"
                 type="text"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                value={form.model}
+                onChange={(e) => setForm({ ...form, model: e.target.value })}
                 placeholder="e.g. Honda Scoopy, Yamaha NMAX"
                 style={{
                   width: '100%',
@@ -332,36 +357,6 @@ export default function ScootersPage() {
 
             <div style={{ marginBottom: '0.75rem' }}>
               <label
-                htmlFor="scooter-model"
-                style={{
-                  display: 'block',
-                  marginBottom: '0.25rem',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  color: '#374151',
-                }}
-              >
-                Model
-              </label>
-              <input
-                id="scooter-model"
-                type="text"
-                value={form.model}
-                onChange={(e) => setForm({ ...form, model: e.target.value })}
-                placeholder="Optional model or year details"
-                style={{
-                  width: '100%',
-                  padding: '0.6rem 0.75rem',
-                  borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
-                  fontSize: '0.95rem',
-                  boxSizing: 'border-box',
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '0.75rem' }}>
-              <label
                 htmlFor="scooter-number-plate"
                 style={{
                   display: 'block',
@@ -371,7 +366,7 @@ export default function ScootersPage() {
                   color: '#374151',
                 }}
               >
-                Number Plate
+                Plate Number <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 id="scooter-number-plate"
@@ -387,7 +382,170 @@ export default function ScootersPage() {
                   fontSize: '0.95rem',
                   boxSizing: 'border-box',
                 }}
+                required
               />
+            </div>
+
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label
+                htmlFor="scooter-vin"
+                style={{
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#374151',
+                }}
+              >
+                VIN or Chassis Number
+              </label>
+              <input
+                id="scooter-vin"
+                type="text"
+                value={form.vinOrChassisNumber}
+                onChange={(e) => setForm({ ...form, vinOrChassisNumber: e.target.value })}
+                placeholder="Optional VIN or chassis number"
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  border: '1px solid #d1d5db',
+                  fontSize: '0.95rem',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label
+                htmlFor="scooter-available-units"
+                style={{
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#374151',
+                }}
+              >
+                Available Units <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <select
+                id="scooter-available-units"
+                value={form.availableUnits}
+                onChange={(e) => setForm({ ...form, availableUnits: parseInt(e.target.value) })}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  border: '1px solid #d1d5db',
+                  fontSize: '0.95rem',
+                  boxSizing: 'border-box',
+                  backgroundColor: 'white',
+                }}
+                required
+              >
+                {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label
+                htmlFor="scooter-odometer"
+                style={{
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#374151',
+                }}
+              >
+                Odometer
+              </label>
+              <input
+                id="scooter-odometer"
+                type="number"
+                value={form.odometer}
+                onChange={(e) => setForm({ ...form, odometer: e.target.value })}
+                placeholder="Current odometer reading"
+                min="0"
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  border: '1px solid #d1d5db',
+                  fontSize: '0.95rem',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label
+                htmlFor="scooter-condition"
+                style={{
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#374151',
+                }}
+              >
+                Condition
+              </label>
+              <input
+                id="scooter-condition"
+                type="text"
+                value={form.condition}
+                onChange={(e) => setForm({ ...form, condition: e.target.value })}
+                placeholder="e.g. Excellent, Good, Fair"
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  border: '1px solid #d1d5db',
+                  fontSize: '0.95rem',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label
+                htmlFor="scooter-status"
+                style={{
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#374151',
+                }}
+              >
+                Status <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <select
+                id="scooter-status"
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value as typeof form.status })}
+                style={{
+                  width: '100%',
+                  padding: '0.6rem 0.75rem',
+                  borderRadius: '0.375rem',
+                  border: '1px solid #d1d5db',
+                  fontSize: '0.95rem',
+                  boxSizing: 'border-box',
+                  backgroundColor: 'white',
+                }}
+                required
+              >
+                <option value="AVAILABLE">Available</option>
+                <option value="RENTED">Rented</option>
+                <option value="MAINTENANCE">Maintenance</option>
+                <option value="RESERVED">Reserved</option>
+              </select>
             </div>
 
             <div style={{ marginBottom: '0.75rem' }}>
@@ -540,7 +698,18 @@ export default function ScootersPage() {
                         color: '#374151',
                       }}
                     >
-                      Notes
+                      Available Units
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        textAlign: 'left',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: '#374151',
+                      }}
+                    >
+                      Status
                     </th>
                     <th
                       style={{
@@ -599,7 +768,40 @@ export default function ScootersPage() {
                           color: '#4b5563',
                         }}
                       >
-                        {scooter.notes || '-'}
+                        {scooter.availableUnits}
+                      </td>
+                      <td
+                        style={{
+                          padding: '0.75rem',
+                          fontSize: '0.9rem',
+                        }}
+                      >
+                        <span
+                          style={{
+                            padding: '0.25rem 0.5rem',
+                            borderRadius: '0.25rem',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            backgroundColor:
+                              scooter.status === 'AVAILABLE'
+                                ? '#d1fae5'
+                                : scooter.status === 'RENTED'
+                                ? '#dbeafe'
+                                : scooter.status === 'MAINTENANCE'
+                                ? '#fef3c7'
+                                : '#f3e8ff',
+                            color:
+                              scooter.status === 'AVAILABLE'
+                                ? '#065f46'
+                                : scooter.status === 'RENTED'
+                                ? '#1e40af'
+                                : scooter.status === 'MAINTENANCE'
+                                ? '#92400e'
+                                : '#6b21a8',
+                          }}
+                        >
+                          {scooter.status}
+                        </span>
                       </td>
                       <td
                         style={{
