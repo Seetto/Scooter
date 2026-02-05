@@ -28,6 +28,7 @@ export async function GET(
         availableUnits: true,
         odometer: true,
         condition: true,
+        pricePerDay: true,
         status: true,
         notes: true,
         createdAt: true,

@@ -24,49 +24,31 @@ async function getCurrentStore() {
   return store
 }
 
-// GET: list scooters for the current store
-export async function GET() {
+// PUT: update a scooter
+export async function PUT(
+  request: Request,
+  context: { params: Promise<{ scooterId: string }> }
+) {
   try {
     const store = await getCurrentStore()
     if (!store) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const scooters = await prisma.scooter.findMany({
-      where: { storeId: store.id },
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        model: true,
-        numberPlate: true,
-        vinOrChassisNumber: true,
-        availableUnits: true,
-        odometer: true,
-        condition: true,
-        pricePerDay: true,
-        status: true,
-        notes: true,
-        createdAt: true,
-      },
+    const { scooterId } = await context.params
+
+    // Verify the scooter belongs to the current store
+    const existingScooter = await prisma.scooter.findUnique({
+      where: { id: scooterId },
+      select: { storeId: true },
     })
 
-    return NextResponse.json({ scooters })
-  } catch (error) {
-    console.error('Error fetching scooters:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch scooters', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    )
-  }
-}
+    if (!existingScooter) {
+      return NextResponse.json({ error: 'Scooter not found' }, { status: 404 })
+    }
 
-// POST: add a new scooter for the current store
-export async function POST(request: Request) {
-  try {
-    const store = await getCurrentStore()
-    if (!store) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (existingScooter.storeId !== store.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
     const body = await request.json()
@@ -99,9 +81,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Valid status is required' }, { status: 400 })
     }
 
-    const scooter = await prisma.scooter.create({
+    const scooter = await prisma.scooter.update({
+      where: { id: scooterId },
       data: {
-        storeId: store.id,
         name: name || model.trim(), // Use name if provided, otherwise use model
         model: model.trim(),
         numberPlate: numberPlate.trim(),
@@ -129,13 +111,12 @@ export async function POST(request: Request) {
       },
     })
 
-    return NextResponse.json({ scooter }, { status: 201 })
+    return NextResponse.json({ scooter })
   } catch (error) {
-    console.error('Error creating scooter:', error)
+    console.error('Error updating scooter:', error)
     return NextResponse.json(
-      { error: 'Failed to create scooter', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to update scooter', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
 }
-

@@ -62,6 +62,7 @@ model Scooter {
   availableUnits    Int            @default(1)
   odometer          Int?
   condition         String?
+  pricePerDay       Float?
   status            ScooterStatus  @default(AVAILABLE)
   notes             String?
   createdAt         DateTime       @default(now())

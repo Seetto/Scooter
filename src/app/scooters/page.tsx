@@ -13,6 +13,7 @@ interface Scooter {
   availableUnits: number
   odometer: number | null
   condition: string | null
+  pricePerDay: number | null
   status: 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'RESERVED'
   notes: string | null
   createdAt: string
@@ -22,6 +23,7 @@ export default function ScootersPage() {
   const { data: session, status } = useSession()
   const [scooters, setScooters] = useState<Scooter[]>([])
   const [showForm, setShowForm] = useState(false)
+  const [editingScooter, setEditingScooter] = useState<Scooter | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState({
@@ -32,6 +34,7 @@ export default function ScootersPage() {
     availableUnits: 1,
     odometer: '',
     condition: '',
+    pricePerDay: '',
     status: 'AVAILABLE' as 'AVAILABLE' | 'RENTED' | 'MAINTENANCE' | 'RESERVED',
     notes: '',
   })
@@ -70,6 +73,40 @@ export default function ScootersPage() {
     }
   }, [isAuthenticated, isStore])
 
+  const resetForm = () => {
+    setForm({ 
+      name: '',
+      model: '', 
+      numberPlate: '', 
+      vinOrChassisNumber: '',
+      availableUnits: 1,
+      odometer: '',
+      condition: '',
+      pricePerDay: '',
+      status: 'AVAILABLE',
+      notes: '' 
+    })
+    setEditingScooter(null)
+    setShowForm(false)
+  }
+
+  const handleEditScooter = (scooter: Scooter) => {
+    setEditingScooter(scooter)
+    setForm({
+      name: scooter.name || '',
+      model: scooter.model || '',
+      numberPlate: scooter.numberPlate || '',
+      vinOrChassisNumber: scooter.vinOrChassisNumber || '',
+      availableUnits: scooter.availableUnits,
+      odometer: scooter.odometer ? String(scooter.odometer) : '',
+      condition: scooter.condition || '',
+      pricePerDay: scooter.pricePerDay ? String(scooter.pricePerDay) : '',
+      status: scooter.status,
+      notes: scooter.notes || '',
+    })
+    setShowForm(true)
+  }
+
   const handleAddScooter = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.model.trim() || !form.numberPlate.trim()) return
@@ -78,8 +115,13 @@ export default function ScootersPage() {
       setLoading(true)
       setError(null)
 
-      const response = await fetch('/api/scooters', {
-        method: 'POST',
+      const url = editingScooter 
+        ? `/api/scooters/${editingScooter.id}`
+        : '/api/scooters'
+      const method = editingScooter ? 'PUT' : 'POST'
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -92,6 +134,7 @@ export default function ScootersPage() {
           availableUnits: form.availableUnits,
           odometer: form.odometer ? parseInt(form.odometer) : null,
           condition: form.condition || null,
+          pricePerDay: form.pricePerDay ? parseFloat(form.pricePerDay) : null,
           status: form.status,
           notes: form.notes,
         }),
@@ -104,20 +147,16 @@ export default function ScootersPage() {
         return
       }
 
-      const newScooter = data.scooter as Scooter
-      setScooters((prev) => [newScooter, ...prev])
-      setForm({ 
-        name: '',
-        model: '', 
-        numberPlate: '', 
-        vinOrChassisNumber: '',
-        availableUnits: 1,
-        odometer: '',
-        condition: '',
-        status: 'AVAILABLE',
-        notes: '' 
-      })
-      setShowForm(false)
+      if (editingScooter) {
+        // Update existing scooter in the list
+        setScooters((prev) => prev.map((s) => s.id === editingScooter.id ? data.scooter : s))
+      } else {
+        // Add new scooter to the list
+        const newScooter = data.scooter as Scooter
+        setScooters((prev) => [newScooter, ...prev])
+      }
+      
+      resetForm()
     } catch (err) {
       console.error('Error saving scooter:', err)
       setError('An error occurred while saving your scooter.')
@@ -280,7 +319,13 @@ export default function ScootersPage() {
 
             <button
               type="button"
-              onClick={() => setShowForm((prev) => !prev)}
+              onClick={() => {
+                if (showForm) {
+                  resetForm()
+                } else {
+                  setShowForm(true)
+                }
+              }}
               style={{
                 padding: '0.7rem 1.5rem',
                 backgroundColor: showForm ? '#6b7280' : '#2563eb',
@@ -324,6 +369,19 @@ export default function ScootersPage() {
               backgroundColor: '#f9fafb',
             }}
           >
+            {editingScooter && (
+              <div style={{
+                marginBottom: '1rem',
+                padding: '0.75rem',
+                backgroundColor: '#dbeafe',
+                color: '#1e40af',
+                borderRadius: '0.375rem',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+              }}>
+                Editing: {editingScooter.model || editingScooter.name}
+              </div>
+            )}
             <div style={{ marginBottom: '0.75rem' }}>
               <label
                 htmlFor="scooter-model"
@@ -515,6 +573,53 @@ export default function ScootersPage() {
 
             <div style={{ marginBottom: '0.75rem' }}>
               <label
+                htmlFor="scooter-price-per-day"
+                style={{
+                  display: 'block',
+                  marginBottom: '0.25rem',
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  color: '#374151',
+                }}
+              >
+                Price per Day
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: '0.75rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#6b7280',
+                    fontSize: '0.95rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  $
+                </span>
+                <input
+                  id="scooter-price-per-day"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={form.pricePerDay}
+                  onChange={(e) => setForm({ ...form, pricePerDay: e.target.value })}
+                  placeholder="0.00"
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.75rem 0.6rem 2rem',
+                    borderRadius: '0.375rem',
+                    border: '1px solid #d1d5db',
+                    fontSize: '0.95rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '0.75rem' }}>
+              <label
                 htmlFor="scooter-status"
                 style={{
                   display: 'block',
@@ -592,7 +697,7 @@ export default function ScootersPage() {
                 cursor: 'pointer',
               }}
             >
-              {loading ? 'Saving...' : 'Save Scooter'}
+              {loading ? (editingScooter ? 'Updating...' : 'Saving...') : (editingScooter ? 'Update Scooter' : 'Save Scooter')}
             </button>
           </form>
         )}
@@ -709,6 +814,17 @@ export default function ScootersPage() {
                         color: '#374151',
                       }}
                     >
+                      Price/Day
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        textAlign: 'left',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: '#374151',
+                      }}
+                    >
                       Status
                     </th>
                     <th
@@ -721,6 +837,17 @@ export default function ScootersPage() {
                       }}
                     >
                       Added
+                    </th>
+                    <th
+                      style={{
+                        padding: '0.75rem',
+                        textAlign: 'left',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: '#374151',
+                      }}
+                    >
+                      Action
                     </th>
                   </tr>
                 </thead>
@@ -774,6 +901,16 @@ export default function ScootersPage() {
                         style={{
                           padding: '0.75rem',
                           fontSize: '0.9rem',
+                          color: '#4b5563',
+                          fontWeight: 600,
+                        }}
+                      >
+                        {scooter.pricePerDay ? `$${scooter.pricePerDay.toFixed(2)}` : '-'}
+                      </td>
+                      <td
+                        style={{
+                          padding: '0.75rem',
+                          fontSize: '0.9rem',
                         }}
                       >
                         <span
@@ -811,6 +948,34 @@ export default function ScootersPage() {
                         }}
                       >
                         {new Date(scooter.createdAt).toLocaleString()}
+                      </td>
+                      <td
+                        style={{
+                          padding: '0.75rem',
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => handleEditScooter(scooter)}
+                          style={{
+                            padding: '0.4rem 0.8rem',
+                            backgroundColor: '#2563eb',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.375rem',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = '#1d4ed8'
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '#2563eb'
+                          }}
+                        >
+                          Edit
+                        </button>
                       </td>
                     </tr>
                   ))}
