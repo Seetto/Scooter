@@ -120,3 +120,58 @@ export async function PUT(
     )
   }
 }
+
+// DELETE: delete a scooter
+export async function DELETE(
+  _request: Request,
+  context: { params: Promise<{ scooterId: string }> }
+) {
+  try {
+    const store = await getCurrentStore()
+    if (!store) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { scooterId } = await context.params
+
+    // Verify the scooter belongs to the current store
+    const existingScooter = await prisma.scooter.findUnique({
+      where: { id: scooterId },
+      select: { 
+        storeId: true,
+        name: true,
+        model: true,
+        _count: {
+          select: {
+            bookings: true,
+          },
+        },
+      },
+    })
+
+    if (!existingScooter) {
+      return NextResponse.json({ error: 'Scooter not found' }, { status: 404 })
+    }
+
+    if (existingScooter.storeId !== store.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
+    }
+
+    // Delete the scooter (bookings will be handled by cascade delete in schema)
+    await prisma.scooter.delete({
+      where: { id: scooterId },
+    })
+
+    return NextResponse.json({ 
+      success: true,
+      message: `Scooter "${existingScooter.model || existingScooter.name}" has been deleted successfully.`,
+      deletedBookings: existingScooter._count.bookings,
+    })
+  } catch (error) {
+    console.error('Error deleting scooter:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete scooter', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    )
+  }
+}

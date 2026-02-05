@@ -90,6 +90,47 @@ export default function ScootersPage() {
     setShowForm(false)
   }
 
+  const handleDeleteScooter = async (scooter: Scooter) => {
+    const scooterName = scooter.model || scooter.name || 'this scooter'
+    
+    if (!confirm(`⚠️ WARNING: Are you sure you want to delete "${scooterName}"?\n\nThis will permanently delete:\n- The scooter\n- All bookings associated with this scooter\n\nThis action cannot be undone!`)) {
+      return
+    }
+
+    // Double confirmation for safety
+    if (!confirm(`Final confirmation: Delete "${scooterName}" and all related bookings?`)) {
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const response = await fetch(`/api/scooters/${scooter.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to delete scooter')
+        return
+      }
+
+      // Remove the scooter from the list
+      setScooters((prev) => prev.filter((s) => s.id !== scooter.id))
+      
+      // Show success message
+      alert(data.message || 'Scooter deleted successfully.')
+    } catch (err) {
+      console.error('Error deleting scooter:', err)
+      setError('An error occurred while deleting the scooter.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleEditScooter = (scooter: Scooter) => {
     setEditingScooter(scooter)
     setForm({
@@ -847,7 +888,7 @@ export default function ScootersPage() {
                         color: '#374151',
                       }}
                     >
-                      Action
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -954,28 +995,57 @@ export default function ScootersPage() {
                           padding: '0.75rem',
                         }}
                       >
-                        <button
-                          type="button"
-                          onClick={() => handleEditScooter(scooter)}
-                          style={{
-                            padding: '0.4rem 0.8rem',
-                            backgroundColor: '#2563eb',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '0.375rem',
-                            fontSize: '0.85rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#1d4ed8'
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = '#2563eb'
-                          }}
-                        >
-                          Edit
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleEditScooter(scooter)}
+                            style={{
+                              padding: '0.4rem 0.8rem',
+                              backgroundColor: '#2563eb',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.375rem',
+                              fontSize: '0.85rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#1d4ed8'
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#2563eb'
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteScooter(scooter)}
+                            disabled={loading}
+                            style={{
+                              padding: '0.4rem 0.8rem',
+                              backgroundColor: loading ? '#9ca3af' : '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '0.375rem',
+                              fontSize: '0.85rem',
+                              fontWeight: 600,
+                              cursor: loading ? 'not-allowed' : 'pointer',
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!loading) {
+                                e.currentTarget.style.backgroundColor = '#dc2626'
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!loading) {
+                                e.currentTarget.style.backgroundColor = '#ef4444'
+                              }
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
