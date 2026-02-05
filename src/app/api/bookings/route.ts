@@ -221,7 +221,7 @@ export async function POST(request: Request) {
         storeId,
         model: selectedScooter.model || selectedScooter.name,
         status: 'AVAILABLE' as any, // Type assertion needed until Prisma client is regenerated
-      },
+      } as any,
       include: {
         bookings: {
           where: {
@@ -309,7 +309,7 @@ export async function POST(request: Request) {
     // Update the scooter status to RENTED
     await prisma.scooter.update({
       where: { id: availableScooter.id },
-      data: { status: 'RENTED' as any }, // Type assertion needed until Prisma client is regenerated
+      data: { status: 'RENTED' as any } as any, // Type assertion needed until Prisma client is regenerated
     })
 
     // Optionally update user profile details with latest name/phone
