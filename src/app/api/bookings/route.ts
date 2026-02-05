@@ -44,22 +44,43 @@ export async function GET() {
       })
 
       // Auto-update CONFIRMED bookings with past end dates to COMPLETED
-      const updatePromises = bookings
+      const bookingsToComplete = bookings.filter((booking) => {
+        if (booking.status !== 'CONFIRMED') return false
+        const endDate = new Date(booking.endDate)
+        endDate.setHours(0, 0, 0, 0)
+        return endDate < today
+      })
+
+      const bookingUpdatePromises = bookingsToComplete.map((booking) =>
+        prisma.booking.update({
+          where: { id: booking.id },
+          data: { status: 'COMPLETED' },
+        }),
+      )
+
+      // Auto-update scooters with RENTED status back to AVAILABLE if their booking end date has passed
+      const scootersToUpdate = bookings
         .filter((booking) => {
-          if (booking.status !== 'CONFIRMED') return false
+          if (!booking.scooterId) return false
           const endDate = new Date(booking.endDate)
           endDate.setHours(0, 0, 0, 0)
           return endDate < today
         })
-        .map((booking) =>
-          prisma.booking.update({
-            where: { id: booking.id },
-            data: { status: 'COMPLETED' },
-          }),
-        )
+        .map((booking) => booking.scooterId)
+        .filter((id): id is string => id !== null)
 
-      if (updatePromises.length > 0) {
-        await Promise.all(updatePromises)
+      const scooterUpdatePromises = scootersToUpdate.map((scooterId) =>
+        prisma.scooter.updateMany({
+          where: {
+            id: scooterId,
+            status: 'RENTED' as any,
+          } as any,
+          data: { status: 'AVAILABLE' as any } as any,
+        }),
+      )
+
+      if (bookingUpdatePromises.length > 0 || scooterUpdatePromises.length > 0) {
+        await Promise.all([...bookingUpdatePromises, ...scooterUpdatePromises])
         // Refetch bookings to get updated statuses
         const updatedBookings = await prisma.booking.findMany({
           where: { storeId: userId },
@@ -106,22 +127,43 @@ export async function GET() {
     })
 
     // Auto-update CONFIRMED bookings with past end dates to COMPLETED
-    const updatePromises = bookings
+    const bookingsToComplete = bookings.filter((booking) => {
+      if (booking.status !== 'CONFIRMED') return false
+      const endDate = new Date(booking.endDate)
+      endDate.setHours(0, 0, 0, 0)
+      return endDate < today
+    })
+
+    const bookingUpdatePromises = bookingsToComplete.map((booking) =>
+      prisma.booking.update({
+        where: { id: booking.id },
+        data: { status: 'COMPLETED' },
+      }),
+    )
+
+    // Auto-update scooters with RENTED status back to AVAILABLE if their booking end date has passed
+    const scootersToUpdate = bookings
       .filter((booking) => {
-        if (booking.status !== 'CONFIRMED') return false
+        if (!booking.scooterId) return false
         const endDate = new Date(booking.endDate)
         endDate.setHours(0, 0, 0, 0)
         return endDate < today
       })
-      .map((booking) =>
-        prisma.booking.update({
-          where: { id: booking.id },
-          data: { status: 'COMPLETED' },
-        }),
-      )
+      .map((booking) => booking.scooterId)
+      .filter((id): id is string => id !== null)
 
-    if (updatePromises.length > 0) {
-      await Promise.all(updatePromises)
+    const scooterUpdatePromises = scootersToUpdate.map((scooterId) =>
+      prisma.scooter.updateMany({
+        where: {
+          id: scooterId,
+          status: 'RENTED' as any,
+        } as any,
+        data: { status: 'AVAILABLE' as any } as any,
+      }),
+    )
+
+    if (bookingUpdatePromises.length > 0 || scooterUpdatePromises.length > 0) {
+      await Promise.all([...bookingUpdatePromises, ...scooterUpdatePromises])
       // Refetch bookings to get updated statuses
       const updatedBookings = await prisma.booking.findMany({
         where: { userId },
