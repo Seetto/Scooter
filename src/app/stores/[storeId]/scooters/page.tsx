@@ -330,7 +330,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
         return
       }
 
-      const successCount = results.length
+      const successCount = result.quantity || bookingForm.quantity
       setBookingSuccess(
         `Successfully created ${successCount} booking${successCount > 1 ? 's' : ''}! The store will review and confirm your booking${successCount > 1 ? 's' : ''}.`,
       )

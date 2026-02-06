@@ -360,40 +360,38 @@ export async function POST(request: Request) {
     }
 
     // Create all bookings and update scooter statuses in a transaction
-    const bookingData = scootersToBook.map((scooter: any) => ({
-      userId,
-      storeId,
-      scooterId: scooter.id,
-      startDate: start,
-      endDate: end,
-    }))
-
-    const scooterUpdateData = scootersToBook.map((scooter: any) => ({
-      where: { id: scooter.id },
-      data: { status: 'RENTED' as any },
-    }))
-
-    // Use a transaction to ensure all bookings are created and scooters updated atomically
-    const [bookings] = await prisma.$transaction([
+    const bookings = await prisma.$transaction(async (tx) => {
       // Create all bookings
-      Promise.all(
-        bookingData.map((data: any) =>
-          prisma.booking.create({
-            data,
+      const createdBookings = await Promise.all(
+        scootersToBook.map((scooter: any) =>
+          tx.booking.create({
+            data: {
+              userId,
+              storeId,
+              scooterId: scooter.id,
+              startDate: start,
+              endDate: end,
+            },
             include: {
               store: { select: { id: true, name: true } },
               scooter: { select: { id: true, name: true, model: true } },
             },
           })
         )
-      ),
-      // Update all scooter statuses
-      Promise.all(
-        scooterUpdateData.map((update: any) =>
-          prisma.scooter.update(update as any)
+      )
+
+      // Update all scooter statuses to RENTED
+      await Promise.all(
+        scootersToBook.map((scooter: any) =>
+          tx.scooter.update({
+            where: { id: scooter.id },
+            data: { status: 'RENTED' as any },
+          })
         )
-      ),
-    ])
+      )
+
+      return createdBookings
+    })
 
     // Optionally update user profile details with latest name/phone
     if (name || phoneNumber) {
