@@ -1175,37 +1175,65 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                 >
                   Checking availability...
                 </div>
-              ) : unavailableDates.length > 0 && (
-                <div
-                  style={{
-                    marginBottom: '0.75rem',
-                    padding: '0.75rem',
-                    borderRadius: '0.375rem',
-                    backgroundColor: '#fef3c7',
-                    border: '1px solid #fbbf24',
-                  }}
-                >
+              ) : (() => {
+                // Only show warning if selected dates conflict with unavailable dates
+                if (!bookingForm.startDate || !bookingForm.endDate || unavailableDates.length === 0) {
+                  return null
+                }
+                
+                const start = new Date(bookingForm.startDate)
+                const end = new Date(bookingForm.endDate)
+                start.setHours(0, 0, 0, 0)
+                end.setHours(0, 0, 0, 0)
+                
+                // Check which dates in the selected range are unavailable
+                const conflictingDates: string[] = []
+                const currentDate = new Date(start)
+                while (currentDate <= end) {
+                  const dateStr = currentDate.toISOString().split('T')[0]
+                  if (unavailableDates.includes(dateStr)) {
+                    conflictingDates.push(dateStr)
+                  }
+                  currentDate.setDate(currentDate.getDate() + 1)
+                }
+                
+                // Only show warning if there are actual conflicts
+                if (conflictingDates.length === 0) {
+                  return null
+                }
+                
+                return (
                   <div
                     style={{
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      color: '#92400e',
-                      marginBottom: '0.25rem',
+                      marginBottom: '0.75rem',
+                      padding: '0.75rem',
+                      borderRadius: '0.375rem',
+                      backgroundColor: '#fef3c7',
+                      border: '1px solid #fbbf24',
                     }}
                   >
-                    ⚠️ Unavailable Dates
+                    <div
+                      style={{
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        color: '#92400e',
+                        marginBottom: '0.25rem',
+                      }}
+                    >
+                      ⚠️ Unavailable Dates
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#78350f',
+                      }}
+                    >
+                      This scooter is already booked on {conflictingDates.length} day{conflictingDates.length !== 1 ? 's' : ''} in your selected range. 
+                      These dates are shown in red and cannot be selected.
+                    </div>
                   </div>
-                  <div
-                    style={{
-                      fontSize: '0.75rem',
-                      color: '#78350f',
-                    }}
-                  >
-                    This scooter is already booked on {unavailableDates.length} day{unavailableDates.length !== 1 ? 's' : ''}. 
-                    These dates are shown in red and cannot be selected.
-                  </div>
-                </div>
-              )}
+                )
+              })()}
 
               {bookingForm.startDate && bookingForm.endDate && (() => {
                 const conflict = checkDateConflict(bookingForm.startDate, bookingForm.endDate)
