@@ -42,26 +42,37 @@ export async function GET(
     // So we should only mark dates up to and including the booking end date as unavailable
     const unavailableDates: string[] = []
 
+    // Helper function to format date in local timezone as YYYY-MM-DD
+    const formatLocalDate = (date: Date): string => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+
     bookings.forEach((booking) => {
+      // Convert database dates to local dates
+      // Database dates might be in UTC, so we need to get the local date components
       const start = new Date(booking.startDate)
       const end = new Date(booking.endDate)
-      start.setHours(0, 0, 0, 0)
-      end.setHours(0, 0, 0, 0)
+      
+      // Get local date components (not UTC)
+      const startLocal = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+      const endLocal = new Date(end.getFullYear(), end.getMonth(), end.getDate())
+      startLocal.setHours(0, 0, 0, 0)
+      endLocal.setHours(0, 0, 0, 0)
 
       // Only include dates that are today or in the future
-      const checkStart = start >= today ? start : today
+      const checkStart = startLocal >= today ? startLocal : today
       
       // Only process if the booking hasn't ended (for unavailable dates display)
       // If booking ends on Feb 6 and today is Feb 7, don't include it
-      if (end >= today) {
+      if (endLocal >= today) {
         // Generate all dates in the range (inclusive of start and end)
         const currentDate = new Date(checkStart)
-        while (currentDate <= end) {
+        while (currentDate <= endLocal) {
           // Use local date formatting to avoid timezone issues
-          const year = currentDate.getFullYear()
-          const month = String(currentDate.getMonth() + 1).padStart(2, '0')
-          const day = String(currentDate.getDate()).padStart(2, '0')
-          const dateStr = `${year}-${month}-${day}`
+          const dateStr = formatLocalDate(currentDate)
           
           if (!unavailableDates.includes(dateStr)) {
             unavailableDates.push(dateStr)
@@ -71,21 +82,17 @@ export async function GET(
       }
     })
 
-    // Format booking dates using local time to avoid timezone issues
-    const formatLocalDate = (date: Date): string => {
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      return `${year}-${month}-${day}`
-    }
-
     return NextResponse.json({
       unavailableDates: unavailableDates.sort(),
-      bookings: bookings.map((b) => ({
-        startDate: formatLocalDate(new Date(b.startDate)),
-        endDate: formatLocalDate(new Date(b.endDate)),
-        status: b.status,
-      })),
+      bookings: bookings.map((b) => {
+        const startDate = new Date(b.startDate)
+        const endDate = new Date(b.endDate)
+        return {
+          startDate: formatLocalDate(new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())),
+          endDate: formatLocalDate(new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate())),
+          status: b.status,
+        }
+      }),
     })
   } catch (error) {
     console.error('Error fetching unavailable dates:', error)
