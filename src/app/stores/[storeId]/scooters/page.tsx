@@ -1228,8 +1228,11 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   return null
                 }
                 
-                const start = new Date(bookingForm.startDate)
-                const end = new Date(bookingForm.endDate)
+                // Parse dates using local time to avoid timezone issues
+                const startParts = bookingForm.startDate.split('-')
+                const endParts = bookingForm.endDate.split('-')
+                const start = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]))
+                const end = new Date(parseInt(endParts[0]), parseInt(endParts[1]) - 1, parseInt(endParts[2]))
                 start.setHours(0, 0, 0, 0)
                 end.setHours(0, 0, 0, 0)
                 
@@ -1237,7 +1240,12 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                 const conflictingDates: string[] = []
                 const currentDate = new Date(start)
                 while (currentDate <= end) {
-                  const dateStr = currentDate.toISOString().split('T')[0]
+                  // Format as YYYY-MM-DD using local date components
+                  const year = currentDate.getFullYear()
+                  const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+                  const day = String(currentDate.getDate()).padStart(2, '0')
+                  const dateStr = `${year}-${month}-${day}`
+                  
                   if (unavailableDates.includes(dateStr)) {
                     conflictingDates.push(dateStr)
                   }
