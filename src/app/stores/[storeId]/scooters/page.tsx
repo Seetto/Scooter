@@ -272,8 +272,22 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
       return
     }
 
-    if (!bookingForm.quantity || bookingForm.quantity < 1 || bookingForm.quantity > selectedScooter.availableUnits) {
-      setBookingError(`Please select a quantity between 1 and ${selectedScooter.availableUnits}.`)
+    // Calculate available units for the selected dates
+    const modelScooters = scooters.filter(s => 
+      (s.model || s.name) === (selectedScooter.model || selectedScooter.name)
+    )
+    const availableScootersForDates = modelScooters.filter(s => {
+      if (s.status === 'AVAILABLE') {
+        return scooterAvailability[s.id] !== false && scooterAvailability[s.id] !== undefined
+      } else if (s.status === 'RENTED') {
+        return scooterAvailability[s.id] === true
+      }
+      return false
+    })
+    const maxAvailableUnits = availableScootersForDates.length
+
+    if (!bookingForm.quantity || bookingForm.quantity < 1 || bookingForm.quantity > maxAvailableUnits) {
+      setBookingError(`Please select a quantity between 1 and ${maxAvailableUnits}.`)
       return
     }
 

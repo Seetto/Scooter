@@ -256,14 +256,16 @@ export async function POST(request: Request) {
       )
     }
 
-    // Find an available scooter with the same model (status = AVAILABLE)
-    // First, get all scooters with the same model and status AVAILABLE
+    // Find available scooters with the same model
+    // Include both AVAILABLE and RENTED scooters (RENTED scooters whose bookings have ended are available)
     const modelScooters = await prisma.scooter.findMany({
       where: {
         storeId,
         model: selectedScooter.model || selectedScooter.name,
-        status: 'AVAILABLE' as any, // Type assertion needed until Prisma client is regenerated
-      } as any,
+        status: {
+          in: ['AVAILABLE', 'RENTED'] as any,
+        } as any,
+      },
       include: {
         bookings: {
           where: {
@@ -273,11 +275,43 @@ export async function POST(request: Request) {
           },
         },
       },
-      orderBy: { createdAt: 'asc' }, // Get the oldest available scooter first
+      orderBy: { createdAt: 'asc' }, // Get the oldest scooter first
     })
 
-    // Filter out scooters that have conflicting bookings
+    // Filter scooters that are available for the selected dates
     const availableScooters = modelScooters.filter((scooter: any) => {
+      // For RENTED scooters, check if all their bookings end before the selected start date
+      if (scooter.status === 'RENTED') {
+        // If there are no active bookings, the scooter is available (booking must have ended)
+        if (scooter.bookings.length === 0) {
+          return true
+        }
+        
+        // Check if all bookings end before the selected start date
+        const allBookingsEndBeforeStart = scooter.bookings.every((booking: any) => {
+          const bookingEnd = new Date(booking.endDate)
+          bookingEnd.setHours(23, 59, 59, 999) // End of the booking day
+          return bookingEnd < start
+        })
+        
+        // Also check that the selected dates don't overlap with any active bookings
+        const hasOverlappingBooking = scooter.bookings.some((booking: any) => {
+          const bookingStart = new Date(booking.startDate)
+          const bookingEnd = new Date(booking.endDate)
+          
+          // Check if dates overlap
+          return (
+            (start >= bookingStart && start <= bookingEnd) ||
+            (end >= bookingStart && end <= bookingEnd) ||
+            (start <= bookingStart && end >= bookingEnd) ||
+            (start >= bookingStart && end <= bookingEnd)
+          )
+        })
+        
+        return allBookingsEndBeforeStart && !hasOverlappingBooking
+      }
+      
+      // For AVAILABLE scooters, check for date conflicts
       return !scooter.bookings.some((booking: any) => {
         const bookingStart = new Date(booking.startDate)
         const bookingEnd = new Date(booking.endDate)
