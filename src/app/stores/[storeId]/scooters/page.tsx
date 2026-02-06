@@ -268,8 +268,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
   const checkDateConflict = (startDate: string, endDate: string): string | null => {
     if (!startDate || !endDate) return null
 
-    const start = new Date(startDate)
-    const end = new Date(endDate)
+    const start = new Date(startDate + 'T00:00:00') // Use local time to avoid timezone issues
+    const end = new Date(endDate + 'T00:00:00')
     start.setHours(0, 0, 0, 0)
     end.setHours(0, 0, 0, 0)
 
@@ -277,12 +277,18 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
       return 'End date must be after start date.'
     }
 
-    // Check if any date in the range is unavailable
+    // Check if any date in the selected range is unavailable
+    // Note: unavailableDates are in YYYY-MM-DD format
     const conflictingDates: string[] = []
     const currentDate = new Date(start)
     
     while (currentDate <= end) {
-      const dateStr = currentDate.toISOString().split('T')[0]
+      // Format as YYYY-MM-DD to match unavailableDates format
+      const year = currentDate.getFullYear()
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+      const day = String(currentDate.getDate()).padStart(2, '0')
+      const dateStr = `${year}-${month}-${day}`
+      
       if (unavailableDates.includes(dateStr)) {
         conflictingDates.push(dateStr)
       }

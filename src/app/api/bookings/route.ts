@@ -289,23 +289,33 @@ export async function POST(request: Request) {
         }
         
         // Check if all bookings end before the selected start date
+        // A booking ending on Feb 6 means the scooter is available starting Feb 7
         const allBookingsEndBeforeStart = scooter.bookings.every((booking: any) => {
           const bookingEnd = new Date(booking.endDate)
-          bookingEnd.setHours(23, 59, 59, 999) // End of the booking day
-          return bookingEnd < start
+          bookingEnd.setHours(0, 0, 0, 0)
+          // Booking ends on bookingEnd, so scooter is available starting bookingEnd + 1 day
+          const nextAvailableDate = new Date(bookingEnd)
+          nextAvailableDate.setDate(nextAvailableDate.getDate() + 1)
+          return start >= nextAvailableDate
         })
         
         // Also check that the selected dates don't overlap with any active bookings
+        // Overlap means: selected start is during booking OR selected end is during booking
+        // OR selected range completely contains booking OR booking completely contains selected range
         const hasOverlappingBooking = scooter.bookings.some((booking: any) => {
           const bookingStart = new Date(booking.startDate)
           const bookingEnd = new Date(booking.endDate)
+          bookingStart.setHours(0, 0, 0, 0)
+          bookingEnd.setHours(0, 0, 0, 0)
           
-          // Check if dates overlap
+          // A booking from Feb 1-6 means unavailable on those days
+          // Selected dates Feb 7-9 should NOT overlap (Feb 7 > Feb 6)
+          // Overlap occurs if: start <= bookingEnd AND end >= bookingStart
+          // But we want to exclude the day after booking end, so:
+          // Overlap if: start <= bookingEnd OR (start > bookingEnd AND end < bookingStart is impossible)
+          // Actually: overlap if the ranges intersect at all
           return (
-            (start >= bookingStart && start <= bookingEnd) ||
-            (end >= bookingStart && end <= bookingEnd) ||
-            (start <= bookingStart && end >= bookingEnd) ||
-            (start >= bookingStart && end <= bookingEnd)
+            (start <= bookingEnd && end >= bookingStart)
           )
         })
         
@@ -313,17 +323,15 @@ export async function POST(request: Request) {
       }
       
       // For AVAILABLE scooters, check for date conflicts
+      // Overlap occurs if the selected range intersects with the booking range
       return !scooter.bookings.some((booking: any) => {
         const bookingStart = new Date(booking.startDate)
         const bookingEnd = new Date(booking.endDate)
+        bookingStart.setHours(0, 0, 0, 0)
+        bookingEnd.setHours(0, 0, 0, 0)
         
-        // Check if dates overlap
-        return (
-          (start >= bookingStart && start <= bookingEnd) ||
-          (end >= bookingStart && end <= bookingEnd) ||
-          (start <= bookingStart && end >= bookingEnd) ||
-          (start >= bookingStart && end <= bookingEnd)
-        )
+        // Overlap if: selected start <= booking end AND selected end >= booking start
+        return (start <= bookingEnd && end >= bookingStart)
       })
     })
 
