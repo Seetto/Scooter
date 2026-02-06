@@ -97,39 +97,73 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
       setCheckingAvailability(true)
       const availability: Record<string, boolean> = {}
 
-      // Check each scooter's availability (only AVAILABLE status scooters)
-      const availableScooters = scooters.filter(s => s.status === 'AVAILABLE')
-      
-      for (const scooter of availableScooters) {
+      const start = new Date(rentalPeriod.startDate)
+      const end = new Date(rentalPeriod.endDate)
+      start.setHours(0, 0, 0, 0)
+      end.setHours(0, 0, 0, 0)
+
+      // Check each scooter's availability (both AVAILABLE and RENTED scooters)
+      for (const scooter of scooters) {
         try {
-          const response = await fetch(`/api/scooters/${scooter.id}/unavailable-dates`)
-          if (response.ok) {
-            const data = await response.json()
-            const unavailableDates = data.unavailableDates || []
-
-            // Check if any date in the rental period is unavailable
-            const start = new Date(rentalPeriod.startDate)
-            const end = new Date(rentalPeriod.endDate)
-            let isAvailable = true
-
-            const currentDate = new Date(start)
-            while (currentDate <= end && isAvailable) {
-              const dateStr = currentDate.toISOString().split('T')[0]
-              if (unavailableDates.includes(dateStr)) {
-                isAvailable = false
-              }
-              currentDate.setDate(currentDate.getDate() + 1)
+          // For RENTED scooters, check if the selected dates are after their booking end date
+          if (scooter.status === 'RENTED') {
+            const response = await fetch(`/api/scooters/${scooter.id}/unavailable-dates`)
+            if (response.ok) {
+              const data = await response.json()
+              const bookings = data.bookings || []
+              
+              // Check if there are any active bookings that overlap with the selected dates
+              const hasOverlappingBooking = bookings.some((booking: any) => {
+                const bookingStart = new Date(booking.startDate)
+                const bookingEnd = new Date(booking.endDate)
+                bookingStart.setHours(0, 0, 0, 0)
+                bookingEnd.setHours(0, 0, 0, 0)
+                
+                // Check if dates overlap
+                return (
+                  (start >= bookingStart && start <= bookingEnd) ||
+                  (end >= bookingStart && end <= bookingEnd) ||
+                  (start <= bookingStart && end >= bookingEnd) ||
+                  (start >= bookingStart && end <= bookingEnd)
+                )
+              })
+              
+              // If no overlapping bookings, the scooter is available for these dates
+              // (the booking has ended before the selected start date)
+              availability[scooter.id] = !hasOverlappingBooking
+            } else {
+              // If we can't check, assume not available for RENTED scooters
+              availability[scooter.id] = false
             }
-
-            availability[scooter.id] = isAvailable
           } else {
-            // If we can't check, assume available
-            availability[scooter.id] = true
+            // For AVAILABLE scooters, check for date conflicts
+            const response = await fetch(`/api/scooters/${scooter.id}/unavailable-dates`)
+            if (response.ok) {
+              const data = await response.json()
+              const unavailableDates = data.unavailableDates || []
+
+              // Check if any date in the rental period is unavailable
+              let isAvailable = true
+
+              const currentDate = new Date(start)
+              while (currentDate <= end && isAvailable) {
+                const dateStr = currentDate.toISOString().split('T')[0]
+                if (unavailableDates.includes(dateStr)) {
+                  isAvailable = false
+                }
+                currentDate.setDate(currentDate.getDate() + 1)
+              }
+
+              availability[scooter.id] = isAvailable
+            } else {
+              // If we can't check, assume available
+              availability[scooter.id] = true
+            }
           }
         } catch (err) {
           console.error(`Error checking availability for scooter ${scooter.id}:`, err)
-          // On error, assume available
-          availability[scooter.id] = true
+          // On error, assume not available for RENTED, available for others
+          availability[scooter.id] = scooter.status !== 'RENTED'
         }
       }
 
@@ -621,28 +655,41 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     const modelScooters = modelGroups[model]
                     const availableScooters = modelScooters.filter(s => s.status === 'AVAILABLE')
                     const rentedScooters = modelScooters.filter(s => s.status === 'RENTED')
-                    const availableUnits = availableScooters.length
+                    
+                    // Calculate available units for the selected dates
+                    // Include AVAILABLE scooters that don't have date conflicts
+                    // Include RENTED scooters whose bookings have ended before the selected dates
+                    let availableUnitsForDates = 0
+                    if (rentalPeriod.startDate && rentalPeriod.endDate) {
+                      // Count AVAILABLE scooters that are available for the selected dates
+                      availableUnitsForDates += availableScooters.filter(s => 
+                        scooterAvailability[s.id] !== false && scooterAvailability[s.id] !== undefined
+                      ).length
+                      
+                      // Count RENTED scooters that are available for the selected dates (booking has ended)
+                      availableUnitsForDates += rentedScooters.filter(s => 
+                        scooterAvailability[s.id] === true
+                      ).length
+                    } else {
+                      // If no dates selected, only count AVAILABLE scooters
+                      availableUnitsForDates = availableScooters.length
+                    }
+                    
                     const totalUnits = modelScooters.length
                     
                     // Use the first scooter of this model for display
                     const scooter = modelScooters[0]
                     
-                    // If there are any RENTED scooters, the model is not available
-                    const hasRentedScooters = rentedScooters.length > 0
-                    
                     // Determine if any scooter of this model is available for the selected dates
-                    // A model is available if:
-                    // 1. There are AVAILABLE scooters (not all are RENTED)
-                    // 2. The selected dates don't conflict with existing bookings
                     const isAvailable = rentalPeriod.startDate && rentalPeriod.endDate
-                      ? availableScooters.length > 0 && availableScooters.some(s => scooterAvailability[s.id] !== false)
-                      : availableUnits > 0 && !hasRentedScooters
+                      ? availableUnitsForDates > 0
+                      : availableScooters.length > 0
                     const availabilityChecked = rentalPeriod.startDate && rentalPeriod.endDate
-                      ? availableScooters.some(s => scooterAvailability[s.id] !== undefined)
+                      ? modelScooters.every(s => scooterAvailability[s.id] !== undefined)
                       : true
                     
-                    // If all scooters are RENTED, show as not available
-                    const allRented = availableUnits === 0 && rentedScooters.length > 0
+                    // If all scooters are RENTED and none are available for the selected dates
+                    const allRented = availableScooters.length === 0 && rentedScooters.length > 0 && availableUnitsForDates === 0
 
                     return (
                     <tr
@@ -669,7 +716,9 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           color: '#4b5563',
                         }}
                       >
-                        {availableUnits > 0 ? availableUnits : (rentedScooters.length > 0 ? 0 : totalUnits)}
+                        {rentalPeriod.startDate && rentalPeriod.endDate 
+                          ? availableUnitsForDates 
+                          : availableScooters.length}
                       </td>
                       <td
                         style={{
@@ -707,7 +756,9 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                             minWidth: '60px',
                           }}
                         >
-                          {Array.from({ length: availableUnits }, (_, i) => i + 1).map((num) => (
+                          {Array.from({ length: rentalPeriod.startDate && rentalPeriod.endDate 
+                            ? availableUnitsForDates 
+                            : availableScooters.length }, (_, i) => i + 1).map((num) => (
                             <option key={num} value={num}>
                               {num}
                             </option>
