@@ -262,10 +262,11 @@ export async function POST(request: Request) {
       where: {
         storeId,
         model: selectedScooter.model || selectedScooter.name,
-        status: {
-          in: ['AVAILABLE', 'RENTED'] as any,
-        } as any,
-      },
+        OR: [
+          { status: 'AVAILABLE' as any },
+          { status: 'RENTED' as any },
+        ],
+      } as any,
       include: {
         bookings: {
           where: {
