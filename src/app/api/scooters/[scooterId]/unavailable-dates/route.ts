@@ -38,6 +38,8 @@ export async function GET(
 
     // Convert bookings to date ranges (array of date strings in YYYY-MM-DD format)
     // Only include dates that are today or in the future (for display purposes)
+    // IMPORTANT: A booking ending on date X means the scooter is available starting date X+1
+    // So we should only mark dates up to and including the booking end date as unavailable
     const unavailableDates: string[] = []
 
     bookings.forEach((booking) => {
@@ -50,11 +52,17 @@ export async function GET(
       const checkStart = start >= today ? start : today
       
       // Only process if the booking hasn't ended (for unavailable dates display)
+      // If booking ends on Feb 6 and today is Feb 7, don't include it
       if (end >= today) {
-        // Generate all dates in the range
+        // Generate all dates in the range (inclusive of start and end)
         const currentDate = new Date(checkStart)
         while (currentDate <= end) {
-          const dateStr = currentDate.toISOString().split('T')[0]
+          // Use local date formatting to avoid timezone issues
+          const year = currentDate.getFullYear()
+          const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+          const day = String(currentDate.getDate()).padStart(2, '0')
+          const dateStr = `${year}-${month}-${day}`
+          
           if (!unavailableDates.includes(dateStr)) {
             unavailableDates.push(dateStr)
           }

@@ -265,8 +265,11 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
   const checkDateConflict = (startDate: string, endDate: string): string | null => {
     if (!startDate || !endDate) return null
 
-    const start = new Date(startDate + 'T00:00:00') // Use local time to avoid timezone issues
-    const end = new Date(endDate + 'T00:00:00')
+    // Parse dates consistently - use the date string directly to avoid timezone issues
+    const startParts = startDate.split('-')
+    const endParts = endDate.split('-')
+    const start = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]))
+    const end = new Date(parseInt(endParts[0]), parseInt(endParts[1]) - 1, parseInt(endParts[2]))
     start.setHours(0, 0, 0, 0)
     end.setHours(0, 0, 0, 0)
 
@@ -286,6 +289,9 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
       const day = String(currentDate.getDate()).padStart(2, '0')
       const dateStr = `${year}-${month}-${day}`
       
+      // Only check dates that are actually in the selected range
+      // A booking ending on Feb 6 means Feb 7+ should be available
+      // So we should only flag conflicts for dates >= start date
       if (unavailableDates.includes(dateStr)) {
         conflictingDates.push(dateStr)
       }
