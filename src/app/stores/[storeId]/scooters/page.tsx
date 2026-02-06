@@ -620,18 +620,29 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   return uniqueModels.map((model) => {
                     const modelScooters = modelGroups[model]
                     const availableScooters = modelScooters.filter(s => s.status === 'AVAILABLE')
+                    const rentedScooters = modelScooters.filter(s => s.status === 'RENTED')
                     const availableUnits = availableScooters.length
+                    const totalUnits = modelScooters.length
                     
                     // Use the first scooter of this model for display
                     const scooter = modelScooters[0]
                     
+                    // If there are any RENTED scooters, the model is not available
+                    const hasRentedScooters = rentedScooters.length > 0
+                    
                     // Determine if any scooter of this model is available for the selected dates
+                    // A model is available if:
+                    // 1. There are AVAILABLE scooters (not all are RENTED)
+                    // 2. The selected dates don't conflict with existing bookings
                     const isAvailable = rentalPeriod.startDate && rentalPeriod.endDate
-                      ? availableScooters.some(s => scooterAvailability[s.id] !== false)
-                      : availableUnits > 0
+                      ? availableScooters.length > 0 && availableScooters.some(s => scooterAvailability[s.id] !== false)
+                      : availableUnits > 0 && !hasRentedScooters
                     const availabilityChecked = rentalPeriod.startDate && rentalPeriod.endDate
                       ? availableScooters.some(s => scooterAvailability[s.id] !== undefined)
                       : true
+                    
+                    // If all scooters are RENTED, show as not available
+                    const allRented = availableUnits === 0 && rentedScooters.length > 0
 
                     return (
                     <tr
@@ -658,7 +669,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           color: '#4b5563',
                         }}
                       >
-                        {availableUnits}
+                        {availableUnits > 0 ? availableUnits : (rentedScooters.length > 0 ? 0 : totalUnits)}
                       </td>
                       <td
                         style={{
@@ -728,7 +739,21 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           >
                             Checking...
                           </span>
-                        ) : isAvailable ? (
+                        ) : allRented || !isAvailable ? (
+                          <span
+                            style={{
+                              padding: '0.45rem 1.1rem',
+                              borderRadius: '0.5rem',
+                              backgroundColor: '#f3f4f6',
+                              color: '#6b7280',
+                              fontWeight: 600,
+                              fontSize: '0.85rem',
+                              display: 'inline-block',
+                            }}
+                          >
+                            Not Available
+                          </span>
+                        ) : (
                           <button
                             type="button"
                             onClick={() => {
@@ -752,20 +777,6 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           >
                             Book Now
                           </button>
-                        ) : (
-                          <span
-                            style={{
-                              padding: '0.45rem 1.1rem',
-                              borderRadius: '0.5rem',
-                              backgroundColor: '#f3f4f6',
-                              color: '#6b7280',
-                              fontWeight: 600,
-                              fontSize: '0.85rem',
-                              display: 'inline-block',
-                            }}
-                          >
-                            Not Available
-                          </span>
                         )}
                       </td>
                     </tr>

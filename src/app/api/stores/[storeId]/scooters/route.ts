@@ -16,7 +16,10 @@ export async function GET(
     const scooters = await prisma.scooter.findMany({
       where: { 
         storeId,
-        status: 'AVAILABLE', // Only show available scooters to users
+        // Show all scooters - RENTED scooters will be marked as "Not Available" on frontend
+        status: {
+          in: ['AVAILABLE', 'RENTED'] as any,
+        } as any,
       },
       orderBy: { createdAt: 'desc' },
       select: {
