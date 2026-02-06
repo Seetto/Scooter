@@ -212,7 +212,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { storeId, scooterId, startDate, endDate, name, phoneNumber } = body
+    const { storeId, scooterId, startDate, endDate, name, phoneNumber, quantity = 1 } = body
     
     console.log('Booking POST - Request body:', { storeId, scooterId, startDate, endDate, hasName: !!name, hasPhone: !!phoneNumber })
 
@@ -327,28 +327,19 @@ export async function POST(request: Request) {
       })
     })
 
-    if (availableScooters.length === 0) {
+    // Check if we have enough available scooters for the requested quantity
+    if (availableScooters.length < quantity) {
       return NextResponse.json(
         {
-          error: 'Scooter is not available for the selected dates',
-          details: 'No available scooters of this model for the selected date range',
+          error: 'Not enough scooters available',
+          details: `Only ${availableScooters.length} scooter${availableScooters.length !== 1 ? 's' : ''} available, but ${quantity} requested`,
         },
         { status: 409 },
       )
     }
 
-    // Get the first available scooter
-    const availableScooter = availableScooters[0]
-
-    if (!availableScooter) {
-      return NextResponse.json(
-        {
-          error: 'Scooter is not available for the selected dates',
-          details: 'No available scooters of this model for the selected date range',
-        },
-        { status: 409 },
-      )
-    }
+    // Get the requested number of available scooters
+    const scootersToBook = availableScooters.slice(0, quantity)
 
     // Fetch user and store details for emails
     const user = await prisma.user.findUnique({
@@ -368,26 +359,41 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create booking with the available scooter
-    const booking = await prisma.booking.create({
-      data: {
-        userId,
-        storeId,
-        scooterId: availableScooter.id, // Use the available scooter, not the selected one
-        startDate: start,
-        endDate: end,
-      },
-      include: {
-        store: { select: { id: true, name: true } },
-        scooter: { select: { id: true, name: true, model: true } },
-      },
-    })
+    // Create all bookings and update scooter statuses in a transaction
+    const bookingData = scootersToBook.map((scooter: any) => ({
+      userId,
+      storeId,
+      scooterId: scooter.id,
+      startDate: start,
+      endDate: end,
+    }))
 
-    // Update the scooter status to RENTED
-    await prisma.scooter.update({
-      where: { id: availableScooter.id },
-      data: { status: 'RENTED' as any } as any, // Type assertion needed until Prisma client is regenerated
-    })
+    const scooterUpdateData = scootersToBook.map((scooter: any) => ({
+      where: { id: scooter.id },
+      data: { status: 'RENTED' as any },
+    }))
+
+    // Use a transaction to ensure all bookings are created and scooters updated atomically
+    const [bookings] = await prisma.$transaction([
+      // Create all bookings
+      Promise.all(
+        bookingData.map((data: any) =>
+          prisma.booking.create({
+            data,
+            include: {
+              store: { select: { id: true, name: true } },
+              scooter: { select: { id: true, name: true, model: true } },
+            },
+          })
+        )
+      ),
+      // Update all scooter statuses
+      Promise.all(
+        scooterUpdateData.map((update: any) =>
+          prisma.scooter.update(update as any)
+        )
+      ),
+    ])
 
     // Optionally update user profile details with latest name/phone
     if (name || phoneNumber) {
@@ -402,23 +408,25 @@ export async function POST(request: Request) {
 
     // Send emails (don't fail booking creation if emails fail)
     try {
-      // Send email to user
-      await sendBookingReceivedEmail(
-        user.email,
-        user.name,
-        store.name,
-        availableScooter.name || availableScooter.model || 'Scooter',
-        start,
-        end,
-      )
+      // Send email to user for each booking
+      for (const booking of bookings) {
+        await sendBookingReceivedEmail(
+          user.email,
+          user.name,
+          store.name,
+          booking.scooter?.name || booking.scooter?.model || 'Scooter',
+          start,
+          end,
+        )
+      }
 
-      // Send email to store
+      // Send email to store (one email for all bookings)
       await sendNewBookingNotificationEmail(
         store.email,
         store.name,
         user.name,
         user.email,
-        availableScooter.name || availableScooter.model || 'Scooter',
+        `${quantity} scooter${quantity !== 1 ? 's' : ''}`,
         start,
         end,
       )
@@ -427,7 +435,12 @@ export async function POST(request: Request) {
       // Continue even if emails fail - booking is still created
     }
 
-    return NextResponse.json({ booking }, { status: 201 })
+    // Return the first booking (for backward compatibility) and the count
+    return NextResponse.json({ 
+      booking: bookings[0],
+      bookings: bookings,
+      quantity: bookings.length,
+    }, { status: 201 })
   } catch (error) {
     console.error('Error creating booking:', error)
     return NextResponse.json(

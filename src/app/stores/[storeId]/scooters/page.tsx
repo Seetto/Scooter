@@ -301,38 +301,30 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     setBookingLoading(true)
 
     try {
-      // Create multiple bookings for the selected quantity
-      const bookingPromises = []
-      for (let i = 0; i < bookingForm.quantity; i++) {
-        bookingPromises.push(
-          fetch('/api/bookings', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-              storeId,
-              scooterId: selectedScooter.id,
-              startDate: bookingForm.startDate,
-              endDate: bookingForm.endDate,
-              name: bookingForm.name,
-              phoneNumber: bookingForm.phoneNumber,
-            }),
-          })
-        )
-      }
+      // Create all bookings in a single request
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          storeId,
+          scooterId: selectedScooter.id,
+          startDate: bookingForm.startDate,
+          endDate: bookingForm.endDate,
+          name: bookingForm.name,
+          phoneNumber: bookingForm.phoneNumber,
+          quantity: bookingForm.quantity,
+        }),
+      })
 
-      const responses = await Promise.all(bookingPromises)
-      const results = await Promise.all(responses.map(r => r.json()))
+      const result = await response.json()
 
-      // Check if all bookings succeeded
-      const failedBookings = results.filter(r => !responses[results.indexOf(r)].ok)
-      
-      if (failedBookings.length > 0) {
-        const errorMsg = failedBookings[0].details 
-          ? `${failedBookings[0].error || 'Failed to create booking'}: ${failedBookings[0].details}`
-          : failedBookings[0].error || 'Failed to create booking. Please try again.'
+      if (!response.ok) {
+        const errorMsg = result.details 
+          ? `${result.error || 'Failed to create booking'}: ${result.details}`
+          : result.error || 'Failed to create booking. Please try again.'
         setBookingError(errorMsg)
         setBookingLoading(false)
         return
