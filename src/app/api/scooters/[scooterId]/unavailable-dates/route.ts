@@ -13,7 +13,9 @@ export async function GET(
       return NextResponse.json({ error: 'Scooter ID is required' }, { status: 400 })
     }
 
-    // Get all confirmed and pending bookings for this scooter that haven't ended yet
+    // Get all confirmed and pending bookings for this scooter
+    // We need ALL bookings (not just future ones) to properly check availability
+    // The frontend will filter out past bookings when checking overlaps
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     
@@ -22,10 +24,6 @@ export async function GET(
         scooterId,
         status: {
           in: ['PENDING', 'CONFIRMED'],
-        },
-        // Only include bookings that haven't ended yet (endDate >= today)
-        endDate: {
-          gte: today,
         },
       },
       select: {
@@ -41,8 +39,6 @@ export async function GET(
     // Convert bookings to date ranges (array of date strings in YYYY-MM-DD format)
     // Only include dates that are today or in the future (for display purposes)
     const unavailableDates: string[] = []
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
 
     bookings.forEach((booking) => {
       const start = new Date(booking.startDate)
