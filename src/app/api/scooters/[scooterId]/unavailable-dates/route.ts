@@ -13,12 +13,19 @@ export async function GET(
       return NextResponse.json({ error: 'Scooter ID is required' }, { status: 400 })
     }
 
-    // Get all confirmed and pending bookings for this scooter
+    // Get all confirmed and pending bookings for this scooter that haven't ended yet
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
     const bookings = await prisma.booking.findMany({
       where: {
         scooterId,
         status: {
           in: ['PENDING', 'CONFIRMED'],
+        },
+        // Only include bookings that haven't ended yet (endDate >= today)
+        endDate: {
+          gte: today,
         },
       },
       select: {
@@ -33,8 +40,6 @@ export async function GET(
 
     // Convert bookings to date ranges (array of date strings in YYYY-MM-DD format)
     const unavailableDates: string[] = []
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
 
     bookings.forEach((booking) => {
       const start = new Date(booking.startDate)
@@ -45,14 +50,17 @@ export async function GET(
       // Only include dates that are today or in the future
       const checkStart = start >= today ? start : today
       
-      // Generate all dates in the range
-      const currentDate = new Date(checkStart)
-      while (currentDate <= end) {
-        const dateStr = currentDate.toISOString().split('T')[0]
-        if (!unavailableDates.includes(dateStr)) {
-          unavailableDates.push(dateStr)
+      // Only process if the booking hasn't ended
+      if (end >= today) {
+        // Generate all dates in the range
+        const currentDate = new Date(checkStart)
+        while (currentDate <= end) {
+          const dateStr = currentDate.toISOString().split('T')[0]
+          if (!unavailableDates.includes(dateStr)) {
+            unavailableDates.push(dateStr)
+          }
+          currentDate.setDate(currentDate.getDate() + 1)
         }
-        currentDate.setDate(currentDate.getDate() + 1)
       }
     })
 
