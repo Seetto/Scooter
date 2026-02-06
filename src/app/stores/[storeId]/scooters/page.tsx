@@ -122,19 +122,16 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
               })
               
               // Check if there are any active bookings that overlap with the selected dates
+              // A booking ending on Feb 6 means the scooter is available starting Feb 7
               const hasOverlappingBooking = bookings.some((booking: any) => {
                 const bookingStart = new Date(booking.startDate)
                 const bookingEnd = new Date(booking.endDate)
                 bookingStart.setHours(0, 0, 0, 0)
                 bookingEnd.setHours(0, 0, 0, 0)
                 
-                // Check if dates overlap
-                return (
-                  (start >= bookingStart && start <= bookingEnd) ||
-                  (end >= bookingStart && end <= bookingEnd) ||
-                  (start <= bookingStart && end >= bookingEnd) ||
-                  (start >= bookingStart && end <= bookingEnd)
-                )
+                // Overlap occurs if the selected range intersects with the booking range
+                // Overlap if: selected start <= booking end AND selected end >= booking start
+                return (start <= bookingEnd && end >= bookingStart)
               })
               
               // If no overlapping bookings and no unavailable dates in the range, the scooter is available
