@@ -39,7 +39,10 @@ export async function GET(
     })
 
     // Convert bookings to date ranges (array of date strings in YYYY-MM-DD format)
+    // Only include dates that are today or in the future (for display purposes)
     const unavailableDates: string[] = []
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
 
     bookings.forEach((booking) => {
       const start = new Date(booking.startDate)
@@ -50,7 +53,7 @@ export async function GET(
       // Only include dates that are today or in the future
       const checkStart = start >= today ? start : today
       
-      // Only process if the booking hasn't ended
+      // Only process if the booking hasn't ended (for unavailable dates display)
       if (end >= today) {
         // Generate all dates in the range
         const currentDate = new Date(checkStart)

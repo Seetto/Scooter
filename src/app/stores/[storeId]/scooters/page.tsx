@@ -107,10 +107,19 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
         try {
           // For RENTED scooters, check if the selected dates are after their booking end date
           if (scooter.status === 'RENTED') {
+            // Use unavailable-dates API but also check all bookings to see if they overlap
             const response = await fetch(`/api/scooters/${scooter.id}/unavailable-dates`)
             if (response.ok) {
               const data = await response.json()
               const bookings = data.bookings || []
+              
+              // Also check unavailable dates to see if any date in the selected range is unavailable
+              const unavailableDates = data.unavailableDates || []
+              const hasUnavailableDates = unavailableDates.some((dateStr: string) => {
+                const date = new Date(dateStr)
+                date.setHours(0, 0, 0, 0)
+                return date >= start && date <= end
+              })
               
               // Check if there are any active bookings that overlap with the selected dates
               const hasOverlappingBooking = bookings.some((booking: any) => {
@@ -128,9 +137,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                 )
               })
               
-              // If no overlapping bookings, the scooter is available for these dates
-              // (the booking has ended before the selected start date)
-              availability[scooter.id] = !hasOverlappingBooking
+              // If no overlapping bookings and no unavailable dates in the range, the scooter is available
+              availability[scooter.id] = !hasOverlappingBooking && !hasUnavailableDates
             } else {
               // If we can't check, assume not available for RENTED scooters
               availability[scooter.id] = false
