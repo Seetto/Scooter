@@ -385,7 +385,7 @@ export async function POST(request: Request) {
         scootersToBook.map((scooter: any) =>
           tx.scooter.update({
             where: { id: scooter.id },
-            data: { status: 'RENTED' as any },
+            data: { status: 'RENTED' as any } as any,
           })
         )
       )
