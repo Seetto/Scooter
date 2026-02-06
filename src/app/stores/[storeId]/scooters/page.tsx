@@ -194,12 +194,42 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
     setSelectedScooter(scooter)
     setBookingError(null)
     setBookingSuccess(null)
+    
+    // Calculate available units for this model based on selected dates
+    const modelScooters = scooters.filter(s => 
+      (s.model || s.name) === (scooter.model || scooter.name)
+    )
+    let availableUnitsForModal = 0
+    if (prefillDates?.startDate && prefillDates?.endDate) {
+      // Count AVAILABLE scooters that are available for the selected dates
+      const availableScooters = modelScooters.filter(s => s.status === 'AVAILABLE')
+      availableUnitsForModal += availableScooters.filter(s => 
+        scooterAvailability[s.id] !== false && scooterAvailability[s.id] !== undefined
+      ).length
+      
+      // Count RENTED scooters that are available for the selected dates (booking has ended)
+      const rentedScooters = modelScooters.filter(s => s.status === 'RENTED')
+      availableUnitsForModal += rentedScooters.filter(s => 
+        scooterAvailability[s.id] === true
+      ).length
+    } else {
+      // If no dates selected, only count AVAILABLE scooters
+      availableUnitsForModal = modelScooters.filter(s => s.status === 'AVAILABLE').length
+    }
+    
+    // Update the scooter object with the calculated available units
+    const scooterWithAvailableUnits = {
+      ...scooter,
+      availableUnits: availableUnitsForModal || 1, // Default to 1 if calculation fails
+    }
+    setSelectedScooter(scooterWithAvailableUnits)
+    
     const qty = quantity || selectedQuantity[scooter.id] || 1
     setBookingForm((prev) => ({
       ...prev,
       startDate: prefillDates?.startDate || '',
       endDate: prefillDates?.endDate || '',
-      quantity: qty,
+      quantity: Math.min(qty, availableUnitsForModal || 1), // Ensure quantity doesn't exceed available units
     }))
     setShowBookingModal(true)
 
