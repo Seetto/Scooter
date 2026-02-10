@@ -955,7 +955,7 @@ export default function ScootersPage() {
                           fontWeight: 600,
                         }}
                       >
-                        {scooter.pricePerDay ? `$${scooter.pricePerDay.toFixed(2)}` : '-'}
+                        {scooter.pricePerDay ? `Rp ${scooter.pricePerDay.toLocaleString('id-ID')}` : '-'}
                       </td>
                       <td
                         style={{

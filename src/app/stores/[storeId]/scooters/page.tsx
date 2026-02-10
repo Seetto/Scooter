@@ -781,7 +781,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           fontWeight: 600,
                         }}
                       >
-                        {scooter.pricePerDay ? `$${scooter.pricePerDay.toFixed(2)}` : '-'}
+                        {scooter.pricePerDay ? `Rp ${scooter.pricePerDay.toLocaleString('id-ID')} (IDR)` : '-'}
                       </td>
                       <td
                         style={{
@@ -948,7 +948,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                 {selectedScooter.pricePerDay && bookingForm.startDate && bookingForm.endDate && (
                   <div style={{ marginTop: '0.5rem' }}>
                     <div style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>
-                      Quantity: {bookingForm.quantity} × ${selectedScooter.pricePerDay.toFixed(2)}/day
+                      Quantity: {bookingForm.quantity} × Rp {selectedScooter.pricePerDay.toLocaleString('id-ID')} (IDR)/day
                     </div>
                     {(() => {
                       const start = new Date(bookingForm.startDate)
