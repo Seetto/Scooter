@@ -584,7 +584,7 @@ export default function ScootersPage() {
                   color: '#374151',
                 }}
               >
-                Price per Day
+                Price per Day (Rupiah)
               </label>
               <div style={{ position: 'relative' }}>
                 <span
@@ -598,19 +598,19 @@ export default function ScootersPage() {
                     fontWeight: 600,
                   }}
                 >
-                  $
+                  Rp
                 </span>
                 <input
                   id="scooter-price-per-day"
                   type="number"
-                  step="0.01"
+                  step="1"
                   min="0"
                   value={form.pricePerDay}
                   onChange={(e) => setForm({ ...form, pricePerDay: e.target.value })}
-                  placeholder="0.00"
+                  placeholder="0"
                   style={{
                     width: '100%',
-                    padding: '0.6rem 0.75rem 0.6rem 2rem',
+                    padding: '0.6rem 0.75rem 0.6rem 2.5rem',
                     borderRadius: '0.375rem',
                     border: '1px solid #d1d5db',
                     fontSize: '0.95rem',
