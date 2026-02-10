@@ -957,7 +957,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       const totalPrice = selectedScooter.pricePerDay * days * bookingForm.quantity
                       return (
                         <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#111827' }}>
-                          Total: ${totalPrice.toFixed(2)} ({days} day{days !== 1 ? 's' : ''})
+                          Total: Rp {totalPrice.toLocaleString('id-ID')} (IDR) ({days} day{days !== 1 ? 's' : ''})
                         </div>
                       )
                     })()}
