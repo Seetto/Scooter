@@ -209,14 +209,14 @@ export default function BookingsPage() {
       style={{
         minHeight: '100vh',
         padding: '2rem',
-        backgroundColor: '#f3f4f6',
+        backgroundColor: 'var(--bg-card)',
       }}
     >
       <div
         style={{
           maxWidth: '960px',
           margin: '0 auto',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-elevated)',
           borderRadius: '0.75rem',
           boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.15)',
           padding: '2rem',
@@ -237,7 +237,7 @@ export default function BookingsPage() {
                 fontSize: '1.75rem',
                 fontWeight: 700,
                 marginBottom: '0.25rem',
-                color: '#111827',
+                color: 'var(--text-primary)',
               }}
             >
               {isStore ? 'Store Bookings' : 'My Bookings'}
@@ -245,7 +245,7 @@ export default function BookingsPage() {
             <p
               style={{
                 fontSize: '0.95rem',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
               }}
             >
               {isStore
@@ -258,12 +258,12 @@ export default function BookingsPage() {
             style={{
               padding: '0.5rem 1rem',
               borderRadius: '9999px',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--border)',
               fontSize: '0.875rem',
               fontWeight: 500,
-              color: '#374151',
+              color: 'var(--text-primary)',
               textDecoration: 'none',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-elevated)',
             }}
           >
             ← Back to home
@@ -275,7 +275,7 @@ export default function BookingsPage() {
           style={{
             display: 'flex',
             gap: '0.75rem',
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: '1px solid var(--border-light)',
             marginBottom: '1.5rem',
           }}
         >
@@ -291,8 +291,8 @@ export default function BookingsPage() {
                   borderRadius: '9999px',
                   border: 'none',
                   cursor: 'pointer',
-                  backgroundColor: isActive ? '#111827' : 'transparent',
-                  color: isActive ? '#f9fafb' : '#4b5563',
+                  backgroundColor: isActive ? 'var(--text-primary)' : 'transparent',
+                  color: isActive ? 'var(--bg-card)' : 'var(--text-secondary)',
                   fontSize: '0.9rem',
                   fontWeight: isActive ? 600 : 500,
                   marginBottom: '-1px',
@@ -310,7 +310,7 @@ export default function BookingsPage() {
             style={{
               padding: '2rem',
               textAlign: 'center',
-              color: '#6b7280',
+              color: 'var(--text-secondary)',
               fontSize: '0.95rem',
             }}
           >
@@ -321,8 +321,8 @@ export default function BookingsPage() {
             style={{
               padding: '1rem',
               borderRadius: '0.5rem',
-              backgroundColor: '#fee2e2',
-              color: '#991b1b',
+              backgroundColor: 'var(--error-bg)',
+              color: 'var(--error-text)',
               fontSize: '0.9rem',
             }}
           >
@@ -333,7 +333,7 @@ export default function BookingsPage() {
             <p
               style={{
                 fontSize: '0.95rem',
-                color: '#4b5563',
+                color: 'var(--text-secondary)',
                 marginBottom: '1rem',
               }}
             >
@@ -344,10 +344,10 @@ export default function BookingsPage() {
                 style={{
                   padding: '2rem',
                   borderRadius: '0.75rem',
-                  border: '1px dashed #d1d5db',
-                  backgroundColor: '#f9fafb',
+                  border: '1px dashed var(--border)',
+                  backgroundColor: 'var(--bg-card)',
                   textAlign: 'center',
-                  color: '#9ca3af',
+                  color: 'var(--disabled)',
                   fontSize: '0.95rem',
                 }}
               >
@@ -367,8 +367,8 @@ export default function BookingsPage() {
                     style={{
                       padding: '1.25rem',
                       borderRadius: '0.75rem',
-                      border: '1px solid #e5e7eb',
-                      backgroundColor: '#ffffff',
+                      border: '1px solid var(--border-light)',
+                      backgroundColor: 'var(--bg-elevated)',
                     }}
                   >
                     <div
@@ -394,7 +394,7 @@ export default function BookingsPage() {
                             style={{
                               fontSize: '1.1rem',
                               fontWeight: 600,
-                              color: '#111827',
+                              color: 'var(--text-primary)',
                               margin: 0,
                             }}
                           >
@@ -410,20 +410,20 @@ export default function BookingsPage() {
                               fontWeight: 600,
                               backgroundColor:
                                 booking.status === 'CONFIRMED'
-                                  ? '#d1fae5'
+                                  ? 'var(--success-bg)'
                                   : booking.status === 'COMPLETED'
-                                    ? '#dbeafe'
+                                    ? 'var(--info-bg)'
                                   : booking.status === 'PENDING'
-                                    ? '#fef3c7'
-                                    : '#fee2e2',
+                                    ? 'var(--warning-bg)'
+                                    : 'var(--error-bg)',
                               color:
                                 booking.status === 'CONFIRMED'
-                                  ? '#065f46'
+                                  ? 'var(--success-text)'
                                   : booking.status === 'COMPLETED'
-                                    ? '#1e40af'
+                                    ? 'var(--info-text)'
                                   : booking.status === 'PENDING'
-                                    ? '#92400e'
-                                    : '#991b1b',
+                                    ? 'var(--warning-text)'
+                                    : 'var(--error-text)',
                             }}
                           >
                             {booking.status}
@@ -433,7 +433,7 @@ export default function BookingsPage() {
                           <p
                             style={{
                               fontSize: '0.9rem',
-                              color: '#4b5563',
+                              color: 'var(--text-secondary)',
                               marginBottom: '0.25rem',
                             }}
                           >
@@ -445,7 +445,7 @@ export default function BookingsPage() {
                         <p
                           style={{
                             fontSize: '0.9rem',
-                            color: '#4b5563',
+                            color: 'var(--text-secondary)',
                             marginBottom: '0.25rem',
                           }}
                         >
@@ -456,7 +456,7 @@ export default function BookingsPage() {
                         <p
                           style={{
                             fontSize: '0.85rem',
-                            color: '#6b7280',
+                            color: 'var(--text-secondary)',
                             marginTop: '0.5rem',
                           }}
                         >
@@ -477,9 +477,9 @@ export default function BookingsPage() {
                             style={{
                               padding: '0.6rem 1.25rem',
                               borderRadius: '0.5rem',
-                              border: '1px solid #2563eb',
-                              backgroundColor: '#ffffff',
-                              color: '#2563eb',
+                              border: '1px solid var(--accent-primary)',
+                              backgroundColor: 'var(--bg-elevated)',
+                              color: 'var(--accent-primary)',
                               fontWeight: 600,
                               fontSize: '0.9rem',
                               cursor: 'pointer',
@@ -498,7 +498,7 @@ export default function BookingsPage() {
                                   padding: '0.6rem 1.25rem',
                                   borderRadius: '0.5rem',
                                   border: 'none',
-                                  backgroundColor: confirmingId === booking.id ? '#9ca3af' : '#10b981',
+                                  backgroundColor: confirmingId === booking.id ? 'var(--disabled)' : 'var(--accent-primary)',
                                   color: '#ffffff',
                                   fontWeight: 600,
                                   fontSize: '0.9rem',
@@ -515,9 +515,9 @@ export default function BookingsPage() {
                                 style={{
                                   padding: '0.6rem 1.25rem',
                                   borderRadius: '0.5rem',
-                                  border: '1px solid #dc2626',
-                                  backgroundColor: cancellingId === booking.id ? '#9ca3af' : '#ffffff',
-                                  color: cancellingId === booking.id ? '#ffffff' : '#dc2626',
+                                  border: '1px solid var(--error-text)',
+                                  backgroundColor: cancellingId === booking.id ? 'var(--disabled)' : 'var(--bg-elevated)',
+                                  color: cancellingId === booking.id ? '#ffffff' : 'var(--error-text)',
                                   fontWeight: 600,
                                   fontSize: '0.9rem',
                                   cursor: confirmingId === booking.id || cancellingId === booking.id ? 'not-allowed' : 'pointer',
@@ -544,9 +544,9 @@ export default function BookingsPage() {
                             style={{
                               padding: '0.6rem 1.25rem',
                               borderRadius: '0.5rem',
-                              border: '1px solid #2563eb',
-                              backgroundColor: '#ffffff',
-                              color: '#2563eb',
+                              border: '1px solid var(--accent-primary)',
+                              backgroundColor: 'var(--bg-elevated)',
+                              color: 'var(--accent-primary)',
                               fontWeight: 600,
                               fontSize: '0.9rem',
                               cursor: 'pointer',
@@ -587,7 +587,7 @@ export default function BookingsPage() {
             >
               <div
                 style={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-elevated)',
                   borderRadius: '0.75rem',
                   maxWidth: '600px',
                   width: '100%',
@@ -600,7 +600,7 @@ export default function BookingsPage() {
                 <div
                   style={{
                     padding: '1.5rem',
-                    borderBottom: '1px solid #e5e7eb',
+                    borderBottom: '1px solid var(--border-light)',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -610,7 +610,7 @@ export default function BookingsPage() {
                     style={{
                       fontSize: '1.5rem',
                       fontWeight: 700,
-                      color: '#111827',
+                      color: 'var(--text-primary)',
                       margin: 0,
                     }}
                   >
@@ -624,7 +624,7 @@ export default function BookingsPage() {
                       border: 'none',
                       fontSize: '1.5rem',
                       cursor: 'pointer',
-                      color: '#6b7280',
+                      color: 'var(--text-secondary)',
                       padding: '0.25rem',
                       lineHeight: 1,
                     }}
@@ -640,7 +640,7 @@ export default function BookingsPage() {
                         display: 'block',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#6b7280',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -650,10 +650,10 @@ export default function BookingsPage() {
                       style={{
                         padding: '0.75rem',
                         borderRadius: '0.5rem',
-                        backgroundColor: '#f9fafb',
-                        border: '1px solid #e5e7eb',
+                        backgroundColor: 'var(--bg-card)',
+                        border: '1px solid var(--border-light)',
                         fontSize: '0.95rem',
-                        color: '#111827',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       {user.name || 'Not provided'}
@@ -666,7 +666,7 @@ export default function BookingsPage() {
                         display: 'block',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#6b7280',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -676,10 +676,10 @@ export default function BookingsPage() {
                       style={{
                         padding: '0.75rem',
                         borderRadius: '0.5rem',
-                        backgroundColor: '#f9fafb',
-                        border: '1px solid #e5e7eb',
+                        backgroundColor: 'var(--bg-card)',
+                        border: '1px solid var(--border-light)',
                         fontSize: '0.95rem',
-                        color: '#111827',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       {user.email}
@@ -692,7 +692,7 @@ export default function BookingsPage() {
                         display: 'block',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#6b7280',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -702,10 +702,10 @@ export default function BookingsPage() {
                       style={{
                         padding: '0.75rem',
                         borderRadius: '0.5rem',
-                        backgroundColor: '#f9fafb',
-                        border: '1px solid #e5e7eb',
+                        backgroundColor: 'var(--bg-card)',
+                        border: '1px solid var(--border-light)',
                         fontSize: '0.95rem',
-                        color: '#111827',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       {user.phoneNumber || 'Not provided'}
@@ -718,7 +718,7 @@ export default function BookingsPage() {
                         display: 'block',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#6b7280',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -728,10 +728,10 @@ export default function BookingsPage() {
                       style={{
                         padding: '0.75rem',
                         borderRadius: '0.5rem',
-                        backgroundColor: '#f9fafb',
-                        border: '1px solid #e5e7eb',
+                        backgroundColor: 'var(--bg-card)',
+                        border: '1px solid var(--border-light)',
                         fontSize: '0.95rem',
-                        color: '#111827',
+                        color: 'var(--text-primary)',
                         whiteSpace: 'pre-wrap',
                       }}
                     >
@@ -746,7 +746,7 @@ export default function BookingsPage() {
                           display: 'block',
                           fontSize: '0.85rem',
                           fontWeight: 600,
-                          color: '#6b7280',
+                          color: 'var(--text-secondary)',
                           marginBottom: '0.25rem',
                         }}
                       >
@@ -756,10 +756,10 @@ export default function BookingsPage() {
                         style={{
                           padding: '0.75rem',
                           borderRadius: '0.5rem',
-                          backgroundColor: '#d1fae5',
-                          border: '1px solid #10b981',
+                          backgroundColor: 'var(--success-bg)',
+                          border: '1px solid var(--accent-primary)',
                           fontSize: '0.95rem',
-                          color: '#065f46',
+                          color: 'var(--success-text)',
                           fontWeight: 500,
                         }}
                       >
@@ -774,7 +774,7 @@ export default function BookingsPage() {
                         display: 'block',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#6b7280',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.5rem',
                       }}
                     >
@@ -789,7 +789,7 @@ export default function BookingsPage() {
                             maxWidth: '100%',
                             maxHeight: '400px',
                             borderRadius: '0.5rem',
-                            border: '1px solid #e5e7eb',
+                            border: '1px solid var(--border-light)',
                             boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
                           }}
                         />
@@ -799,10 +799,10 @@ export default function BookingsPage() {
                         style={{
                           padding: '2rem',
                           borderRadius: '0.5rem',
-                          border: '1px dashed #d1d5db',
-                          backgroundColor: '#f9fafb',
+                          border: '1px dashed var(--border)',
+                          backgroundColor: 'var(--bg-card)',
                           textAlign: 'center',
-                          color: '#9ca3af',
+                          color: 'var(--disabled)',
                           fontSize: '0.9rem',
                         }}
                       >
@@ -815,7 +815,7 @@ export default function BookingsPage() {
                 <div
                   style={{
                     padding: '1rem 1.5rem',
-                    borderTop: '1px solid #e5e7eb',
+                    borderTop: '1px solid var(--border-light)',
                     display: 'flex',
                     justifyContent: 'flex-end',
                   }}
@@ -827,7 +827,7 @@ export default function BookingsPage() {
                       padding: '0.6rem 1.25rem',
                       borderRadius: '0.5rem',
                       border: 'none',
-                      backgroundColor: '#2563eb',
+                      backgroundColor: 'var(--accent-primary)',
                       color: '#ffffff',
                       fontWeight: 600,
                       fontSize: '0.9rem',
@@ -874,7 +874,7 @@ export default function BookingsPage() {
             >
               <div
                 style={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-elevated)',
                   borderRadius: '0.75rem',
                   maxWidth: '600px',
                   width: '100%',
@@ -887,7 +887,7 @@ export default function BookingsPage() {
                 <div
                   style={{
                     padding: '1.5rem',
-                    borderBottom: '1px solid #e5e7eb',
+                    borderBottom: '1px solid var(--border-light)',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
@@ -897,7 +897,7 @@ export default function BookingsPage() {
                     style={{
                       fontSize: '1.5rem',
                       fontWeight: 700,
-                      color: '#111827',
+                      color: 'var(--text-primary)',
                       margin: 0,
                     }}
                   >
@@ -911,7 +911,7 @@ export default function BookingsPage() {
                       border: 'none',
                       fontSize: '1.5rem',
                       cursor: 'pointer',
-                      color: '#6b7280',
+                      color: 'var(--text-secondary)',
                       padding: '0.25rem',
                       lineHeight: 1,
                     }}
@@ -927,7 +927,7 @@ export default function BookingsPage() {
                         display: 'block',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#6b7280',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -937,10 +937,10 @@ export default function BookingsPage() {
                       style={{
                         padding: '0.75rem',
                         borderRadius: '0.5rem',
-                        backgroundColor: '#f9fafb',
-                        border: '1px solid #e5e7eb',
+                        backgroundColor: 'var(--bg-card)',
+                        border: '1px solid var(--border-light)',
                         fontSize: '0.95rem',
-                        color: '#111827',
+                        color: 'var(--text-primary)',
                         fontWeight: 600,
                       }}
                     >
@@ -954,7 +954,7 @@ export default function BookingsPage() {
                         display: 'block',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#6b7280',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -964,10 +964,10 @@ export default function BookingsPage() {
                       style={{
                         padding: '0.75rem',
                         borderRadius: '0.5rem',
-                        backgroundColor: '#f9fafb',
-                        border: '1px solid #e5e7eb',
+                        backgroundColor: 'var(--bg-card)',
+                        border: '1px solid var(--border-light)',
                         fontSize: '0.95rem',
-                        color: '#111827',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       {store.email}
@@ -981,7 +981,7 @@ export default function BookingsPage() {
                           display: 'block',
                           fontSize: '0.85rem',
                           fontWeight: 600,
-                          color: '#6b7280',
+                          color: 'var(--text-secondary)',
                           marginBottom: '0.25rem',
                         }}
                       >
@@ -991,10 +991,10 @@ export default function BookingsPage() {
                         style={{
                           padding: '0.75rem',
                           borderRadius: '0.5rem',
-                          backgroundColor: '#f9fafb',
-                          border: '1px solid #e5e7eb',
+                          backgroundColor: 'var(--bg-card)',
+                          border: '1px solid var(--border-light)',
                           fontSize: '0.95rem',
-                          color: '#111827',
+                          color: 'var(--text-primary)',
                         }}
                       >
                         {store.phoneNumber}
@@ -1009,7 +1009,7 @@ export default function BookingsPage() {
                           display: 'block',
                           fontSize: '0.85rem',
                           fontWeight: 600,
-                          color: '#6b7280',
+                          color: 'var(--text-secondary)',
                           marginBottom: '0.25rem',
                         }}
                       >
@@ -1019,10 +1019,10 @@ export default function BookingsPage() {
                         style={{
                           padding: '0.75rem',
                           borderRadius: '0.5rem',
-                          backgroundColor: '#f9fafb',
-                          border: '1px solid #e5e7eb',
+                          backgroundColor: 'var(--bg-card)',
+                          border: '1px solid var(--border-light)',
                           fontSize: '0.95rem',
-                          color: '#111827',
+                          color: 'var(--text-primary)',
                           whiteSpace: 'pre-wrap',
                         }}
                       >
@@ -1038,7 +1038,7 @@ export default function BookingsPage() {
                           display: 'block',
                           fontSize: '0.85rem',
                           fontWeight: 600,
-                          color: '#6b7280',
+                          color: 'var(--text-secondary)',
                           marginBottom: '0.5rem',
                         }}
                       >
@@ -1050,7 +1050,7 @@ export default function BookingsPage() {
                           height: '200px',
                           borderRadius: '0.5rem',
                           overflow: 'hidden',
-                          border: '1px solid #e5e7eb',
+                          border: '1px solid var(--border-light)',
                           marginBottom: '0.75rem',
                         }}
                       >
@@ -1075,7 +1075,7 @@ export default function BookingsPage() {
                             padding: '0.6rem 1.25rem',
                             borderRadius: '0.5rem',
                             border: 'none',
-                            backgroundColor: '#2563eb',
+                            backgroundColor: 'var(--accent-primary)',
                             color: '#ffffff',
                             fontWeight: 600,
                             fontSize: '0.9rem',
@@ -1098,7 +1098,7 @@ export default function BookingsPage() {
                 <div
                   style={{
                     padding: '1rem 1.5rem',
-                    borderTop: '1px solid #e5e7eb',
+                    borderTop: '1px solid var(--border-light)',
                     display: 'flex',
                     justifyContent: 'flex-end',
                   }}
@@ -1110,7 +1110,7 @@ export default function BookingsPage() {
                       padding: '0.6rem 1.25rem',
                       borderRadius: '0.5rem',
                       border: 'none',
-                      backgroundColor: '#2563eb',
+                      backgroundColor: 'var(--accent-primary)',
                       color: '#ffffff',
                       fontWeight: 600,
                       fontSize: '0.9rem',

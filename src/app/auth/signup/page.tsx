@@ -207,17 +207,17 @@ export default function SignupPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '2rem',
-        backgroundColor: '#f9fafb',
+        backgroundColor: 'var(--bg-main)',
       }}
     >
       <div
         style={{
           width: '100%',
           maxWidth: role ? '420px' : '480px',
-          backgroundColor: 'white',
+          backgroundColor: 'var(--bg-elevated)',
           padding: '2rem',
-          borderRadius: '0.5rem',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+          borderRadius: '0.75rem',
+          boxShadow: 'var(--shadow-card)',
         }}
       >
         {/* Step 1: choose account type */}
@@ -229,7 +229,7 @@ export default function SignupPage() {
                 fontWeight: '700',
                 marginBottom: '0.5rem',
                 textAlign: 'center',
-                color: '#1f2937',
+                color: 'var(--text-primary)',
               }}
             >
               Sign Up
@@ -237,7 +237,7 @@ export default function SignupPage() {
             <p
               style={{
                 textAlign: 'center',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
                 marginBottom: '1.5rem',
               }}
             >
@@ -256,9 +256,9 @@ export default function SignupPage() {
                 onClick={() => setRole('rider')}
                 style={{
                   padding: '0.9rem 1rem',
-                  borderRadius: '0.5rem',
-                  border: '1px solid #2563eb',
-                  backgroundColor: '#2563eb',
+                  borderRadius: '0.75rem',
+                  border: '1px solid var(--accent-primary)',
+                  backgroundColor: 'var(--accent-primary)',
                   color: 'white',
                   fontWeight: 600,
                   fontSize: '1rem',
@@ -272,7 +272,7 @@ export default function SignupPage() {
                     fontSize: '0.85rem',
                     fontWeight: 400,
                     marginTop: '0.25rem',
-                    color: 'rgba(255,255,255,0.85)',
+                    color: 'rgba(255,255,255,0.9)',
                   }}
                 >
                   Sign up to find scooters near you.
@@ -284,10 +284,10 @@ export default function SignupPage() {
                 onClick={() => setRole('store')}
                 style={{
                   padding: '0.9rem 1rem',
-                  borderRadius: '0.5rem',
-                  border: '1px solid #d1d5db',
-                  backgroundColor: '#f9fafb',
-                  color: '#111827',
+                  borderRadius: '0.75rem',
+                  border: '1px solid var(--border)',
+                  backgroundColor: 'var(--accent-secondary-light)',
+                  color: 'var(--text-primary)',
                   fontWeight: 600,
                   fontSize: '1rem',
                   cursor: 'pointer',
@@ -300,7 +300,7 @@ export default function SignupPage() {
                     fontSize: '0.85rem',
                     fontWeight: 400,
                     marginTop: '0.25rem',
-                    color: '#4b5563',
+                    color: 'var(--text-secondary)',
                   }}
                 >
                   Sign up to list your store and scooters.
@@ -311,7 +311,7 @@ export default function SignupPage() {
             <p
               style={{
                 textAlign: 'center',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
                 fontSize: '0.875rem',
                 marginTop: '1.5rem',
               }}
@@ -319,7 +319,7 @@ export default function SignupPage() {
               Already have an account?{' '}
               <Link
                 href="/auth/login"
-                style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '600' }}
+                style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: '600' }}
               >
                 Sign in
               </Link>
@@ -336,7 +336,7 @@ export default function SignupPage() {
               style={{
                 border: 'none',
                 background: 'none',
-                color: '#2563eb',
+                color: 'var(--accent-primary)',
                 fontSize: '0.85rem',
                 marginBottom: '0.75rem',
                 cursor: 'pointer',
@@ -351,7 +351,7 @@ export default function SignupPage() {
                 fontWeight: '700',
                 marginBottom: '0.5rem',
                 textAlign: 'center',
-                color: '#1f2937',
+                color: 'var(--text-primary)',
               }}
             >
               {role === 'rider' ? 'Rider Sign Up' : 'Store Sign Up'}
@@ -359,7 +359,7 @@ export default function SignupPage() {
             <p
               style={{
                 textAlign: 'center',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
                 marginBottom: '2rem',
               }}
             >
@@ -372,9 +372,9 @@ export default function SignupPage() {
               <div
                 style={{
                   padding: '0.75rem',
-                  backgroundColor: '#fee2e2',
-                  color: '#991b1b',
-                  borderRadius: '0.375rem',
+                  backgroundColor: 'var(--error-bg)',
+                  color: 'var(--error-text)',
+                  borderRadius: '0.5rem',
                   marginBottom: '1rem',
                   fontSize: '0.875rem',
                 }}
@@ -395,10 +395,10 @@ export default function SignupPage() {
                         marginBottom: '0.5rem',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
-                      Store Name <span style={{ color: '#ef4444' }}>*</span>
+                      Store Name <span style={{ color: 'var(--error-text)' }}>*</span>
                     </label>
                     <input
                       type="text"
@@ -410,7 +410,7 @@ export default function SignupPage() {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid var(--border)',
                         borderRadius: '0.375rem',
                         fontSize: '1rem',
                         boxSizing: 'border-box',
@@ -426,7 +426,7 @@ export default function SignupPage() {
                         marginBottom: '0.5rem',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Phone Number
@@ -440,7 +440,7 @@ export default function SignupPage() {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid var(--border)',
                         borderRadius: '0.375rem',
                         fontSize: '1rem',
                         boxSizing: 'border-box',
@@ -455,10 +455,10 @@ export default function SignupPage() {
                         marginBottom: '0.5rem',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
-                      Store Location <span style={{ color: '#ef4444' }}>*</span>
+                      Store Location <span style={{ color: 'var(--error-text)' }}>*</span>
                     </label>
                     <StoreLocationPicker
                       onLocationSelect={(location, address) => {
@@ -485,7 +485,7 @@ export default function SignupPage() {
                         marginBottom: '0.5rem',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Store Front Photo (coming soon)
@@ -500,12 +500,12 @@ export default function SignupPage() {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px dashed #d1d5db',
+                        border: '1px dashed var(--border)',
                         borderRadius: '0.375rem',
                         fontSize: '0.95rem',
                         boxSizing: 'border-box',
-                        backgroundColor: '#f9fafb',
-                        color: '#9ca3af',
+                        backgroundColor: 'var(--bg-card)',
+                        color: 'var(--disabled)',
                       }}
                     />
                   </div>
@@ -523,7 +523,7 @@ export default function SignupPage() {
                         marginBottom: '0.5rem',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Name (Optional)
@@ -536,7 +536,7 @@ export default function SignupPage() {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid var(--border)',
                         borderRadius: '0.375rem',
                         fontSize: '1rem',
                         boxSizing: 'border-box',
@@ -552,7 +552,7 @@ export default function SignupPage() {
                         marginBottom: '0.5rem',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Phone Number
@@ -566,7 +566,7 @@ export default function SignupPage() {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid var(--border)',
                         borderRadius: '0.375rem',
                         fontSize: '1rem',
                         boxSizing: 'border-box',
@@ -582,7 +582,7 @@ export default function SignupPage() {
                         marginBottom: '0.5rem',
                         fontSize: '0.875rem',
                         fontWeight: '600',
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Hotel / Villa Address
@@ -596,7 +596,7 @@ export default function SignupPage() {
                       style={{
                         width: '100%',
                         padding: '0.75rem',
-                        border: '1px solid #d1d5db',
+                        border: '1px solid var(--border)',
                         borderRadius: '0.375rem',
                         fontSize: '1rem',
                         boxSizing: 'border-box',
@@ -615,7 +615,7 @@ export default function SignupPage() {
                     marginBottom: '0.5rem',
                     fontSize: '0.875rem',
                     fontWeight: '600',
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Email
@@ -629,7 +629,7 @@ export default function SignupPage() {
                   style={{
                     width: '100%',
                     padding: '0.75rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     borderRadius: '0.375rem',
                     fontSize: '1rem',
                     boxSizing: 'border-box',
@@ -646,7 +646,7 @@ export default function SignupPage() {
                       marginBottom: '0.5rem',
                       fontSize: '0.875rem',
                       fontWeight: '600',
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Passport / Driver&apos;s Licence Photo
@@ -660,16 +660,16 @@ export default function SignupPage() {
                     style={{
                       width: '100%',
                       padding: '0.75rem',
-                      border: '1px solid #d1d5db',
+                      border: '1px solid var(--border)',
                       borderRadius: '0.375rem',
                       fontSize: '0.95rem',
                       boxSizing: 'border-box',
-                      backgroundColor: uploadingPassport ? '#f9fafb' : '#ffffff',
+                      backgroundColor: uploadingPassport ? 'var(--bg-card)' : 'var(--bg-elevated)',
                       cursor: uploadingPassport ? 'not-allowed' : 'pointer',
                     }}
                   />
                   {uploadingPassport && (
-                    <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#6b7280' }}>
+                    <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                       Uploading...
                     </p>
                   )}
@@ -682,7 +682,7 @@ export default function SignupPage() {
                           maxWidth: '100%',
                           maxHeight: '200px',
                           borderRadius: '0.375rem',
-                          border: '1px solid #e5e7eb',
+                          border: '1px solid var(--border-light)',
                         }}
                       />
                       <button
@@ -696,7 +696,7 @@ export default function SignupPage() {
                         style={{
                           marginTop: '0.5rem',
                           padding: '0.4rem 0.8rem',
-                          backgroundColor: '#ef4444',
+                          backgroundColor: 'var(--error-bg)',
                           color: '#ffffff',
                           border: 'none',
                           borderRadius: '0.375rem',
@@ -709,7 +709,7 @@ export default function SignupPage() {
                       </button>
                     </div>
                   )}
-                  <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#6b7280' }}>
+                  <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                     Accepted formats: JPEG, PNG, WebP. Maximum size: 5MB
                   </p>
                 </div>
@@ -720,9 +720,9 @@ export default function SignupPage() {
                   <div
                     style={{
                       padding: '0.75rem',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--border-light)',
                       borderRadius: '0.375rem',
-                      backgroundColor: '#f9fafb',
+                      backgroundColor: 'var(--bg-card)',
                     }}
                   >
                     <button
@@ -731,7 +731,7 @@ export default function SignupPage() {
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#2563eb',
+                        color: 'var(--accent-primary)',
                         textDecoration: 'underline',
                         cursor: 'pointer',
                         padding: 0,
@@ -764,7 +764,7 @@ export default function SignupPage() {
                         htmlFor="damageAgreementCheck"
                         style={{
                           fontSize: '0.875rem',
-                          color: '#374151',
+                          color: 'var(--text-primary)',
                           cursor: 'pointer',
                         }}
                       >
@@ -783,7 +783,7 @@ export default function SignupPage() {
                     marginBottom: '0.5rem',
                     fontSize: '0.875rem',
                     fontWeight: '600',
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Password
@@ -797,7 +797,7 @@ export default function SignupPage() {
                   style={{
                     width: '100%',
                     padding: '0.75rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     borderRadius: '0.375rem',
                     fontSize: '1rem',
                     boxSizing: 'border-box',
@@ -813,7 +813,7 @@ export default function SignupPage() {
                     marginBottom: '0.5rem',
                     fontSize: '0.875rem',
                     fontWeight: '600',
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Confirm Password
@@ -827,7 +827,7 @@ export default function SignupPage() {
                   style={{
                     width: '100%',
                     padding: '0.75rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     borderRadius: '0.375rem',
                     fontSize: '1rem',
                     boxSizing: 'border-box',
@@ -841,7 +841,7 @@ export default function SignupPage() {
                 style={{
                   width: '100%',
                   padding: '0.75rem',
-                  backgroundColor: loading ? '#9ca3af' : '#2563eb',
+                  backgroundColor: loading ? 'var(--disabled)' : 'var(--accent-primary)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '0.375rem',
@@ -860,11 +860,11 @@ export default function SignupPage() {
         {role && (
           <p style={{
             textAlign: 'center',
-            color: '#6b7280',
+            color: 'var(--text-secondary)',
             fontSize: '0.875rem',
           }}>
             Already have an account?{' '}
-            <Link href="/auth/login" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '600' }}>
+            <Link href="/auth/login" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: '600' }}>
               Sign in
             </Link>
           </p>
@@ -888,7 +888,7 @@ export default function SignupPage() {
         >
           <div
             style={{
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-elevated)',
               borderRadius: '0.75rem',
               maxWidth: '700px',
               width: '100%',
@@ -901,13 +901,13 @@ export default function SignupPage() {
             <div
               style={{
                 padding: '1.5rem',
-                borderBottom: '1px solid #e5e7eb',
+                borderBottom: '1px solid var(--border-light)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 position: 'sticky',
                 top: 0,
-                backgroundColor: '#ffffff',
+                backgroundColor: 'var(--bg-elevated)',
                 zIndex: 10,
               }}
             >
@@ -915,7 +915,7 @@ export default function SignupPage() {
                 style={{
                   fontSize: '1.25rem',
                   fontWeight: 700,
-                  color: '#111827',
+                  color: 'var(--text-primary)',
                   margin: 0,
                 }}
               >
@@ -929,7 +929,7 @@ export default function SignupPage() {
                   border: 'none',
                   fontSize: '1.5rem',
                   cursor: 'pointer',
-                  color: '#6b7280',
+                  color: 'var(--text-secondary)',
                   padding: '0.25rem',
                   lineHeight: 1,
                 }}
@@ -942,7 +942,7 @@ export default function SignupPage() {
                 padding: '1.5rem',
                 fontSize: '0.9rem',
                 lineHeight: '1.7',
-                color: '#374151',
+                color: 'var(--text-primary)',
               }}
             >
               <p style={{ marginBottom: '1rem', fontWeight: 600 }}>
@@ -950,7 +950,7 @@ export default function SignupPage() {
               </p>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   1. Responsibility for the Scooter
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>
@@ -966,7 +966,7 @@ export default function SignupPage() {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   2. Condition of the Scooter
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>I confirm that:</p>
@@ -981,7 +981,7 @@ export default function SignupPage() {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   3. Damage, Loss, or Theft
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>I agree that I am financially responsible for:</p>
@@ -999,7 +999,7 @@ export default function SignupPage() {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   4. Accidents & Reporting
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>In the event of:</p>
@@ -1018,7 +1018,7 @@ export default function SignupPage() {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   5. Insurance (If Applicable)
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>I understand that:</p>
@@ -1039,7 +1039,7 @@ export default function SignupPage() {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   6. Legal Compliance
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>I acknowledge that:</p>
@@ -1050,7 +1050,7 @@ export default function SignupPage() {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   7. Payment for Damages
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>I authorise the Owner to:</p>
@@ -1062,7 +1062,7 @@ export default function SignupPage() {
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   8. Limitation of Liability
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>I understand that the Owner and platform:</p>
@@ -1074,7 +1074,7 @@ export default function SignupPage() {
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: '#111827' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
                   9. Agreement & Acceptance
                 </h3>
                 <p style={{ marginBottom: '0.5rem' }}>By signing or accepting this agreement, I confirm that:</p>
@@ -1088,7 +1088,7 @@ export default function SignupPage() {
               <div
                 style={{
                   paddingTop: '1rem',
-                  borderTop: '1px solid #e5e7eb',
+                  borderTop: '1px solid var(--border-light)',
                   display: 'flex',
                   justifyContent: 'flex-end',
                 }}
@@ -1101,7 +1101,7 @@ export default function SignupPage() {
                   }}
                   style={{
                     padding: '0.6rem 1.5rem',
-                    backgroundColor: '#2563eb',
+                    backgroundColor: 'var(--accent-primary)',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: '0.5rem',

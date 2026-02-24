@@ -233,7 +233,7 @@ export default function ProfilePage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#6b7280',
+          color: 'var(--text-secondary)',
         }}
       >
         Loading profile...
@@ -246,14 +246,14 @@ export default function ProfilePage() {
       style={{
         minHeight: '100vh',
         padding: '2rem',
-        backgroundColor: '#f3f4f6',
+        backgroundColor: 'var(--bg-card)',
       }}
     >
       <div
         style={{
           maxWidth: '960px',
           margin: '0 auto',
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--bg-elevated)',
           borderRadius: '0.75rem',
           boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.15)',
           padding: '2rem',
@@ -274,7 +274,7 @@ export default function ProfilePage() {
                 fontSize: '1.75rem',
                 fontWeight: 700,
                 marginBottom: '0.25rem',
-                color: '#111827',
+                color: 'var(--text-primary)',
               }}
             >
               My Profile
@@ -282,7 +282,7 @@ export default function ProfilePage() {
             <p
               style={{
                 fontSize: '0.95rem',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
               }}
             >
               View and update your account details.
@@ -293,12 +293,12 @@ export default function ProfilePage() {
             style={{
               padding: '0.5rem 1rem',
               borderRadius: '9999px',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--border)',
               fontSize: '0.875rem',
               fontWeight: 500,
-              color: '#374151',
+              color: 'var(--text-primary)',
               textDecoration: 'none',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-elevated)',
             }}
           >
             ← Back to home
@@ -311,8 +311,8 @@ export default function ProfilePage() {
               marginBottom: '1rem',
               padding: '0.75rem 1rem',
               borderRadius: '0.5rem',
-              backgroundColor: '#fee2e2',
-              color: '#991b1b',
+              backgroundColor: 'var(--error-bg)',
+              color: 'var(--error-text)',
               fontSize: '0.9rem',
             }}
           >
@@ -325,9 +325,9 @@ export default function ProfilePage() {
             style={{
               padding: '1.5rem',
               borderRadius: '0.75rem',
-              backgroundColor: '#f9fafb',
-              border: '1px solid #e5e7eb',
-              color: '#6b7280',
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
               fontSize: '0.95rem',
             }}
           >
@@ -348,7 +348,7 @@ export default function ProfilePage() {
                   fontSize: '1.1rem',
                   fontWeight: 600,
                   marginBottom: '1rem',
-                  color: '#111827',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Account details
@@ -362,7 +362,7 @@ export default function ProfilePage() {
                     marginBottom: '0.25rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Name
@@ -376,7 +376,7 @@ export default function ProfilePage() {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.95rem',
                   }}
                 />
@@ -390,7 +390,7 @@ export default function ProfilePage() {
                     marginBottom: '0.25rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Email
@@ -404,7 +404,7 @@ export default function ProfilePage() {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.95rem',
                   }}
                 />
@@ -418,7 +418,7 @@ export default function ProfilePage() {
                     marginBottom: '0.25rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Phone number
@@ -432,7 +432,7 @@ export default function ProfilePage() {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.95rem',
                   }}
                 />
@@ -446,7 +446,7 @@ export default function ProfilePage() {
                     marginBottom: '0.25rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Hotel / villa address
@@ -460,7 +460,7 @@ export default function ProfilePage() {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.95rem',
                     resize: 'vertical',
                   }}
@@ -475,7 +475,7 @@ export default function ProfilePage() {
                       marginBottom: '0.25rem',
                       fontSize: '0.85rem',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Damage Agreement
@@ -484,10 +484,10 @@ export default function ProfilePage() {
                     style={{
                       padding: '0.6rem 0.75rem',
                       borderRadius: '0.375rem',
-                      border: '1px solid #d1d5db',
+                      border: '1px solid var(--border)',
                       backgroundColor: '#f9fafb',
                       fontSize: '0.9rem',
-                      color: '#059669',
+                      color: 'var(--accent-primary)',
                       fontWeight: 500,
                     }}
                   >
@@ -503,7 +503,7 @@ export default function ProfilePage() {
                     marginBottom: '0.5rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Passport / Driver&apos;s Licence Photo
@@ -517,12 +517,12 @@ export default function ProfilePage() {
                         maxWidth: '100%',
                         maxHeight: '300px',
                         borderRadius: '0.5rem',
-                        border: '1px solid #e5e7eb',
+                        border: '1px solid var(--border-light)',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                         marginBottom: '0.5rem',
                       }}
                     />
-                    <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
                       This photo is visible to stores when you make a booking.
                     </p>
                     <label
@@ -531,9 +531,9 @@ export default function ProfilePage() {
                         display: 'inline-block',
                         padding: '0.5rem 1rem',
                         borderRadius: '0.375rem',
-                        border: '1px solid #d1d5db',
-                        backgroundColor: '#ffffff',
-                        color: '#374151',
+                        border: '1px solid var(--border)',
+                        backgroundColor: 'var(--bg-elevated)',
+                        color: 'var(--text-primary)',
                         fontSize: '0.875rem',
                         fontWeight: 500,
                         cursor: uploadingPassport ? 'not-allowed' : 'pointer',
@@ -560,7 +560,7 @@ export default function ProfilePage() {
                         border: '1px dashed #d1d5db',
                         backgroundColor: '#f9fafb',
                         textAlign: 'center',
-                        color: '#9ca3af',
+                        color: 'var(--disabled)',
                         fontSize: '0.9rem',
                         marginBottom: '0.75rem',
                       }}
@@ -574,7 +574,7 @@ export default function ProfilePage() {
                         padding: '0.6rem 1.25rem',
                         borderRadius: '0.375rem',
                         border: 'none',
-                        backgroundColor: uploadingPassport ? '#9ca3af' : '#2563eb',
+                        backgroundColor: uploadingPassport ? 'var(--disabled)' : 'var(--accent-primary)',
                         color: '#ffffff',
                         fontSize: '0.875rem',
                         fontWeight: 600,
@@ -592,7 +592,7 @@ export default function ProfilePage() {
                       disabled={uploadingPassport}
                       style={{ display: 'none' }}
                     />
-                    <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
                       Accepted formats: JPEG, PNG, WebP (max 5MB)
                     </p>
                   </div>
@@ -606,7 +606,7 @@ export default function ProfilePage() {
                   padding: '0.6rem 1.25rem',
                   borderRadius: '0.5rem',
                   border: 'none',
-                  backgroundColor: saving ? '#9ca3af' : '#2563eb',
+                  backgroundColor: saving ? 'var(--disabled)' : 'var(--accent-primary)',
                   color: '#ffffff',
                   fontWeight: 600,
                   fontSize: '0.95rem',
@@ -624,7 +624,7 @@ export default function ProfilePage() {
                   fontSize: '1.1rem',
                   fontWeight: 600,
                   marginBottom: '1rem',
-                  color: '#111827',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Update password
@@ -638,7 +638,7 @@ export default function ProfilePage() {
                     marginBottom: '0.25rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Current password
@@ -654,7 +654,7 @@ export default function ProfilePage() {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.95rem',
                   }}
                 />
@@ -668,7 +668,7 @@ export default function ProfilePage() {
                     marginBottom: '0.25rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   New password
@@ -684,7 +684,7 @@ export default function ProfilePage() {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.95rem',
                   }}
                 />
@@ -698,7 +698,7 @@ export default function ProfilePage() {
                     marginBottom: '0.25rem',
                     fontSize: '0.85rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Confirm new password
@@ -717,7 +717,7 @@ export default function ProfilePage() {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.95rem',
                   }}
                 />
@@ -730,7 +730,7 @@ export default function ProfilePage() {
                   padding: '0.6rem 1.25rem',
                   borderRadius: '0.5rem',
                   border: 'none',
-                  backgroundColor: saving ? '#9ca3af' : '#111827',
+                  backgroundColor: saving ? 'var(--disabled)' : 'var(--text-primary)',
                   color: '#ffffff',
                   fontWeight: 600,
                   fontSize: '0.95rem',

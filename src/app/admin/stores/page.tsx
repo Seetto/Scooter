@@ -220,7 +220,7 @@ export default function StoresPage() {
     <div style={{
       minHeight: '100vh',
       padding: '1rem',
-      backgroundColor: '#f9fafb',
+      backgroundColor: 'var(--bg-main)',
     }}>
       <div style={{
         maxWidth: '1400px',
@@ -239,7 +239,7 @@ export default function StoresPage() {
           <h1 style={{
             fontSize: '2rem',
             fontWeight: '700',
-            color: '#1f2937',
+            color: 'var(--text-primary)',
           }}>
             Stores Database (Admin)
           </h1>
@@ -248,7 +248,7 @@ export default function StoresPage() {
               onClick={fetchStores}
               style={{
                 padding: '0.5rem 1rem',
-                backgroundColor: '#2563eb',
+                backgroundColor: 'var(--accent-primary)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '0.375rem',
@@ -269,21 +269,21 @@ export default function StoresPage() {
               marginBottom: '2rem',
               padding: '1.5rem',
               borderRadius: '0.5rem',
-              border: '1px solid #e5e7eb',
-              backgroundColor: '#f9fafb',
+              border: '1px solid var(--border-light)',
+              backgroundColor: 'var(--bg-main)',
             }}
           >
             <h2 style={{
               fontSize: '1.25rem',
               fontWeight: 600,
               marginBottom: '1rem',
-              color: '#111827',
+              color: 'var(--text-primary)',
             }}>
               Admin Login
             </h2>
             <p style={{
               fontSize: '0.875rem',
-              color: '#4b5563',
+              color: 'var(--text-secondary)',
               marginBottom: '1rem',
             }}>
               Enter admin credentials to view and manage stores.
@@ -294,8 +294,8 @@ export default function StoresPage() {
                 marginBottom: '0.75rem',
                 padding: '0.75rem',
                 borderRadius: '0.375rem',
-                backgroundColor: '#fee2e2',
-                color: '#991b1b',
+                backgroundColor: 'var(--error-bg)',
+                color: 'var(--error-text)',
                 fontSize: '0.875rem',
               }}>
                 {authError}
@@ -308,7 +308,7 @@ export default function StoresPage() {
                 marginBottom: '0.25rem',
                 fontSize: '0.875rem',
                 fontWeight: 600,
-                color: '#374151',
+                color: 'var(--text-primary)',
               }}>
                 Username
               </label>
@@ -322,7 +322,7 @@ export default function StoresPage() {
                   width: '100%',
                   padding: '0.5rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.9rem',
                 }}
               />
@@ -334,7 +334,7 @@ export default function StoresPage() {
                 marginBottom: '0.25rem',
                 fontSize: '0.875rem',
                 fontWeight: 600,
-                color: '#374151',
+                color: 'var(--text-primary)',
               }}>
                 Password
               </label>
@@ -348,7 +348,7 @@ export default function StoresPage() {
                   width: '100%',
                   padding: '0.5rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.9rem',
                 }}
               />
@@ -359,7 +359,7 @@ export default function StoresPage() {
               disabled={loading}
               style={{
                 padding: '0.5rem 1rem',
-                backgroundColor: loading ? '#9ca3af' : '#2563eb',
+                backgroundColor: loading ? 'var(--disabled)' : 'var(--accent-primary)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '0.375rem',
@@ -375,15 +375,15 @@ export default function StoresPage() {
 
         {loading && !isAuthenticated && (
           <div style={{ textAlign: 'center', padding: '2rem' }}>
-            <p style={{ color: '#6b7280' }}>Loading stores...</p>
+            <p style={{ color: 'var(--text-secondary)' }}>Loading stores...</p>
           </div>
         )}
 
         {error && (
           <div style={{
             padding: '1rem',
-            backgroundColor: '#fee2e2',
-            color: '#991b1b',
+            backgroundColor: 'var(--error-bg)',
+            color: 'var(--error-text)',
             borderRadius: '0.375rem',
             marginBottom: '1rem',
           }}>
@@ -427,7 +427,7 @@ export default function StoresPage() {
               <div style={{
                 textAlign: 'center',
                 padding: '3rem',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
               }}>
                 No stores found in the database.
               </div>
@@ -442,7 +442,7 @@ export default function StoresPage() {
                   maxHeight: isMobile ? 'none' : '70vh',
                   overflowY: 'auto',
                   overflowX: 'auto',
-                  border: '1px solid #e5e7eb',
+                  border: '1px solid var(--border-light)',
                   borderRadius: '0.5rem',
                   padding: '1rem',
                   width: '100%',
@@ -451,7 +451,7 @@ export default function StoresPage() {
                     fontSize: '1.25rem',
                     fontWeight: 600,
                     marginBottom: '1rem',
-                    color: '#1f2937',
+                    color: 'var(--text-primary)',
                   }}>
                     Store List
                   </h2>
@@ -488,14 +488,14 @@ export default function StoresPage() {
                               cursor: 'pointer',
                             }}
                           >
-                            <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
                               {store.name}
                             </div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
+                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
                               {store.email}
                             </div>
                             {store.phoneNumber && (
-                              <div style={{ fontSize: '0.875rem', color: '#6b7280', wordBreak: 'break-word' }}>
+                              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', wordBreak: 'break-word' }}>
                                 {store.phoneNumber}
                               </div>
                             )}
@@ -519,7 +519,7 @@ export default function StoresPage() {
                             }}
                             style={{
                               padding: '0.5rem 1rem',
-                              backgroundColor: '#2563eb',
+                              backgroundColor: 'var(--accent-primary)',
                               color: 'white',
                               border: 'none',
                               borderRadius: '0.375rem',
@@ -533,7 +533,7 @@ export default function StoresPage() {
                               e.currentTarget.style.backgroundColor = '#1d4ed8'
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#2563eb'
+                              e.currentTarget.style.backgroundColor = 'var(--accent-primary)'
                             }}
                           >
                             View Info
@@ -575,14 +575,14 @@ export default function StoresPage() {
                               cursor: 'pointer',
                             }}
                           >
-                            <div style={{ fontWeight: 600, color: '#1f2937', marginBottom: '0.25rem' }}>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
                               {store.name}
                             </div>
-                            <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
+                            <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '0.25rem', wordBreak: 'break-all' }}>
                               {store.email}
                             </div>
                             {store.phoneNumber && (
-                              <div style={{ fontSize: '0.875rem', color: '#6b7280', wordBreak: 'break-word' }}>
+                              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', wordBreak: 'break-word' }}>
                                 {store.phoneNumber}
                               </div>
                             )}
@@ -606,7 +606,7 @@ export default function StoresPage() {
                             }}
                             style={{
                               padding: '0.5rem 1rem',
-                              backgroundColor: '#2563eb',
+                              backgroundColor: 'var(--accent-primary)',
                               color: 'white',
                               border: 'none',
                               borderRadius: '0.375rem',
@@ -620,7 +620,7 @@ export default function StoresPage() {
                               e.currentTarget.style.backgroundColor = '#1d4ed8'
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#2563eb'
+                              e.currentTarget.style.backgroundColor = 'var(--accent-primary)'
                             }}
                           >
                             View Info
@@ -635,7 +635,7 @@ export default function StoresPage() {
                 <div style={{ width: '100%', minWidth: 0 }}>
                   {selectedStore ? (
                     <div style={{
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--border-light)',
                       borderRadius: '0.5rem',
                       padding: isMobile ? '1rem' : '1.5rem',
                     }}>
@@ -651,7 +651,7 @@ export default function StoresPage() {
                           <h2 style={{
                             fontSize: '1.5rem',
                             fontWeight: 700,
-                            color: '#1f2937',
+                            color: 'var(--text-primary)',
                             marginBottom: '0.5rem',
                           }}>
                             {selectedStore.name}
@@ -680,7 +680,7 @@ export default function StoresPage() {
                               disabled={loading}
                               style={{
                                 padding: '0.5rem 1.5rem',
-                                backgroundColor: loading ? '#9ca3af' : '#10b981',
+                                backgroundColor: loading ? 'var(--disabled)' : 'var(--accent-primary)',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '0.375rem',
@@ -699,7 +699,7 @@ export default function StoresPage() {
                             disabled={loading}
                             style={{
                               padding: '0.5rem 1.5rem',
-                              backgroundColor: loading ? '#9ca3af' : '#ef4444',
+                              backgroundColor: loading ? 'var(--disabled)' : 'var(--error-text)',
                               color: 'white',
                               border: 'none',
                               borderRadius: '0.375rem',
@@ -717,32 +717,32 @@ export default function StoresPage() {
 
                       <div style={{ marginBottom: '1.5rem', wordBreak: 'break-word' }}>
                         <div style={{ marginBottom: '0.75rem' }}>
-                          <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Email:</strong>
-                          <span style={{ color: '#6b7280', wordBreak: 'break-all' }}>{selectedStore.email}</span>
+                          <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Email:</strong>
+                          <span style={{ color: 'var(--text-secondary)', wordBreak: 'break-all' }}>{selectedStore.email}</span>
                         </div>
                         {selectedStore.phoneNumber && (
                           <div style={{ marginBottom: '0.75rem' }}>
-                            <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Phone:</strong>
-                            <span style={{ color: '#6b7280' }}>{selectedStore.phoneNumber}</span>
+                            <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Phone:</strong>
+                            <span style={{ color: 'var(--text-secondary)' }}>{selectedStore.phoneNumber}</span>
                           </div>
                         )}
                         {selectedStore.address && (
                           <div style={{ marginBottom: '0.75rem' }}>
-                            <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Address:</strong>
-                            <span style={{ color: '#6b7280', wordBreak: 'break-word' }}>{selectedStore.address}</span>
+                            <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Address:</strong>
+                            <span style={{ color: 'var(--text-secondary)', wordBreak: 'break-word' }}>{selectedStore.address}</span>
                           </div>
                         )}
                         {selectedStore.latitude && selectedStore.longitude && (
                           <div style={{ marginBottom: '0.75rem' }}>
-                            <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Location:</strong>
-                            <span style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: '0.875rem', wordBreak: 'break-all' }}>
+                            <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Location:</strong>
+                            <span style={{ color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: '0.875rem', wordBreak: 'break-all' }}>
                               {selectedStore.latitude.toFixed(6)}, {selectedStore.longitude.toFixed(6)}
                             </span>
                           </div>
                         )}
                         <div style={{ marginBottom: '0.75rem' }}>
-                          <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Created:</strong>
-                          <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                          <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Created:</strong>
+                          <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                             {new Date(selectedStore.createdAt).toLocaleString()}
                           </span>
                         </div>
@@ -755,7 +755,7 @@ export default function StoresPage() {
                             fontSize: '1rem',
                             fontWeight: 600,
                             marginBottom: '0.5rem',
-                            color: '#1f2937',
+                            color: 'var(--text-primary)',
                           }}>
                             Store Location
                           </h3>
@@ -775,7 +775,7 @@ export default function StoresPage() {
                           fontSize: '1rem',
                           fontWeight: 600,
                           marginBottom: '0.5rem',
-                          color: '#1f2937',
+                          color: 'var(--text-primary)',
                         }}>
                           Store Front Photo
                         </h3>
@@ -788,7 +788,7 @@ export default function StoresPage() {
                               maxWidth: '500px',
                               height: 'auto',
                               borderRadius: '0.375rem',
-                              border: '1px solid #e5e7eb',
+                              border: '1px solid var(--border-light)',
                             }}
                           />
                         ) : (
@@ -797,12 +797,12 @@ export default function StoresPage() {
                             maxWidth: '500px',
                             height: '300px',
                             backgroundColor: '#f3f4f6',
-                            border: '2px dashed #d1d5db',
+                            border: '2px dashed var(--border)',
                             borderRadius: '0.375rem',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#9ca3af',
+                            color: 'var(--disabled)',
                             fontSize: '0.875rem',
                           }}>
                             No store front photo uploaded yet
@@ -814,8 +814,8 @@ export default function StoresPage() {
                     <div style={{
                       padding: '3rem',
                       textAlign: 'center',
-                      color: '#6b7280',
-                      border: '1px solid #e5e7eb',
+                      color: 'var(--text-secondary)',
+                      border: '1px solid var(--border-light)',
                       borderRadius: '0.5rem',
                     }}>
                       Select a store from the list to view details
@@ -868,7 +868,7 @@ export default function StoresPage() {
                   <h2 style={{
                     fontSize: '1.5rem',
                     fontWeight: 700,
-                    color: '#1f2937',
+                    color: 'var(--text-primary)',
                     marginBottom: '0.5rem',
                   }}>
                     {showStoreModal.name}
@@ -892,15 +892,15 @@ export default function StoresPage() {
                     border: 'none',
                     fontSize: '1.5rem',
                     cursor: 'pointer',
-                    color: '#6b7280',
+                    color: 'var(--text-secondary)',
                     padding: '0.25rem',
                     lineHeight: 1,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#111827'
+                    e.currentTarget.style.color = 'var(--text-primary)'
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = '#6b7280'
+                    e.currentTarget.style.color = 'var(--text-secondary)'
                   }}
                 >
                   ×
@@ -909,32 +909,32 @@ export default function StoresPage() {
 
               <div style={{ marginBottom: '1.5rem', wordBreak: 'break-word' }}>
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Email:</strong>
-                  <span style={{ color: '#6b7280', wordBreak: 'break-all' }}>{showStoreModal.email}</span>
+                  <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Email:</strong>
+                  <span style={{ color: 'var(--text-secondary)', wordBreak: 'break-all' }}>{showStoreModal.email}</span>
                 </div>
                 {showStoreModal.phoneNumber && (
                   <div style={{ marginBottom: '0.75rem' }}>
-                    <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Phone:</strong>
-                    <span style={{ color: '#6b7280' }}>{showStoreModal.phoneNumber}</span>
+                    <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Phone:</strong>
+                    <span style={{ color: 'var(--text-secondary)' }}>{showStoreModal.phoneNumber}</span>
                   </div>
                 )}
                 {showStoreModal.address && (
                   <div style={{ marginBottom: '0.75rem' }}>
-                    <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Address:</strong>
-                    <span style={{ color: '#6b7280', wordBreak: 'break-word' }}>{showStoreModal.address}</span>
+                    <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Address:</strong>
+                    <span style={{ color: 'var(--text-secondary)', wordBreak: 'break-word' }}>{showStoreModal.address}</span>
                   </div>
                 )}
                 {showStoreModal.latitude && showStoreModal.longitude && (
                   <div style={{ marginBottom: '0.75rem' }}>
-                    <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Location:</strong>
-                    <span style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: '0.875rem', wordBreak: 'break-all' }}>
+                    <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Location:</strong>
+                    <span style={{ color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: '0.875rem', wordBreak: 'break-all' }}>
                       {showStoreModal.latitude.toFixed(6)}, {showStoreModal.longitude.toFixed(6)}
                     </span>
                   </div>
                 )}
                 <div style={{ marginBottom: '0.75rem' }}>
-                  <strong style={{ color: '#374151', display: 'block', marginBottom: '0.25rem' }}>Created:</strong>
-                  <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                  <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>Created:</strong>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                     {new Date(showStoreModal.createdAt).toLocaleString()}
                   </span>
                 </div>
@@ -947,7 +947,7 @@ export default function StoresPage() {
                     fontSize: '1rem',
                     fontWeight: 600,
                     marginBottom: '0.5rem',
-                    color: '#1f2937',
+                    color: 'var(--text-primary)',
                   }}>
                     Store Location
                   </h3>
@@ -967,7 +967,7 @@ export default function StoresPage() {
                   fontSize: '1rem',
                   fontWeight: 600,
                   marginBottom: '0.5rem',
-                  color: '#1f2937',
+                  color: 'var(--text-primary)',
                 }}>
                   Store Front Photo
                 </h3>
@@ -980,7 +980,7 @@ export default function StoresPage() {
                       maxWidth: '500px',
                       height: 'auto',
                       borderRadius: '0.375rem',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--border-light)',
                     }}
                   />
                 ) : (
@@ -989,12 +989,12 @@ export default function StoresPage() {
                     maxWidth: '500px',
                     height: '200px',
                     backgroundColor: '#f3f4f6',
-                    border: '2px dashed #d1d5db',
+                    border: '2px dashed var(--border)',
                     borderRadius: '0.375rem',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#9ca3af',
+                    color: 'var(--disabled)',
                     fontSize: '0.875rem',
                   }}>
                     No store front photo uploaded yet
@@ -1008,7 +1008,7 @@ export default function StoresPage() {
                 gap: '0.75rem',
                 flexWrap: 'wrap',
                 paddingTop: '1rem',
-                borderTop: '1px solid #e5e7eb',
+                borderTop: '1px solid var(--border-light)',
               }}>
                 {!showStoreModal.accepted && (
                   <button
@@ -1020,7 +1020,7 @@ export default function StoresPage() {
                     style={{
                       flex: isMobile ? '1' : 'none',
                       padding: '0.75rem 1.5rem',
-                      backgroundColor: loading ? '#9ca3af' : '#10b981',
+                      backgroundColor: loading ? 'var(--disabled)' : 'var(--accent-primary)',
                       color: 'white',
                       border: 'none',
                       borderRadius: '0.375rem',
@@ -1041,7 +1041,7 @@ export default function StoresPage() {
                   style={{
                     flex: isMobile ? '1' : 'none',
                     padding: '0.75rem 1.5rem',
-                    backgroundColor: loading ? '#9ca3af' : '#ef4444',
+                    backgroundColor: loading ? 'var(--disabled)' : 'var(--error-text)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '0.375rem',
@@ -1057,7 +1057,7 @@ export default function StoresPage() {
                   style={{
                     flex: isMobile ? '1' : 'none',
                     padding: '0.75rem 1.5rem',
-                    backgroundColor: '#6b7280',
+                    backgroundColor: 'var(--text-secondary)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '0.375rem',

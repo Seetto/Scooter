@@ -17,15 +17,16 @@ export default function Home() {
   const isAuthenticated = status === 'authenticated'
 
   return (
-    <main style={{ 
-      padding: "2rem", 
+    <main style={{
+      padding: "2rem",
       textAlign: "center",
       minHeight: "100vh",
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
-      gap: "2rem"
+      gap: "2rem",
+      background: "var(--bg-main)",
     }}>
       {isAuthenticated && (
         <div style={{
@@ -53,18 +54,18 @@ export default function Home() {
             height={56}
             style={{ objectFit: 'contain' }}
           />
-          <h1 style={{ 
-            fontSize: "2.5rem", 
-            fontWeight: "700", 
+          <h1 style={{
+            fontSize: "2.5rem",
+            fontWeight: "700",
             marginBottom: "0.5rem",
-            color: "#1f2937"
+            color: "var(--text-primary)"
           }}>
             Scoot2U
           </h1>
         </div>
-        <p style={{ 
-          fontSize: "1.125rem", 
-          color: "#6b7280",
+        <p style={{
+          fontSize: "1.125rem",
+          color: "var(--text-secondary)",
           marginBottom: "2rem"
         }}>
           Find a scooter near you
@@ -86,23 +87,23 @@ export default function Home() {
               fontSize: '1.125rem',
               fontWeight: '600',
               color: '#fff',
-              backgroundColor: '#2563eb',
+              backgroundColor: 'var(--accent-primary)',
               border: 'none',
               borderRadius: '0.5rem',
               cursor: 'pointer',
               textDecoration: 'none',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+              boxShadow: 'var(--shadow-card)',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#1d4ed8'
+              e.currentTarget.style.backgroundColor = 'var(--accent-primary-hover)'
               e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.08)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#2563eb'
+              e.currentTarget.style.backgroundColor = 'var(--accent-primary)'
               e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+              e.currentTarget.style.boxShadow = 'var(--shadow-card)'
             }}
           >
             Sign In
@@ -113,21 +114,21 @@ export default function Home() {
               padding: '1rem 2rem',
               fontSize: '1.125rem',
               fontWeight: '600',
-              color: '#1f2937',
-              backgroundColor: '#e5e7eb',
-              border: '1px solid #d1d5db',
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--accent-secondary-light)',
+              border: '1px solid var(--border)',
               borderRadius: '0.5rem',
               cursor: 'pointer',
               textDecoration: 'none',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+              boxShadow: 'var(--shadow-card)',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#d1d5db'
+              e.currentTarget.style.backgroundColor = 'var(--accent-secondary)'
               e.currentTarget.style.transform = 'translateY(-2px)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#e5e7eb'
+              e.currentTarget.style.backgroundColor = 'var(--accent-secondary-light)'
               e.currentTarget.style.transform = 'translateY(0)'
             }}
           >

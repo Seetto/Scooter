@@ -394,7 +394,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
       style={{
         minHeight: '100vh',
         padding: '2rem',
-        backgroundColor: '#f9fafb',
+        backgroundColor: 'var(--bg-main)',
         display: 'flex',
         justifyContent: 'center',
       }}
@@ -424,7 +424,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
               style={{
                 fontSize: '1.75rem',
                 fontWeight: 700,
-                color: '#111827',
+                color: 'var(--text-primary)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -433,7 +433,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
             <p
               style={{
                 fontSize: '0.95rem',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
               }}
             >
               Scooters available at this store.
@@ -445,9 +445,9 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
             style={{
               padding: '0.7rem 1.3rem',
               borderRadius: '0.5rem',
-              border: '1px solid #d1d5db',
-              backgroundColor: '#f9fafb',
-              color: '#374151',
+              border: '1px solid var(--border)',
+              backgroundColor: 'var(--bg-main)',
+              color: 'var(--text-primary)',
               fontWeight: 600,
               fontSize: '0.9rem',
               textDecoration: 'none',
@@ -463,15 +463,15 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
             marginBottom: '1.5rem',
             padding: '1.25rem',
             borderRadius: '0.5rem',
-            backgroundColor: '#f9fafb',
-            border: '1px solid #e5e7eb',
+            backgroundColor: 'var(--bg-main)',
+            border: '1px solid var(--border-light)',
           }}
         >
           <h3
             style={{
               fontSize: '1rem',
               fontWeight: 600,
-              color: '#111827',
+              color: 'var(--text-primary)',
               marginBottom: '0.75rem',
             }}
           >
@@ -492,7 +492,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Start Date
@@ -516,7 +516,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.9rem',
                   boxSizing: 'border-box',
                 }}
@@ -530,7 +530,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 End Date
@@ -550,7 +550,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.9rem',
                   boxSizing: 'border-box',
                 }}
@@ -562,7 +562,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
               style={{
                 marginTop: '0.75rem',
                 fontSize: '0.8rem',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
                 fontStyle: 'italic',
               }}
             >
@@ -577,8 +577,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
               marginBottom: '1rem',
               padding: '0.75rem 1rem',
               borderRadius: '0.5rem',
-              backgroundColor: '#fee2e2',
-              color: '#991b1b',
+              backgroundColor: 'var(--error-bg)',
+              color: 'var(--error-text)',
               fontSize: '0.9rem',
             }}
           >
@@ -591,7 +591,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
             style={{
               padding: '2rem',
               textAlign: 'center',
-              color: '#6b7280',
+              color: 'var(--text-secondary)',
               fontSize: '0.95rem',
             }}
           >
@@ -602,10 +602,10 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
             style={{
               padding: '1.75rem',
               borderRadius: '0.5rem',
-              border: '1px dashed #d1d5db',
-              backgroundColor: '#f9fafb',
+              border: '1px dashed var(--border)',
+              backgroundColor: 'var(--bg-main)',
               textAlign: 'center',
-              color: '#6b7280',
+              color: 'var(--text-secondary)',
               fontSize: '0.95rem',
             }}
           >
@@ -615,7 +615,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
           <div
             style={{
               borderRadius: '0.5rem',
-              border: '1px solid #e5e7eb',
+              border: '1px solid var(--border-light)',
               overflow: 'hidden',
             }}
           >
@@ -628,8 +628,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
               <thead>
                 <tr
                   style={{
-                    backgroundColor: '#f9fafb',
-                    borderBottom: '1px solid #e5e7eb',
+                    backgroundColor: 'var(--bg-main)',
+                    borderBottom: '1px solid var(--border-light)',
                   }}
                 >
                   <th
@@ -638,7 +638,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       textAlign: 'left',
                       fontSize: '0.85rem',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Model
@@ -649,7 +649,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       textAlign: 'left',
                       fontSize: '0.85rem',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Available Units
@@ -660,7 +660,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       textAlign: 'left',
                       fontSize: '0.85rem',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Price per Day
@@ -671,7 +671,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       textAlign: 'left',
                       fontSize: '0.85rem',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Quantity
@@ -682,7 +682,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       textAlign: 'left',
                       fontSize: '0.85rem',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Action
@@ -748,7 +748,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     <tr
                       key={scooter.id}
                       style={{
-                        borderBottom: '1px solid #e5e7eb',
+                        borderBottom: '1px solid var(--border-light)',
                         opacity: rentalPeriod.startDate && rentalPeriod.endDate && !isAvailable ? 0.6 : 1,
                       }}
                     >
@@ -756,7 +756,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                         style={{
                           padding: '0.75rem',
                           fontSize: '0.9rem',
-                          color: '#111827',
+                          color: 'var(--text-primary)',
                           fontWeight: 600,
                         }}
                       >
@@ -766,7 +766,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                         style={{
                           padding: '0.75rem',
                           fontSize: '0.9rem',
-                          color: '#4b5563',
+                          color: 'var(--text-secondary)',
                         }}
                       >
                         {rentalPeriod.startDate && rentalPeriod.endDate 
@@ -777,7 +777,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                         style={{
                           padding: '0.75rem',
                           fontSize: '0.9rem',
-                          color: '#4b5563',
+                          color: 'var(--text-secondary)',
                           fontWeight: 600,
                         }}
                       >
@@ -801,10 +801,10 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           style={{
                             padding: '0.4rem 0.6rem',
                             borderRadius: '0.375rem',
-                            border: '1px solid #d1d5db',
+                            border: '1px solid var(--border)',
                             fontSize: '0.85rem',
-                            backgroundColor: (!isAvailable || !availabilityChecked) ? '#f3f4f6' : 'white',
-                            color: (!isAvailable || !availabilityChecked) ? '#9ca3af' : '#111827',
+                            backgroundColor: (!isAvailable || !availabilityChecked) ? 'var(--bg-card)' : 'white',
+                            color: (!isAvailable || !availabilityChecked) ? 'var(--disabled)' : 'var(--text-primary)',
                             cursor: (!isAvailable || !availabilityChecked) ? 'not-allowed' : 'pointer',
                             minWidth: '60px',
                           }}
@@ -827,7 +827,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           <span
                             style={{
                               fontSize: '0.85rem',
-                              color: '#9ca3af',
+                              color: 'var(--disabled)',
                               fontStyle: 'italic',
                             }}
                           >
@@ -837,7 +837,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                           <span
                             style={{
                               fontSize: '0.85rem',
-                              color: '#6b7280',
+                              color: 'var(--text-secondary)',
                               fontStyle: 'italic',
                             }}
                           >
@@ -848,8 +848,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                             style={{
                               padding: '0.45rem 1.1rem',
                               borderRadius: '0.5rem',
-                              backgroundColor: '#f3f4f6',
-                              color: '#6b7280',
+                              backgroundColor: 'var(--bg-card)',
+                              color: 'var(--text-secondary)',
                               fontWeight: 600,
                               fontSize: '0.85rem',
                               display: 'inline-block',
@@ -872,8 +872,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                               padding: '0.45rem 1.1rem',
                               borderRadius: '0.5rem',
                               border: 'none',
-                              backgroundColor: '#10b981',
-                              color: '#ffffff',
+                              backgroundColor: 'var(--accent-primary)',
+                              color: 'var(--bg-elevated)',
                               fontWeight: 600,
                               fontSize: '0.85rem',
                               cursor: 'pointer',
@@ -909,7 +909,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
         >
           <div
             style={{
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--bg-elevated)',
               padding: '1.5rem',
               borderRadius: '0.75rem',
               maxWidth: '500px',
@@ -931,7 +931,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   style={{
                     fontSize: '1.25rem',
                     fontWeight: 700,
-                    color: '#111827',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Book Scooter
@@ -939,7 +939,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                 <p
                   style={{
                     fontSize: '0.9rem',
-                    color: '#6b7280',
+                    color: 'var(--text-secondary)',
                     marginTop: '0.25rem',
                   }}
                 >
@@ -947,7 +947,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                 </p>
                 {selectedScooter.pricePerDay && bookingForm.startDate && bookingForm.endDate && (
                   <div style={{ marginTop: '0.5rem' }}>
-                    <div style={{ fontSize: '0.85rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
                       Quantity: {bookingForm.quantity} × Rp {selectedScooter.pricePerDay.toLocaleString('id-ID')} (IDR)/day
                     </div>
                     {(() => {
@@ -956,7 +956,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1
                       const totalPrice = selectedScooter.pricePerDay * days * bookingForm.quantity
                       return (
-                        <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#111827' }}>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                           Total: Rp {totalPrice.toLocaleString('id-ID')} (IDR) ({days} day{days !== 1 ? 's' : ''})
                         </div>
                       )
@@ -972,7 +972,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   border: 'none',
                   fontSize: '1.25rem',
                   cursor: 'pointer',
-                  color: '#6b7280',
+                  color: 'var(--text-secondary)',
                 }}
               >
                 ×
@@ -985,8 +985,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   marginBottom: '0.75rem',
                   padding: '0.75rem',
                   borderRadius: '0.375rem',
-                  backgroundColor: '#fee2e2',
-                  color: '#991b1b',
+                  backgroundColor: 'var(--error-bg)',
+                  color: 'var(--error-text)',
                   fontSize: '0.875rem',
                 }}
               >
@@ -1000,8 +1000,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   marginBottom: '0.75rem',
                   padding: '0.75rem',
                   borderRadius: '0.375rem',
-                  backgroundColor: '#dcfce7',
-                  color: '#166534',
+                  backgroundColor: 'var(--success-bg)',
+                  color: 'var(--success-text)',
                   fontSize: '0.875rem',
                 }}
               >
@@ -1018,7 +1018,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     marginBottom: '0.25rem',
                     fontSize: '0.875rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Name
@@ -1034,7 +1034,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.9rem',
                     boxSizing: 'border-box',
                   }}
@@ -1049,7 +1049,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     marginBottom: '0.25rem',
                     fontSize: '0.875rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Phone Number
@@ -1069,7 +1069,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.9rem',
                     boxSizing: 'border-box',
                   }}
@@ -1092,7 +1092,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       marginBottom: '0.25rem',
                       fontSize: '0.875rem',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     Start Date
@@ -1120,13 +1120,13 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       padding: '0.6rem 0.75rem',
                       borderRadius: '0.375rem',
                       border: unavailableDates.includes(bookingForm.startDate) && bookingForm.startDate
-                        ? '2px solid #ef4444'
-                        : '1px solid #d1d5db',
+                        ? '2px solid var(--error-text)'
+                        : '1px solid var(--border)',
                       fontSize: '0.9rem',
                       boxSizing: 'border-box',
                       backgroundColor: unavailableDates.includes(bookingForm.startDate) && bookingForm.startDate
-                        ? '#fef2f2'
-                        : '#ffffff',
+                        ? 'var(--error-bg)'
+                        : 'var(--bg-elevated)',
                     }}
                   />
                 </div>
@@ -1138,7 +1138,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       marginBottom: '0.25rem',
                       fontSize: '0.875rem',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     End Date
@@ -1161,13 +1161,13 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       padding: '0.6rem 0.75rem',
                       borderRadius: '0.375rem',
                       border: unavailableDates.includes(bookingForm.endDate) && bookingForm.endDate
-                        ? '2px solid #ef4444'
-                        : '1px solid #d1d5db',
+                        ? '2px solid var(--error-text)'
+                        : '1px solid var(--border)',
                       fontSize: '0.9rem',
                       boxSizing: 'border-box',
                       backgroundColor: unavailableDates.includes(bookingForm.endDate) && bookingForm.endDate
-                        ? '#fef2f2'
-                        : '#ffffff',
+                        ? 'var(--error-bg)'
+                        : 'var(--bg-elevated)',
                     }}
                   />
                 </div>
@@ -1181,7 +1181,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     marginBottom: '0.25rem',
                     fontSize: '0.875rem',
                     fontWeight: 600,
-                    color: '#374151',
+                    color: 'var(--text-primary)',
                   }}
                 >
                   Quantity
@@ -1196,7 +1196,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     width: '100%',
                     padding: '0.6rem 0.75rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.9rem',
                     boxSizing: 'border-box',
                     backgroundColor: 'white',
@@ -1216,7 +1216,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     marginBottom: '0.75rem',
                     padding: '0.5rem',
                     fontSize: '0.8rem',
-                    color: '#6b7280',
+                    color: 'var(--text-secondary)',
                     fontStyle: 'italic',
                   }}
                 >
@@ -1263,15 +1263,15 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       marginBottom: '0.75rem',
                       padding: '0.75rem',
                       borderRadius: '0.375rem',
-                      backgroundColor: '#fef3c7',
-                      border: '1px solid #fbbf24',
+                      backgroundColor: 'var(--warning-bg)',
+                      border: '1px solid var(--accent-primary)',
                     }}
                   >
                     <div
                       style={{
                         fontSize: '0.8rem',
                         fontWeight: 600,
-                        color: '#92400e',
+                        color: 'var(--warning-text)',
                         marginBottom: '0.25rem',
                       }}
                     >
@@ -1280,7 +1280,7 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                     <div
                       style={{
                         fontSize: '0.75rem',
-                        color: '#78350f',
+                        color: 'var(--warning-text)'
                       }}
                     >
                       This scooter is already booked on {conflictingDates.length} day{conflictingDates.length !== 1 ? 's' : ''} in your selected range. 
@@ -1298,10 +1298,10 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                       marginBottom: '0.75rem',
                       padding: '0.75rem',
                       borderRadius: '0.375rem',
-                      backgroundColor: '#fee2e2',
-                      border: '1px solid #f87171',
+                      backgroundColor: 'var(--error-bg)',
+                      border: '1px solid var(--error-text)',
                       fontSize: '0.8rem',
-                      color: '#991b1b',
+                      color: 'var(--error-text)',
                     }}
                   >
                     {conflict}
@@ -1323,9 +1323,9 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   disabled={bookingLoading}
                   style={{
                     padding: '0.6rem 1.25rem',
-                    backgroundColor: '#ffffff',
-                    color: '#374151',
-                    border: '1px solid #d1d5db',
+                    backgroundColor: 'var(--bg-elevated)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border)',
                     borderRadius: '0.5rem',
                     fontWeight: 500,
                     fontSize: '0.9rem',
@@ -1339,8 +1339,8 @@ export default function StoreScootersPage({ params, searchParams }: PageProps) {
                   disabled={bookingLoading}
                   style={{
                     padding: '0.6rem 1.25rem',
-                    backgroundColor: bookingLoading ? '#9ca3af' : '#10b981',
-                    color: '#ffffff',
+                    backgroundColor: bookingLoading ? 'var(--disabled)' : 'var(--accent-primary)',
+                    color: 'var(--bg-elevated)',
                     border: 'none',
                     borderRadius: '0.5rem',
                     fontWeight: 600,

@@ -171,7 +171,7 @@ export default function AuthLinks() {
   if (status === 'loading') {
     return (
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <span style={{ color: '#6b7280' }}>Loading...</span>
+        <span style={{ color: 'var(--text-secondary)' }}>Loading...</span>
       </div>
     )
   }
@@ -187,9 +187,9 @@ export default function AuthLinks() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             style={{
               padding: '0.5rem',
-              borderRadius: '0.375rem',
-              border: '1px solid #d1d5db',
-              backgroundColor: '#ffffff',
+              borderRadius: '0.5rem',
+              border: '1px solid var(--border)',
+              backgroundColor: 'var(--bg-elevated)',
               cursor: 'pointer',
               display: 'flex',
               flexDirection: 'column',
@@ -205,7 +205,7 @@ export default function AuthLinks() {
               style={{
                 width: '1.25rem',
                 height: '2px',
-                backgroundColor: '#374151',
+                backgroundColor: 'var(--text-primary)',
                 borderRadius: '1px',
                 transition: 'all 0.3s ease',
                 transform: isMenuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none',
@@ -215,7 +215,7 @@ export default function AuthLinks() {
               style={{
                 width: '1.25rem',
                 height: '2px',
-                backgroundColor: '#374151',
+                backgroundColor: 'var(--text-primary)',
                 borderRadius: '1px',
                 transition: 'all 0.3s ease',
                 opacity: isMenuOpen ? 0 : 1,
@@ -225,7 +225,7 @@ export default function AuthLinks() {
               style={{
                 width: '1.25rem',
                 height: '2px',
-                backgroundColor: '#374151',
+                backgroundColor: 'var(--text-primary)',
                 borderRadius: '1px',
                 transition: 'all 0.3s ease',
                 transform: isMenuOpen ? 'rotate(-45deg) translate(7px, -6px)' : 'none',
@@ -254,10 +254,10 @@ export default function AuthLinks() {
                   position: 'absolute',
                   top: 'calc(100% + 0.5rem)',
                   right: 0,
-                  backgroundColor: '#ffffff',
-                  borderRadius: '0.5rem',
-                  border: '1px solid #e5e7eb',
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                  backgroundColor: 'var(--bg-elevated)',
+                  borderRadius: '0.75rem',
+                  border: '1px solid var(--border)',
+                  boxShadow: 'var(--shadow-card)',
                   minWidth: '200px',
                   zIndex: 999,
                   padding: '0.5rem',
@@ -268,14 +268,14 @@ export default function AuthLinks() {
                 <div
                   style={{
                     padding: '0.75rem',
-                    borderBottom: '1px solid #e5e7eb',
+                    borderBottom: '1px solid var(--border)',
                     marginBottom: '0.5rem',
                   }}
                 >
-                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#111827' }}>
+                  <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                     {session.user?.name || session.user?.email}
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
                     {session.user?.email}
                   </div>
                 </div>
@@ -296,14 +296,14 @@ export default function AuthLinks() {
                           border: 'none',
                           fontSize: '0.875rem',
                           fontWeight: 500,
-                          color: '#374151',
+                          color: 'var(--text-primary)',
                           backgroundColor: 'transparent',
                           cursor: 'pointer',
                           textAlign: 'left',
                           transition: 'background-color 0.2s',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f3f4f6'
+                          e.currentTarget.style.backgroundColor = 'var(--accent-secondary-light)'
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = 'transparent'
@@ -323,14 +323,14 @@ export default function AuthLinks() {
                           border: 'none',
                           fontSize: '0.875rem',
                           fontWeight: 500,
-                          color: '#374151',
+                          color: 'var(--text-primary)',
                           backgroundColor: 'transparent',
                           cursor: 'pointer',
                           textAlign: 'left',
                           transition: 'background-color 0.2s',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f3f4f6'
+                          e.currentTarget.style.backgroundColor = 'var(--accent-secondary-light)'
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = 'transparent'
@@ -341,7 +341,7 @@ export default function AuthLinks() {
                       <div
                         style={{
                           height: '1px',
-                          backgroundColor: '#e5e7eb',
+                          backgroundColor: 'var(--border)',
                           margin: '0.5rem 0',
                         }}
                       />
@@ -357,7 +357,7 @@ export default function AuthLinks() {
                       border: 'none',
                       fontSize: '0.875rem',
                       fontWeight: 500,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                       textDecoration: 'none',
                       backgroundColor: 'transparent',
                       textAlign: 'left',
@@ -365,7 +365,7 @@ export default function AuthLinks() {
                       display: 'block',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f3f4f6'
+                      e.currentTarget.style.backgroundColor = 'var(--accent-secondary-light)'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent'
@@ -382,7 +382,7 @@ export default function AuthLinks() {
                           height: '1.25rem',
                           padding: '0 0.35rem',
                           borderRadius: '9999px',
-                          backgroundColor: '#ef4444',
+                          backgroundColor: 'var(--error-text)',
                           color: '#ffffff',
                           fontSize: '0.7rem',
                           fontWeight: 700,
@@ -405,7 +405,7 @@ export default function AuthLinks() {
                       border: 'none',
                       fontSize: '0.875rem',
                       fontWeight: 500,
-                      color: '#374151',
+                      color: 'var(--text-primary)',
                       textDecoration: 'none',
                       backgroundColor: 'transparent',
                       textAlign: 'left',
@@ -413,7 +413,7 @@ export default function AuthLinks() {
                       display: 'block',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#f3f4f6'
+                      e.currentTarget.style.backgroundColor = 'var(--accent-secondary-light)'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent'
@@ -424,7 +424,7 @@ export default function AuthLinks() {
                   <div
                     style={{
                       height: '1px',
-                      backgroundColor: '#e5e7eb',
+                      backgroundColor: 'var(--border)',
                       margin: '0.5rem 0',
                     }}
                   />
@@ -438,7 +438,7 @@ export default function AuthLinks() {
                       borderRadius: '0.375rem',
                       border: 'none',
                       backgroundColor: 'transparent',
-                      color: '#ef4444',
+                      color: 'var(--error-text)',
                       cursor: 'pointer',
                       fontSize: '0.875rem',
                       fontWeight: 500,
@@ -446,7 +446,7 @@ export default function AuthLinks() {
                       transition: 'background-color 0.2s',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#fee2e2'
+                      e.currentTarget.style.backgroundColor = 'var(--error-bg)'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent'
@@ -479,7 +479,7 @@ export default function AuthLinks() {
           >
             <div
               style={{
-                backgroundColor: 'white',
+                backgroundColor: 'var(--bg-elevated)',
                 borderRadius: '0.5rem',
                 padding: '2rem',
                 maxWidth: '800px',
@@ -491,7 +491,7 @@ export default function AuthLinks() {
               onClick={(e) => e.stopPropagation()}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1f2937' }}>Users</h2>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>Users</h2>
                 <button
                   onClick={() => setShowUsersModal(false)}
                   style={{
@@ -499,41 +499,41 @@ export default function AuthLinks() {
                     border: 'none',
                     fontSize: '1.5rem',
                     cursor: 'pointer',
-                    color: '#6b7280',
+                    color: 'var(--text-secondary)',
                   }}
                 >
                   ×
                 </button>
               </div>
-              {loading && <p style={{ color: '#6b7280' }}>Loading...</p>}
+              {loading && <p style={{ color: 'var(--text-secondary)' }}>Loading...</p>}
               {error && (
-                <div style={{ padding: '0.75rem', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '0.375rem', marginBottom: '1rem' }}>
+                <div style={{ padding: '0.75rem', backgroundColor: 'var(--error-bg)', color: 'var(--error-text)', borderRadius: '0.5rem', marginBottom: '1rem' }}>
                   {error}
                 </div>
               )}
               {!loading && !error && (
                 <>
-                  <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#dbeafe', borderRadius: '0.375rem' }}>
+                  <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: 'var(--info-bg)', borderRadius: '0.5rem' }}>
                     <strong>Total Users:</strong> {users.length}
                   </div>
                   {users.length === 0 ? (
-                    <p style={{ color: '#6b7280', textAlign: 'center', padding: '2rem' }}>No users found.</p>
+                    <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>No users found.</p>
                   ) : (
                     <div style={{ overflowX: 'auto' }}>
                       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ backgroundColor: '#f3f4f6', borderBottom: '2px solid #e5e7eb' }}>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Email</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Name</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Created</th>
+                          <tr style={{ backgroundColor: 'var(--bg-card)', borderBottom: '2px solid var(--border)' }}>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Email</th>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Name</th>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Created</th>
                           </tr>
                         </thead>
                         <tbody>
                           {users.map((user) => (
-                            <tr key={user.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                              <td style={{ padding: '0.75rem', color: '#374151' }}>{user.email}</td>
-                              <td style={{ padding: '0.75rem', color: '#374151' }}>{user.name || '-'}</td>
-                              <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: '#6b7280' }}>
+                            <tr key={user.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                              <td style={{ padding: '0.75rem', color: 'var(--text-primary)' }}>{user.email}</td>
+                              <td style={{ padding: '0.75rem', color: 'var(--text-primary)' }}>{user.name || '-'}</td>
+                              <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                                 {new Date(user.createdAt).toLocaleDateString()}
                               </td>
                             </tr>
@@ -567,7 +567,7 @@ export default function AuthLinks() {
           >
             <div
               style={{
-                backgroundColor: 'white',
+                backgroundColor: 'var(--bg-elevated)',
                 borderRadius: '0.5rem',
                 padding: '2rem',
                 maxWidth: '800px',
@@ -579,7 +579,7 @@ export default function AuthLinks() {
               onClick={(e) => e.stopPropagation()}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1f2937' }}>Stores</h2>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>Stores</h2>
                 <button
                   onClick={() => setShowStoresModal(false)}
                   style={{
@@ -587,57 +587,57 @@ export default function AuthLinks() {
                     border: 'none',
                     fontSize: '1.5rem',
                     cursor: 'pointer',
-                    color: '#6b7280',
+                    color: 'var(--text-secondary)',
                   }}
                 >
                   ×
                 </button>
               </div>
-              {loading && <p style={{ color: '#6b7280' }}>Loading...</p>}
+              {loading && <p style={{ color: 'var(--text-secondary)' }}>Loading...</p>}
               {error && (
-                <div style={{ padding: '0.75rem', backgroundColor: '#fee2e2', color: '#991b1b', borderRadius: '0.375rem', marginBottom: '1rem' }}>
+                <div style={{ padding: '0.75rem', backgroundColor: 'var(--error-bg)', color: 'var(--error-text)', borderRadius: '0.5rem', marginBottom: '1rem' }}>
                   {error}
                 </div>
               )}
               {!loading && !error && (
                 <>
-                  <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#dbeafe', borderRadius: '0.375rem' }}>
+                  <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: 'var(--info-bg)', borderRadius: '0.5rem' }}>
                     <strong>Total Stores:</strong> {stores.length} ({stores.filter(s => s.accepted).length} accepted, {stores.filter(s => !s.accepted).length} pending)
                   </div>
                   {stores.length === 0 ? (
-                    <p style={{ color: '#6b7280', textAlign: 'center', padding: '2rem' }}>No stores found.</p>
+                    <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>No stores found.</p>
                   ) : (
                     <div style={{ overflowX: 'auto' }}>
                       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ backgroundColor: '#f3f4f6', borderBottom: '2px solid #e5e7eb' }}>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Name</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Email</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Address</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Status</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Created</th>
-                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: '#374151' }}>Actions</th>
+                          <tr style={{ backgroundColor: 'var(--bg-card)', borderBottom: '2px solid var(--border)' }}>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Name</th>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Email</th>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Address</th>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Status</th>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Created</th>
+                            <th style={{ padding: '0.75rem', textAlign: 'left', fontWeight: 600, color: 'var(--text-primary)' }}>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                           {stores.map((store) => (
-                            <tr key={store.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                              <td style={{ padding: '0.75rem', color: '#374151', fontWeight: 600 }}>{store.name}</td>
-                              <td style={{ padding: '0.75rem', color: '#374151', fontSize: '0.875rem' }}>{store.email}</td>
-                              <td style={{ padding: '0.75rem', color: '#374151', fontSize: '0.875rem' }}>{store.address || '-'}</td>
+                            <tr key={store.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                              <td style={{ padding: '0.75rem', color: 'var(--text-primary)', fontWeight: 600 }}>{store.name}</td>
+                              <td style={{ padding: '0.75rem', color: 'var(--text-primary)', fontSize: '0.875rem' }}>{store.email}</td>
+                              <td style={{ padding: '0.75rem', color: 'var(--text-primary)', fontSize: '0.875rem' }}>{store.address || '-'}</td>
                               <td style={{ padding: '0.75rem' }}>
                                 <span style={{
                                   padding: '0.25rem 0.5rem',
                                   borderRadius: '0.25rem',
                                   fontSize: '0.75rem',
                                   fontWeight: 600,
-                                  backgroundColor: store.accepted ? '#d1fae5' : '#fef3c7',
-                                  color: store.accepted ? '#065f46' : '#92400e',
+                                  backgroundColor: store.accepted ? 'var(--success-bg)' : 'var(--warning-bg)',
+                                  color: store.accepted ? 'var(--success-text)' : 'var(--warning-text)',
                                 }}>
                                   {store.accepted ? 'Accepted' : 'Pending'}
                                 </span>
                               </td>
-                              <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: '#6b7280' }}>
+                              <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                                 {new Date(store.createdAt).toLocaleDateString()}
                               </td>
                               <td style={{ padding: '0.75rem' }}>
@@ -648,8 +648,8 @@ export default function AuthLinks() {
                                       style={{
                                         padding: '0.35rem 0.75rem',
                                         borderRadius: '0.375rem',
-                                        border: '1px solid #2563eb',
-                                        backgroundColor: '#2563eb',
+                                        border: '1px solid var(--accent-primary)',
+                                        backgroundColor: 'var(--accent-primary)',
                                         color: 'white',
                                         fontSize: '0.75rem',
                                         fontWeight: 600,
@@ -667,7 +667,7 @@ export default function AuthLinks() {
                                         padding: '0.35rem 0.75rem',
                                         borderRadius: '0.375rem',
                                         border: 'none',
-                                        backgroundColor: loading ? '#9ca3af' : '#10b981',
+                                        backgroundColor: loading ? 'var(--disabled)' : 'var(--accent-primary)',
                                         color: 'white',
                                         fontSize: '0.75rem',
                                         fontWeight: 600,
@@ -700,7 +700,7 @@ export default function AuthLinks() {
         href="/auth/login"
         style={{
           padding: '0.5rem 1rem',
-          color: '#2563eb',
+          color: 'var(--accent-primary)',
           textDecoration: 'none',
           fontSize: '0.875rem',
           fontWeight: '600',
@@ -712,7 +712,7 @@ export default function AuthLinks() {
         href="/auth/signup"
         style={{
           padding: '0.5rem 1rem',
-          backgroundColor: '#2563eb',
+          backgroundColor: 'var(--accent-primary)',
           color: 'white',
           textDecoration: 'none',
           borderRadius: '0.375rem',

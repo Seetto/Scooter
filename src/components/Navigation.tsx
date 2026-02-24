@@ -63,10 +63,10 @@ export default function Navigation() {
 
   if (status === "loading") {
     return (
-      <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-start h-16 items-center">
-            <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+      <nav style={{ background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-soft)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', height: 64 }}>
+            <div style={{ width: 24, height: 24, border: '2px solid var(--border)', borderTopColor: 'var(--accent-primary)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
           </div>
         </div>
       </nav>
@@ -80,12 +80,13 @@ export default function Navigation() {
   return (
     <>
       {/* MINIMAL NAVBAR - ONLY HAMBURGER MENU */}
-      <nav className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-start items-center h-16">
+      <nav style={{ background: 'var(--bg-elevated)', boxShadow: 'var(--shadow-soft)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', height: 64 }}>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white p-2 rounded-md transition-colors"
+              style={{ color: 'var(--text-secondary)', padding: 8, borderRadius: 6, border: 'none', background: 'none', cursor: 'pointer' }}
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
@@ -93,16 +94,23 @@ export default function Navigation() {
 
           {/* DROPDOWN - CALENDAR AND NEED TO BOOK LINKS */}
           {isMobileMenuOpen && (
-            <div className="absolute top-16 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-lg z-50">
-              <div className="px-4 py-2 space-y-1">
+            <div style={{ position: 'absolute', top: 64, left: 0, right: 0, background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border)', boxShadow: 'var(--shadow-card)', zIndex: 50 }}>
+              <div style={{ padding: '0.5rem 1rem' }}>
                 <Link
                   href="/calendar"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center space-x-2 px-3 py-3 rounded-md text-sm font-medium transition-colors block ${
-                    pathname === '/calendar'
-                      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
-                      : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    padding: '0.75rem 1rem',
+                    borderRadius: 8,
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    textDecoration: 'none',
+                    color: pathname === '/calendar' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                    background: pathname === '/calendar' ? 'var(--accent-secondary-light)' : 'transparent',
+                  }}
                 >
                   <CalendarIcon />
                   <span>Calendar</span>
@@ -114,24 +122,30 @@ export default function Navigation() {
       </nav>
 
       {/* FIXED FOOTER - USER INFO AND SIGN OUT */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {session.user?.name}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {session.user?.email}
-              </span>
-            </div>
-            <button
-              onClick={() => signOut()}
-              className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors px-4 py-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-800"
-            >
-              Sign out
-            </button>
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'var(--bg-elevated)', borderTop: '1px solid var(--border)', boxShadow: '0 -2px 10px rgba(0,0,0,0.06)', zIndex: 40 }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>
+              {session.user?.name}
+            </span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              {session.user?.email}
+            </span>
           </div>
+          <button
+            onClick={() => signOut()}
+            style={{
+              fontSize: '0.875rem',
+              color: 'var(--error-text)',
+              padding: '0.5rem 1rem',
+              borderRadius: 6,
+              border: '1px solid var(--error-bg)',
+              background: 'transparent',
+              cursor: 'pointer',
+            }}
+          >
+            Sign out
+          </button>
         </div>
       </div>
     </>

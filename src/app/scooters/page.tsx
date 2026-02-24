@@ -211,10 +211,10 @@ export default function ScootersPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f9fafb',
+          backgroundColor: 'var(--bg-main)',
         }}
       >
-        <p style={{ color: '#6b7280' }}>Loading...</p>
+        <p style={{ color: 'var(--text-secondary)' }}>Loading...</p>
       </div>
     )
   }
@@ -227,7 +227,7 @@ export default function ScootersPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f9fafb',
+          backgroundColor: 'var(--bg-main)',
           padding: '2rem',
         }}
       >
@@ -246,7 +246,7 @@ export default function ScootersPage() {
               fontSize: '1.75rem',
               fontWeight: 700,
               marginBottom: '0.75rem',
-              color: '#111827',
+              color: 'var(--text-primary)',
             }}
           >
             Store Access Only
@@ -266,8 +266,8 @@ export default function ScootersPage() {
             style={{
               padding: '0.7rem 1.5rem',
               borderRadius: '0.5rem',
-              backgroundColor: '#2563eb',
-              color: '#ffffff',
+              backgroundColor: 'var(--accent-primary)',
+              color: 'var(--bg-elevated)',
               textDecoration: 'none',
               fontWeight: 600,
               fontSize: '0.95rem',
@@ -285,7 +285,7 @@ export default function ScootersPage() {
       style={{
         minHeight: '100vh',
         padding: '2rem',
-        backgroundColor: '#f9fafb',
+        backgroundColor: 'var(--bg-main)',
         display: 'flex',
         justifyContent: 'center',
       }}
@@ -315,7 +315,7 @@ export default function ScootersPage() {
               style={{
                 fontSize: '1.75rem',
                 fontWeight: 700,
-                color: '#111827',
+                color: 'var(--text-primary)',
                 marginBottom: '0.25rem',
               }}
             >
@@ -324,7 +324,7 @@ export default function ScootersPage() {
             <p
               style={{
                 fontSize: '0.95rem',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
               }}
             >
               Create and manage the scooters available to hire from your store.
@@ -344,9 +344,9 @@ export default function ScootersPage() {
               style={{
                 padding: '0.7rem 1.3rem',
                 borderRadius: '0.5rem',
-                border: '1px solid #d1d5db',
-                backgroundColor: '#f9fafb',
-                color: '#374151',
+                border: '1px solid var(--border)',
+                backgroundColor: 'var(--bg-main)',
+                color: 'var(--text-primary)',
                 fontWeight: 600,
                 fontSize: '0.9rem',
                 textDecoration: 'none',
@@ -366,8 +366,8 @@ export default function ScootersPage() {
               }}
               style={{
                 padding: '0.7rem 1.5rem',
-                backgroundColor: showForm ? '#6b7280' : '#2563eb',
-                color: '#ffffff',
+                backgroundColor: showForm ? 'var(--text-secondary)' : 'var(--accent-primary)',
+                color: 'var(--bg-elevated)',
                 border: 'none',
                 borderRadius: '0.5rem',
                 fontWeight: 600,
@@ -387,8 +387,8 @@ export default function ScootersPage() {
               marginBottom: '1rem',
               padding: '0.75rem 1rem',
               borderRadius: '0.5rem',
-              backgroundColor: '#fee2e2',
-              color: '#991b1b',
+              backgroundColor: 'var(--error-bg)',
+              color: 'var(--error-text)',
               fontSize: '0.9rem',
             }}
           >
@@ -403,8 +403,8 @@ export default function ScootersPage() {
               marginBottom: '1.75rem',
               padding: '1.25rem',
               borderRadius: '0.5rem',
-              border: '1px solid #e5e7eb',
-              backgroundColor: '#f9fafb',
+              border: '1px solid var(--border-light)',
+              backgroundColor: 'var(--bg-main)',
             }}
           >
             {editingScooter && (
@@ -428,7 +428,7 @@ export default function ScootersPage() {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Model <span style={{ color: '#ef4444' }}>*</span>
@@ -443,7 +443,7 @@ export default function ScootersPage() {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.95rem',
                   boxSizing: 'border-box',
                 }}
@@ -459,7 +459,7 @@ export default function ScootersPage() {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Plate Number <span style={{ color: '#ef4444' }}>*</span>
@@ -474,7 +474,7 @@ export default function ScootersPage() {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.95rem',
                   boxSizing: 'border-box',
                 }}
@@ -490,7 +490,7 @@ export default function ScootersPage() {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 VIN or Chassis Number
@@ -505,7 +505,7 @@ export default function ScootersPage() {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.95rem',
                   boxSizing: 'border-box',
                 }}
@@ -520,7 +520,7 @@ export default function ScootersPage() {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Odometer
@@ -536,7 +536,7 @@ export default function ScootersPage() {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.95rem',
                   boxSizing: 'border-box',
                 }}
@@ -551,7 +551,7 @@ export default function ScootersPage() {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Condition
@@ -566,7 +566,7 @@ export default function ScootersPage() {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.95rem',
                   boxSizing: 'border-box',
                 }}
@@ -581,7 +581,7 @@ export default function ScootersPage() {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Price per Day (Rupiah)
@@ -593,7 +593,7 @@ export default function ScootersPage() {
                     left: '0.75rem',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    color: '#6b7280',
+                    color: 'var(--text-secondary)',
                     fontSize: '0.95rem',
                     fontWeight: 600,
                   }}
@@ -612,7 +612,7 @@ export default function ScootersPage() {
                     width: '100%',
                     padding: '0.6rem 0.75rem 0.6rem 2.5rem',
                     borderRadius: '0.375rem',
-                    border: '1px solid #d1d5db',
+                    border: '1px solid var(--border)',
                     fontSize: '0.95rem',
                     boxSizing: 'border-box',
                   }}
@@ -628,7 +628,7 @@ export default function ScootersPage() {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Status <span style={{ color: '#ef4444' }}>*</span>
@@ -641,7 +641,7 @@ export default function ScootersPage() {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.95rem',
                   boxSizing: 'border-box',
                   backgroundColor: 'white',
@@ -663,7 +663,7 @@ export default function ScootersPage() {
                   marginBottom: '0.25rem',
                   fontSize: '0.875rem',
                   fontWeight: 600,
-                  color: '#374151',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Notes
@@ -678,7 +678,7 @@ export default function ScootersPage() {
                   width: '100%',
                   padding: '0.6rem 0.75rem',
                   borderRadius: '0.375rem',
-                  border: '1px solid #d1d5db',
+                  border: '1px solid var(--border)',
                   fontSize: '0.95rem',
                   boxSizing: 'border-box',
                   resize: 'vertical',
@@ -690,8 +690,8 @@ export default function ScootersPage() {
               type="submit"
               style={{
                 padding: '0.6rem 1.4rem',
-                backgroundColor: '#2563eb',
-                color: '#ffffff',
+                backgroundColor: 'var(--accent-primary)',
+                color: 'var(--bg-elevated)',
                 border: 'none',
                 borderRadius: '0.5rem',
                 fontWeight: 600,
@@ -720,27 +720,27 @@ export default function ScootersPage() {
                 style={{
                   marginBottom: '1.5rem',
                   padding: '1rem',
-                  backgroundColor: '#f9fafb',
+                  backgroundColor: 'var(--bg-main)',
                   borderRadius: '0.5rem',
-                  border: '1px solid #e5e7eb',
+                  border: '1px solid var(--border-light)',
                 }}
               >
                 <h3
                   style={{
                     fontSize: '1rem',
                     fontWeight: 600,
-                    color: '#111827',
+                    color: 'var(--text-primary)',
                     marginBottom: '0.75rem',
                   }}
                 >
                   Scooter Summary
                 </h3>
                 <div style={{ marginBottom: '0.5rem' }}>
-                  <strong style={{ color: '#374151' }}>Total Scooters: </strong>
-                  <span style={{ color: '#6b7280' }}>{totalScooters}</span>
+                  <strong style={{ color: 'var(--text-primary)' }}>Total Scooters: </strong>
+                  <span style={{ color: 'var(--text-secondary)' }}>{totalScooters}</span>
                 </div>
                 <div>
-                  <strong style={{ color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
+                  <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.5rem' }}>
                     By Model:
                   </strong>
                   <div
@@ -759,12 +759,12 @@ export default function ScootersPage() {
                             padding: '0.5rem',
                             backgroundColor: 'white',
                             borderRadius: '0.375rem',
-                            border: '1px solid #e5e7eb',
+                            border: '1px solid var(--border-light)',
                             fontSize: '0.875rem',
                           }}
                         >
-                          <span style={{ fontWeight: 600, color: '#111827' }}>{model}:</span>{' '}
-                          <span style={{ color: '#6b7280' }}>{count}</span>
+                          <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{model}:</span>{' '}
+                          <span style={{ color: 'var(--text-secondary)' }}>{count}</span>
                         </div>
                       ))}
                   </div>
@@ -777,7 +777,7 @@ export default function ScootersPage() {
             style={{
               fontSize: '1.1rem',
               fontWeight: 600,
-              color: '#111827',
+              color: 'var(--text-primary)',
               marginBottom: '0.75rem',
             }}
           >
@@ -788,7 +788,7 @@ export default function ScootersPage() {
             <div
               style={{
                 padding: '1rem 0',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
                 fontSize: '0.9rem',
               }}
             >
@@ -801,10 +801,10 @@ export default function ScootersPage() {
               style={{
                 padding: '1.75rem',
                 borderRadius: '0.5rem',
-                border: '1px dashed #d1d5db',
-                backgroundColor: '#f9fafb',
+                border: '1px dashed var(--border)',
+                backgroundColor: 'var(--bg-main)',
                 textAlign: 'center',
-                color: '#6b7280',
+                color: 'var(--text-secondary)',
                 fontSize: '0.95rem',
               }}
             >
@@ -814,7 +814,7 @@ export default function ScootersPage() {
             <div
               style={{
                 borderRadius: '0.5rem',
-                border: '1px solid #e5e7eb',
+                border: '1px solid var(--border-light)',
                 overflow: 'hidden',
               }}
             >
@@ -827,8 +827,8 @@ export default function ScootersPage() {
                 <thead>
                   <tr
                     style={{
-                      backgroundColor: '#f9fafb',
-                      borderBottom: '1px solid #e5e7eb',
+                      backgroundColor: 'var(--bg-main)',
+                      borderBottom: '1px solid var(--border-light)',
                     }}
                   >
                     <th
@@ -837,7 +837,7 @@ export default function ScootersPage() {
                         textAlign: 'left',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       ID
@@ -848,7 +848,7 @@ export default function ScootersPage() {
                         textAlign: 'left',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Model
@@ -859,7 +859,7 @@ export default function ScootersPage() {
                         textAlign: 'left',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Number Plate
@@ -870,7 +870,7 @@ export default function ScootersPage() {
                         textAlign: 'left',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Price/Day
@@ -881,7 +881,7 @@ export default function ScootersPage() {
                         textAlign: 'left',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Status
@@ -892,7 +892,7 @@ export default function ScootersPage() {
                         textAlign: 'left',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Added
@@ -903,7 +903,7 @@ export default function ScootersPage() {
                         textAlign: 'left',
                         fontSize: '0.85rem',
                         fontWeight: 600,
-                        color: '#374151',
+                        color: 'var(--text-primary)',
                       }}
                     >
                       Actions
@@ -915,14 +915,14 @@ export default function ScootersPage() {
                     <tr
                       key={scooter.id}
                       style={{
-                        borderBottom: '1px solid #e5e7eb',
+                        borderBottom: '1px solid var(--border-light)',
                       }}
                     >
                       <td
                         style={{
                           padding: '0.75rem',
                           fontSize: '0.9rem',
-                          color: '#111827',
+                          color: 'var(--text-primary)',
                           fontWeight: 600,
                         }}
                       >
@@ -994,7 +994,7 @@ export default function ScootersPage() {
                         style={{
                           padding: '0.75rem',
                           fontSize: '0.85rem',
-                          color: '#6b7280',
+                          color: 'var(--text-secondary)',
                         }}
                       >
                         {new Date(scooter.createdAt).toLocaleString()}
@@ -1010,7 +1010,7 @@ export default function ScootersPage() {
                             onClick={() => handleEditScooter(scooter)}
                             style={{
                               padding: '0.4rem 0.8rem',
-                              backgroundColor: '#2563eb',
+                              backgroundColor: 'var(--accent-primary)',
                               color: 'white',
                               border: 'none',
                               borderRadius: '0.375rem',
@@ -1022,7 +1022,7 @@ export default function ScootersPage() {
                               e.currentTarget.style.backgroundColor = '#1d4ed8'
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#2563eb'
+                              e.currentTarget.style.backgroundColor = 'var(--accent-primary)'
                             }}
                           >
                             Edit
@@ -1033,7 +1033,7 @@ export default function ScootersPage() {
                             disabled={loading}
                             style={{
                               padding: '0.4rem 0.8rem',
-                              backgroundColor: loading ? '#9ca3af' : '#ef4444',
+                              backgroundColor: loading ? 'var(--disabled)' : '#ef4444',
                               color: 'white',
                               border: 'none',
                               borderRadius: '0.375rem',

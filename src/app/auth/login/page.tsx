@@ -63,28 +63,28 @@ function LoginForm() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '2rem',
-      backgroundColor: '#f9fafb',
+      backgroundColor: 'var(--bg-main)',
     }}>
       <div style={{
         width: '100%',
         maxWidth: '400px',
-        backgroundColor: 'white',
+        backgroundColor: 'var(--bg-elevated)',
         padding: '2rem',
-        borderRadius: '0.5rem',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        borderRadius: '0.75rem',
+        boxShadow: 'var(--shadow-card)',
       }}>
         <h1 style={{
           fontSize: '1.875rem',
           fontWeight: '700',
           marginBottom: '0.5rem',
           textAlign: 'center',
-          color: '#1f2937',
+          color: 'var(--text-primary)',
         }}>
           Sign In
         </h1>
         <p style={{
           textAlign: 'center',
-          color: '#6b7280',
+          color: 'var(--text-secondary)',
           marginBottom: '2rem',
         }}>
           Welcome back! Please sign in to your account
@@ -93,9 +93,9 @@ function LoginForm() {
         {message && (
           <div style={{
             padding: '0.75rem',
-            backgroundColor: '#d1fae5',
-            color: '#065f46',
-            borderRadius: '0.375rem',
+            backgroundColor: 'var(--success-bg)',
+            color: 'var(--success-text)',
+            borderRadius: '0.5rem',
             marginBottom: '1rem',
             fontSize: '0.875rem',
           }}>
@@ -106,9 +106,9 @@ function LoginForm() {
         {error && (
           <div style={{
             padding: '0.75rem',
-            backgroundColor: '#fee2e2',
-            color: '#991b1b',
-            borderRadius: '0.375rem',
+            backgroundColor: 'var(--error-bg)',
+            color: 'var(--error-text)',
+            borderRadius: '0.5rem',
             marginBottom: '1rem',
             fontSize: '0.875rem',
           }}>
@@ -123,7 +123,7 @@ function LoginForm() {
               marginBottom: '0.5rem',
               fontSize: '0.875rem',
               fontWeight: '600',
-              color: '#374151',
+              color: 'var(--text-primary)',
             }}>
               Email or Username
             </label>
@@ -137,8 +137,8 @@ function LoginForm() {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
+                border: '1px solid var(--border)',
+                borderRadius: '0.5rem',
                 fontSize: '1rem',
                 boxSizing: 'border-box',
               }}
@@ -151,7 +151,7 @@ function LoginForm() {
               marginBottom: '0.5rem',
               fontSize: '0.875rem',
               fontWeight: '600',
-              color: '#374151',
+              color: 'var(--text-primary)',
             }}>
               Password
             </label>
@@ -164,8 +164,8 @@ function LoginForm() {
               style={{
                 width: '100%',
                 padding: '0.75rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '0.375rem',
+                border: '1px solid var(--border)',
+                borderRadius: '0.5rem',
                 fontSize: '1rem',
                 boxSizing: 'border-box',
               }}
@@ -178,10 +178,10 @@ function LoginForm() {
             style={{
               width: '100%',
               padding: '0.75rem',
-              backgroundColor: loading ? '#9ca3af' : '#2563eb',
+              backgroundColor: loading ? 'var(--disabled)' : 'var(--accent-primary)',
               color: 'white',
               border: 'none',
-              borderRadius: '0.375rem',
+              borderRadius: '0.5rem',
               fontSize: '1rem',
               fontWeight: '600',
               cursor: loading ? 'not-allowed' : 'pointer',
@@ -194,11 +194,11 @@ function LoginForm() {
 
         <p style={{
           textAlign: 'center',
-          color: '#6b7280',
+          color: 'var(--text-secondary)',
           fontSize: '0.875rem',
         }}>
           Don't have an account?{' '}
-          <Link href="/auth/signup" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: '600' }}>
+          <Link href="/auth/signup" style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: '600' }}>
             Sign up
           </Link>
         </p>
@@ -216,7 +216,7 @@ export default function LoginPage() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '2rem',
-        backgroundColor: '#f9fafb',
+        backgroundColor: 'var(--bg-main)',
       }}>
         <div>Loading...</div>
       </div>

@@ -354,8 +354,8 @@ export default function FindScooterButton() {
         const infoWindow = new google.maps.InfoWindow({
           content: `
             <div style="padding: 0.2rem 0.35rem; line-height: 1.2; white-space: nowrap;">
-              <div style="font-size: 0.75rem; font-weight: 600; color: #1f2937;">${store.name}</div>
-              ${store.distance ? `<div style="color: #059669; font-size: 0.65rem; margin-top: 0.1rem;">${store.distance.toFixed(2)} km</div>` : ''}
+              <div style="font-size: 0.75rem; font-weight: 600; color: #334050;">${store.name}</div>
+              ${store.distance ? `<div style="color: #2D9D78; font-size: 0.65rem; margin-top: 0.1rem;">${store.distance.toFixed(2)} km</div>` : ''}
             </div>
           `,
         })
@@ -394,7 +394,7 @@ export default function FindScooterButton() {
             fontSize: '1.125rem',
             fontWeight: '600',
             color: '#fff',
-            backgroundColor: '#9ca3af',
+            backgroundColor: 'var(--disabled)',
             border: 'none',
             borderRadius: '0.5rem',
             cursor: 'not-allowed',
@@ -427,25 +427,25 @@ export default function FindScooterButton() {
             fontSize: '1.125rem',
             fontWeight: '600',
             color: '#fff',
-            backgroundColor: loading ? '#9ca3af' : '#2563eb',
+            backgroundColor: loading ? 'var(--disabled)' : 'var(--accent-primary)',
             border: 'none',
             borderRadius: '0.5rem',
             cursor: loading ? 'not-allowed' : 'pointer',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            boxShadow: 'var(--shadow-card)',
             transition: 'all 0.2s ease',
           }}
           onMouseEnter={(e) => {
             if (!loading && mounted) {
-              e.currentTarget.style.backgroundColor = '#1d4ed8'
+              e.currentTarget.style.backgroundColor = 'var(--accent-primary-hover)'
               e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.08)'
             }
           }}
           onMouseLeave={(e) => {
             if (!loading && mounted) {
-              e.currentTarget.style.backgroundColor = '#2563eb'
+              e.currentTarget.style.backgroundColor = 'var(--accent-primary)'
               e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+              e.currentTarget.style.boxShadow = 'var(--shadow-card)'
             }
           }}
         >
@@ -460,21 +460,21 @@ export default function FindScooterButton() {
               padding: '0.9rem 1.75rem',
               fontSize: '1rem',
               fontWeight: 600,
-              color: '#1f2937',
-              backgroundColor: '#e5e7eb',
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--accent-secondary-light)',
               borderRadius: '0.5rem',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--border)',
               cursor: 'pointer',
               textDecoration: 'none',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+              boxShadow: 'var(--shadow-card)',
               transition: 'all 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#d1d5db'
+              e.currentTarget.style.backgroundColor = 'var(--accent-secondary)'
               e.currentTarget.style.transform = 'translateY(-2px)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#e5e7eb'
+              e.currentTarget.style.backgroundColor = 'var(--accent-secondary-light)'
               e.currentTarget.style.transform = 'translateY(0)'
             }}
           >
@@ -489,7 +489,7 @@ export default function FindScooterButton() {
                   height: '1.25rem',
                   padding: '0 0.35rem',
                   borderRadius: '9999px',
-                  backgroundColor: '#ef4444',
+                  backgroundColor: 'var(--error-text)',
                   color: '#ffffff',
                   fontSize: '0.7rem',
                   fontWeight: 700,
@@ -512,22 +512,21 @@ export default function FindScooterButton() {
               padding: '0.9rem 1.75rem',
               fontSize: '1rem',
               fontWeight: 600,
-              color: '#1f2937',
-              backgroundColor: '#e5e7eb',
+              color: 'var(--text-primary)',
+              backgroundColor: 'var(--accent-secondary-light)',
               borderRadius: '0.5rem',
-              border: '1px solid #d1d5db',
+              border: '1px solid var(--border)',
               cursor: 'pointer',
               textDecoration: 'none',
-              boxShadow:
-                '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.05)',
+              boxShadow: 'var(--shadow-card)',
               transition: 'all 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#d1d5db'
+              e.currentTarget.style.backgroundColor = 'var(--accent-secondary)'
               e.currentTarget.style.transform = 'translateY(-2px)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#e5e7eb'
+              e.currentTarget.style.backgroundColor = 'var(--accent-secondary-light)'
               e.currentTarget.style.transform = 'translateY(0)'
             }}
           >
@@ -540,8 +539,8 @@ export default function FindScooterButton() {
         <div
           style={{
             padding: '1rem',
-            backgroundColor: '#fee2e2',
-            color: '#991b1b',
+            backgroundColor: 'var(--error-bg)',
+            color: 'var(--error-text)',
             borderRadius: '0.5rem',
             fontSize: '0.875rem',
             maxWidth: '500px',
@@ -556,7 +555,7 @@ export default function FindScooterButton() {
                 href="https://console.cloud.google.com/google/maps-apis"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: '#991b1b', textDecoration: 'underline' }}
+                style={{ color: 'var(--error-text)', textDecoration: 'underline' }}
               >
                 Get your API key here
               </a>
@@ -585,9 +584,9 @@ export default function FindScooterButton() {
                 style={{
                   padding: '1rem 1.25rem',
                   borderRadius: '0.75rem',
-                  backgroundColor: '#ffffff',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                  border: '1px solid #e5e7eb',
+                  backgroundColor: 'var(--bg-elevated)',
+                  boxShadow: 'var(--shadow-soft)',
+                  border: '1px solid var(--border-light)',
                   transition: 'all 0.2s ease',
                 }}
               >
@@ -600,11 +599,11 @@ export default function FindScooterButton() {
                   }}
                 >
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '1rem', fontWeight: 700, color: '#111827' }}>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                       {store.name}
                     </div>
                     {store.distance !== undefined && (
-                      <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '0.2rem' }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', marginTop: '0.2rem' }}>
                         Distance: {store.distance.toFixed(2)} km
                       </div>
                     )}
@@ -617,8 +616,8 @@ export default function FindScooterButton() {
                     }}
                     style={{
                       padding: '0.6rem 1.25rem',
-                      backgroundColor: isExpanded ? '#e5e7eb' : '#2563eb',
-                      color: isExpanded ? '#374151' : '#ffffff',
+                      backgroundColor: isExpanded ? 'var(--accent-secondary-light)' : 'var(--accent-primary)',
+                      color: isExpanded ? 'var(--text-primary)' : '#ffffff',
                       border: 'none',
                       borderRadius: '0.5rem',
                       fontWeight: 600,
@@ -629,12 +628,12 @@ export default function FindScooterButton() {
                     }}
                     onMouseEnter={(e) => {
                       if (!isExpanded) {
-                        e.currentTarget.style.backgroundColor = '#1d4ed8'
+                        e.currentTarget.style.backgroundColor = 'var(--accent-primary-hover)'
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!isExpanded) {
-                        e.currentTarget.style.backgroundColor = '#2563eb'
+                        e.currentTarget.style.backgroundColor = 'var(--accent-primary)'
                       }
                     }}
                   >
@@ -661,13 +660,13 @@ export default function FindScooterButton() {
                         border: '1px solid #e5e7eb',
                       }}
                     >
-                      <div style={{ fontSize: '0.9rem', color: '#4b5563', marginBottom: '0.5rem' }}>
-                        <strong style={{ color: '#374151' }}>Address:</strong>{' '}
+                      <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                        <strong style={{ color: 'var(--text-primary)' }}>Address:</strong>{' '}
                         {store.address || 'No address provided'}
                       </div>
                       {store.phoneNumber && (
-                        <div style={{ fontSize: '0.9rem', color: '#4b5563' }}>
-                          <strong style={{ color: '#374151' }}>Phone:</strong> {store.phoneNumber}
+                        <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                          <strong style={{ color: 'var(--text-primary)' }}>Phone:</strong> {store.phoneNumber}
                         </div>
                       )}
                     </div>
@@ -682,7 +681,7 @@ export default function FindScooterButton() {
                         }}
                         style={{
                           padding: '0.6rem 1.25rem',
-                          backgroundColor: '#6b7280',
+                          backgroundColor: 'var(--text-secondary)',
                           color: '#ffffff',
                           border: 'none',
                           borderRadius: '0.5rem',
@@ -692,14 +691,14 @@ export default function FindScooterButton() {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.35rem',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+                          boxShadow: 'var(--shadow-soft)',
                           transition: 'all 0.2s ease',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#4b5563'
+                          e.currentTarget.style.backgroundColor = 'var(--text-primary)'
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#6b7280'
+                          e.currentTarget.style.backgroundColor = 'var(--text-secondary)'
                         }}
                       >
                         <span role="img" aria-label="map">
@@ -711,7 +710,7 @@ export default function FindScooterButton() {
                         href={`/stores/${store.id}/scooters?name=${encodeURIComponent(store.name)}`}
                         style={{
                           padding: '0.6rem 1.25rem',
-                          backgroundColor: '#6b7280',
+                          backgroundColor: 'var(--text-secondary)',
                           color: '#ffffff',
                           border: 'none',
                           borderRadius: '0.5rem',
@@ -722,14 +721,14 @@ export default function FindScooterButton() {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '0.35rem',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.12)',
+                          boxShadow: 'var(--shadow-soft)',
                           transition: 'all 0.2s ease',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#4b5563'
+                          e.currentTarget.style.backgroundColor = 'var(--text-primary)'
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#6b7280'
+                          e.currentTarget.style.backgroundColor = 'var(--text-secondary)'
                         }}
                       >
                         <span role="img" aria-label="scooter">
@@ -754,7 +753,7 @@ export default function FindScooterButton() {
             minHeight: '320px',                 // keep usable height on small phones
             borderRadius: '0.5rem',
             overflow: 'hidden',
-            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+            boxShadow: 'var(--shadow-soft)',
             marginTop: '1rem',
           }}
         >
